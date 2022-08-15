@@ -2,7 +2,7 @@ module.exports = async (ctx, next) => {
   try {
     await next();
   } catch(err) {
-    if (!err.statusCode) {
+    if (!err.status) {
       ctx.status = 400;
       ctx.body = { message: err.message || 'Unknown Error'}
     } else {
