@@ -4,15 +4,15 @@ const { v4: uuid, validate } = require('uuid');
 const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
 
   if (!user_id) {
-    throw new Error('Missing user_id or actor_id', 400);
+    throw new Error('Missing user_id or actor_id');
   }
 
   if (!name) {
-    throw new Error('Missing name', 400);
+    throw new Error('Missing name');
   }
 
   if(!diagram_xml) {
-    throw new Error('Missing diagram_xml', 400)
+    throw new Error('Missing diagram_xml')
   }
 
   const diagram = await db('diagrams')
@@ -36,7 +36,7 @@ const getAllDiagrams = async () => {
 const getDiagramById = async (id) => {
 
   if (!validate(id)) {
-    throw new Error('Invalid id', 400);
+    throw new Error('Invalid id');
   }
 
   const diagram = await db('diagrams').where('id', id).first();
