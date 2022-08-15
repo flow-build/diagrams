@@ -20,15 +20,15 @@ describe('POST /token', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.jwtToken).toBeDefined();
-    expect(response.body.payload.actor_id).toBeDefined();
+    expect(response.body.payload.user_id).toBeDefined();
   });
 
-  test('should use provided actor_id', async () => {
-    const actorId = uuid();
-    const response = await request.post('/token').send({ actor_id: actorId });
+  test('should use provided user_id', async () => {
+    const userId = uuid();
+    const response = await request.post('/token').send({ user_id: userId });
 
     expect(response.status).toBe(200);
     expect(response.body.jwtToken).toBeDefined();
-    expect(response.body.payload.actor_id).toBe(actorId);
+    expect(response.body.payload.user_id).toBe(userId);
   });
 });

@@ -4,7 +4,7 @@ const { v4: uuid, validate } = require('uuid');
 const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
 
   if (!user_id) {
-    throw new Error('Missing user_id or actor_id');
+    throw new Error('Missing user_id');
   }
 
   if (!name) {

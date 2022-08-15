@@ -2,11 +2,10 @@ const diagramsService = require('../services/diagrams');
 
 const saveDiagram = async (ctx, next) => {
 
-  const { name, diagram_xml, workflow_id, user_id } = ctx.request.body;
-  const { actor_id } = ctx.state.user;
-  const user = actor_id || user_id;
+  const { name, diagram_xml, workflow_id } = ctx.request.body;
+  const { user_id } = ctx.state.user;
 
-  const diagram = await diagramsService.saveDiagram(name, diagram_xml, workflow_id, user);
+  const diagram = await diagramsService.saveDiagram(name, diagram_xml, workflow_id, user_id);
   
   ctx.status = 201;
   ctx.body = {
@@ -19,8 +18,7 @@ const saveDiagram = async (ctx, next) => {
   return next();
 }
 
-const getAllDiagrams = async (ctx, next) =>{
-  const diagrams = await diagramsService.getAllDiagrams();
+  const { user_id } = ctx.state.user;
 
   ctx.status = 200;
   ctx.body = diagrams;

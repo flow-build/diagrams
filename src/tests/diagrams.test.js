@@ -20,7 +20,7 @@ describe('POST /diagrams', () => {
   test('should return 201', async () => {
     const tokenResponse = await request.post('/token');
     const { jwtToken } = tokenResponse.body;
-    const { actor_id } = tokenResponse.body.payload;
+    const { user_id } = tokenResponse.body.payload;
 
     const lastResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -31,7 +31,7 @@ describe('POST /diagrams', () => {
 
     expect(lastResponse.status).toBe(201);
     expect(validate(lastResponse.body.id)).toBeTruthy();
-    expect(lastResponse.body.user_id).toEqual(actor_id);
+    expect(lastResponse.body.user_id).toEqual(user_id);
     expect(lastResponse.body.name).toEqual('Test');
   });
 
