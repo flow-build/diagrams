@@ -23,16 +23,6 @@ describe('POST /token', () => {
     expect(response.body.payload.actor_id).toBeDefined();
   });
 
-  test('should use provided duration', async () => {
-    const definedDuration = 6000;
-
-    const response = await request.post('/token');
-
-    expect(response.status).toBe(200);
-    expect(response.body.jwtToken).toBeDefined();
-    expect(response.body.payload.actor_id).toBeDefined();
-  });
-
   test('should use provided actor_id', async () => {
     const actorId = uuid();
     const response = await request.post('/token').send({ actor_id: actorId });
