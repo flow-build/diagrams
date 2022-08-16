@@ -18,7 +18,10 @@ const saveDiagram = async (ctx, next) => {
   return next();
 }
 
+const getAllDiagramsByUserId = async (ctx, next) =>{
   const { user_id } = ctx.state.user;
+
+  const diagrams = await diagramsService.getAllDiagramsByUserId(user_id);
 
   ctx.status = 200;
   ctx.body = diagrams;
@@ -46,6 +49,6 @@ const getDiagramById = async (ctx, next) => {
 
 module.exports = {
   saveDiagram,
-  getAllDiagrams,
+  getAllDiagramsByUserId,
   getDiagramById
 }
