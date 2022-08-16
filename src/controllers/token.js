@@ -4,14 +4,11 @@ const { jwtSecret } = require('../utils/jwtSecret');
 
 const getToken = (ctx, next) => {
   const secret = jwtSecret;
-  const payload = {};
-  payload.user_id  = ctx.request.body.user_id || uuid();
 
-  const jwtToken = createJWTToken(payload, secret);
+  const jwtToken = createJWTToken(secret);
   ctx.status = 200;
   ctx.body = { 
-    jwtToken,
-    payload
+    jwtToken
   }
 
   return next();

@@ -11,8 +11,8 @@ module.exports = (opts = {}) => {
   router.use(bodyParser());
   router.use(cors(opts.corsOptions));
 
+  router.get('/token', errorHandler, tokenController.getToken);
   router.get('/', errorHandler, healthController.healtchCheck);
-  router.post('/token', errorHandler, tokenController.getToken);
 
   return router; 
 }

@@ -14,21 +14,11 @@ afterAll(async () => {
   await server.close();
 })
 
-describe('POST /token', () => {
+describe('GET /token', () => {
   test('should return 200 without payload', async () => {
-    const response = await request.post('/token');
+    const response = await request.get('/token');
 
     expect(response.status).toBe(200);
     expect(response.body.jwtToken).toBeDefined();
-    expect(response.body.payload.user_id).toBeDefined();
-  });
-
-  test('should use provided user_id', async () => {
-    const userId = uuid();
-    const response = await request.post('/token').send({ user_id: userId });
-
-    expect(response.status).toBe(200);
-    expect(response.body.jwtToken).toBeDefined();
-    expect(response.body.payload.user_id).toBe(userId);
   });
 });
