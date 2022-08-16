@@ -12,6 +12,10 @@ Make sure ports 5000 and 5432 are free to use on your localhost.
 
 ## Tests
 
-You can run unit tests by running ```npm run test```.
+You can run tests by running: 
+
+```
+npm run test
+```
 
 Note: some tests will fail if you don't have the database running.
