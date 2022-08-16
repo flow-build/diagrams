@@ -3,8 +3,7 @@ const { validate } = require('uuid');
 
 const saveDiagram = async (ctx, next) => {
 
-  const { name, diagram_xml, workflow_id } = ctx.request.body;
-  const { user_id } = ctx.state.user;
+  const { name, diagram_xml, workflow_id, user_id } = ctx.request.body;
 
   if (!user_id) {
     ctx.throw(400, 'Missing user_id');

@@ -18,30 +18,30 @@ afterAll(async () => {
 
 describe('POST /diagrams', () => {
   test('should return 201', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
-    const { user_id } = tokenResponse.body.payload;
 
     const lastResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'Test',
-        diagram_xml: diagramSample
+        diagram_xml: diagramSample,
+        user_id: '2'
       })
 
     expect(lastResponse.status).toBe(201);
     expect(validate(lastResponse.body.id)).toBeTruthy();
-    expect(lastResponse.body.user_id).toEqual(user_id);
     expect(lastResponse.body.name).toEqual('Test');
   });
 
   test('should return 400 if doesnt have name', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
+        user_id: '3',
         diagram_xml: diagramSample
       })
 
@@ -50,30 +50,48 @@ describe('POST /diagrams', () => {
   });
 
   test('should return 400 if doesnt have diagram_xml', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
-        name: 'Test'
+        name: 'Test',
+        user_id: '3'
       })
 
     expect(lastResponse.status).toBe(400);
     expect(lastResponse.body.message).toEqual('Missing diagram_xml');
   });
+
+  test('should return 400 if doesnt have user_id', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.post('/diagrams').type('form')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test',
+        diagram_xml: diagramSample
+      })
+
+    expect(lastResponse.status).toBe(400);
+    expect(lastResponse.body.message).toEqual('Missing user_id');
+  });
+
 });
 
 describe('GET /diagrams/:id', () => {
   test('should return 200 with the diagrams xml', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const postResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'Test diagram id',
-        diagram_xml: diagramSample
+        diagram_xml: diagramSample,
+        user_id: '4'
       });
     const { id } = postResponse.body;
 
@@ -86,7 +104,7 @@ describe('GET /diagrams/:id', () => {
 
   test('should return 404 for non existing diagram_id', async () => {
     const diagram_id = uuid();
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.get(`/diagrams/${diagram_id}`)
@@ -97,7 +115,7 @@ describe('GET /diagrams/:id', () => {
   });
 
   test('should return 400 invalid id', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.get('/diagrams/123456')
@@ -110,7 +128,7 @@ describe('GET /diagrams/:id', () => {
 
 describe('GET /diagrams', () => {
   test('should return 200 with all diagrams', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.get('/diagrams')
@@ -123,7 +141,7 @@ describe('GET /diagrams', () => {
 
 describe('GET /workflows/:id/diagrams', () => {
   test('should return 200 with all diagrams of workflow', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const postResponse = await request.post('/diagrams').type('form')
@@ -131,7 +149,8 @@ describe('GET /workflows/:id/diagrams', () => {
       .send({
         name: 'Test workflow_id diagrams',
         diagram_xml: diagramSample,
-        workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8'
+        workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8',
+        user_id: '5'
       });
     const { workflow_id } = postResponse.body;
 
@@ -158,7 +177,7 @@ describe('GET /diagrams/user/:id', () => {
 
 describe('DELETE /diagrams/:id', () => {
   test('should return 204 deleting diagram', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const postResponse = await request.post('/diagrams').type('form')
@@ -166,7 +185,8 @@ describe('DELETE /diagrams/:id', () => {
       .send({
         name: 'Test Delete',
         diagram_xml: diagramSample,
-        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8',
+        user_id: '6'
       });
     const { id } = postResponse.body;
 
@@ -177,7 +197,7 @@ describe('DELETE /diagrams/:id', () => {
   });
 
   test('should return 400 invalid id', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.del('/diagrams/123456')
@@ -189,7 +209,7 @@ describe('DELETE /diagrams/:id', () => {
 
   test('should return 404 for non existing diagram', async () => {
     const diagram_id = uuid();
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.del(`/diagrams/${diagram_id}`)
@@ -202,7 +222,7 @@ describe('DELETE /diagrams/:id', () => {
 
 describe('PATCH /diagrams/:id', () => {
   test('should return 200 diagram updated name', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const postResponse = await request.post('/diagrams').type('form')
@@ -210,7 +230,8 @@ describe('PATCH /diagrams/:id', () => {
       .send({
         name: 'Test Update',
         diagram_xml: diagramSample,
-        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8',
+        user_id: '7'
       });
     const { id } = postResponse.body;
 
@@ -227,7 +248,7 @@ describe('PATCH /diagrams/:id', () => {
   });
 
   test('should return 400 invalid id', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.patch('/diagrams/123456')
@@ -239,7 +260,7 @@ describe('PATCH /diagrams/:id', () => {
 
   test('should return 404 for non existing diagram', async () => {
     const diagram_id = uuid();
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.patch(`/diagrams/${diagram_id}`)
@@ -255,7 +276,7 @@ describe('PATCH /diagrams/:id', () => {
   });
 
   test('should return 400 for bad request', async () => {
-    const tokenResponse = await request.post('/token');
+    const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
     const postResponse = await request.post('/diagrams').type('form')
@@ -263,7 +284,8 @@ describe('PATCH /diagrams/:id', () => {
       .send({
         name: 'Test Update',
         diagram_xml: diagramSample,
-        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8',
+        user_id: '8'
       });
     const { id } = postResponse.body;
 
