@@ -139,7 +139,7 @@ describe('GET /diagrams', () => {
   });
 });
 
-describe('GET /workflows/:id/diagrams', () => {
+describe('GET /diagrams/workflow/:id', () => {
   test('should return 200 with all diagrams of workflow', async () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
@@ -154,7 +154,7 @@ describe('GET /workflows/:id/diagrams', () => {
       });
     const { workflow_id } = postResponse.body;
 
-    const lastResponse = await request.get(`/workflows/${workflow_id}/diagrams`)
+    const lastResponse = await request.get(`/diagrams/workflow/${workflow_id}`)
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(200);

@@ -61,6 +61,20 @@ const getDiagramsByUserId = async (ctx, next) => {
   return next();
 }
 
+const getDiagramsByUserAndWF = async (ctx, next) => {
+  const { workflow_id, user_id } = ctx.params;
+
+  try {
+    const diagrams = await diagramsService.getDiagramsByUserAndWF(workflow_id, user_id);
+    ctx.status = 200;
+    ctx.body = diagrams;
+  } catch (err) {
+    throw new Error(err);
+  }
+
+  return next();
+}
+
 const getDiagramById = async (ctx, next) => {
 
   const { id } = ctx.params;
@@ -172,6 +186,7 @@ module.exports = {
   saveDiagram,
   getAllDiagrams,
   getDiagramsByUserId,
+  getDiagramsByUserAndWF,
   getDiagramById,
   getDiagramsByWorkflowId,
   updateDiagram,

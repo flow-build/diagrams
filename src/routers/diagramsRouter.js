@@ -17,19 +17,19 @@ module.exports = (opts = {}) => {
 
   const diagrams = Router();
   diagrams.prefix('/diagrams');
+  diagrams
+    .get('/user/:user_id/workflow/:workflow_id', 
+      errorHandler, diagramsController.getDiagramsByUserAndWF
+    );
   diagrams.get('/user/:id', errorHandler, diagramsController.getDiagramsByUserId);
-  diagrams.post('/', errorHandler, diagramsController.saveDiagram);
-  diagrams.get('/', errorHandler, diagramsController.getAllDiagrams);
+  diagrams.get('/workflow/:id', errorHandler, diagramsController.getDiagramsByWorkflowId);
   diagrams.get('/:id', errorHandler, diagramsController.getDiagramById);
+  diagrams.get('/', errorHandler, diagramsController.getAllDiagrams);
+  diagrams.post('/', errorHandler, diagramsController.saveDiagram);
   diagrams.patch('/:id', errorHandler, diagramsController.updateDiagram);
   diagrams.del('/:id', errorHandler, diagramsController.deleteDiagram);
 
-  const workflows = Router();
-  workflows.prefix('/workflows');
-  workflows.get('/:id/diagrams', errorHandler, diagramsController.getDiagramsByWorkflowId);
-
   router.use(diagrams.routes());
-  router.use(workflows.routes());
   
   return router; 
 }
