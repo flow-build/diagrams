@@ -52,10 +52,6 @@ const getDiagramById = async (id) => {
 
   const diagram = await db('diagrams').where('id', id).first();
 
-  if(!diagram) {
-    return;
-  }
-
   return diagram;
 }
 
@@ -72,10 +68,29 @@ const getDiagramsByWorkflowId = async(workflow_id) => {
   return diagrams;
 }
 
+const deleteDiagram = async (id) => {
+
+  if (!validate(id)) {
+    throw new Error('Invalid id');
+  }
+
+  const diagram = await db('diagrams').where('id', id).first();
+
+  if (diagram) {
+    const diagramDeleted = await db('diagrams')
+      .where('id', id).del().returning('*');
+
+    return diagramDeleted;
+  } 
+
+  return;
+}
+
 module.exports = {
   saveDiagram,
   getAllDiagrams,
   getAllDiagramsForUser,
   getDiagramById,
-  getDiagramsByWorkflowId
+  getDiagramsByWorkflowId,
+  deleteDiagram
 }

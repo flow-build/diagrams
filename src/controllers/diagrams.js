@@ -68,10 +68,28 @@ const getDiagramsByWorkflowId = async(ctx, next) => {
   return next();
 }
 
+const deleteDiagram = async (ctx, next) => {
+  const { id } = ctx.params;
+  
+  const diagramDeleted = await diagramsService.deleteDiagram(id);
+
+  if (diagramDeleted) {
+    ctx.status = 204;
+  } else {
+    ctx.status = 404;
+    ctx.body = {
+      message: 'Diagram not found'
+    }
+  }
+
+  return next();
+}
+
 module.exports = {
   saveDiagram,
   getAllDiagrams,
   getAllDiagramsForUser,
   getDiagramById,
-  getDiagramsByWorkflowId
+  getDiagramsByWorkflowId,
+  deleteDiagram
 }

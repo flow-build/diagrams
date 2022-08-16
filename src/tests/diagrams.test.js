@@ -72,12 +72,12 @@ describe('GET /diagrams/:id', () => {
     const postResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
-        name: 'Test 1',
+        name: 'Test diagram id',
         diagram_xml: diagramSample
       });
-    const diagram_id = postResponse.body.id;
+    const { id } = postResponse.body;
 
-    const lastResponse = await request.get(`/diagrams/${diagram_id}`)
+    const lastResponse = await request.get(`/diagrams/${id}`)
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(200);
@@ -106,7 +106,6 @@ describe('GET /diagrams/:id', () => {
     expect(lastResponse.status).toBe(400);
     expect(lastResponse.body.message).toEqual('Invalid id');
   });
-
 });
 
 describe('GET /diagrams', () => {
@@ -120,7 +119,6 @@ describe('GET /diagrams', () => {
     expect(lastResponse.status).toBe(200);
     expect(lastResponse.body).toBeDefined();
   });
-
 });
 
 describe('GET /workflows/:id/diagrams', () => {
@@ -131,7 +129,7 @@ describe('GET /workflows/:id/diagrams', () => {
     const postResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
-        name: 'Test 2',
+        name: 'Test workflow_id diagrams',
         diagram_xml: diagramSample,
         workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8'
       });
@@ -143,7 +141,6 @@ describe('GET /workflows/:id/diagrams', () => {
     expect(lastResponse.status).toBe(200);
     expect(lastResponse.body).toBeDefined();
   });
-
 });
 
 describe('GET /user/diagrams', () => {
@@ -157,4 +154,49 @@ describe('GET /user/diagrams', () => {
     expect(lastResponse.status).toBe(200);
     expect(lastResponse.body).toBeDefined();
   });
+});
+
+describe('DELETE /diagrams/:id', () => {
+  test('should return 204 deleting diagram', async () => {
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const postResponse = await request.post('/diagrams').type('form')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test Delete',
+        diagram_xml: diagramSample,
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+      });
+    const { id } = postResponse.body;
+
+    const lastResponse = await request.del(`/diagrams/${id}`)
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(204);
+  });
+
+  test('should return 400 invalid id', async () => {
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.del('/diagrams/123456')
+    .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(400);
+    expect(lastResponse.body.message).toEqual('Invalid id');
+  });
+
+  test('should return 404 for non existing diagram', async () => {
+    const diagram_id = uuid();
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.del(`/diagrams/${diagram_id}`)
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(404);
+    expect(lastResponse.body.message).toEqual('Diagram not found');
+  });
+  
 });
