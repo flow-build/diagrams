@@ -48,6 +48,17 @@ const getDiagramsByWorkflowId = async (workflow_id) => {
   return diagrams;
 }
 
+const getLatestDiagramByWorkflowId = async (workflow_id) => {
+  
+  const diagram = await db('diagrams')
+    .select('id', 'name', 'workflow_id', 'user_id')
+    .where('workflow_id', workflow_id)
+    .orderBy('updated_at', 'desc')
+    .first();
+  
+    return diagram;
+}
+
 const getDiagramsByUserAndWF = async (workflow_id, user_id) => {
   
   const diagrams = await db('diagrams')
@@ -99,6 +110,7 @@ module.exports = {
   getDiagramsByUserAndWF,
   getDiagramById,
   getDiagramsByWorkflowId,
+  getLatestDiagramByWorkflowId,
   updateDiagram,
   deleteDiagram
 }

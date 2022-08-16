@@ -64,6 +64,10 @@ const getDiagramsByUserId = async (ctx, next) => {
 const getDiagramsByUserAndWF = async (ctx, next) => {
   const { workflow_id, user_id } = ctx.params;
 
+  if (!validate(workflow_id)) {
+    ctx.throw(400, 'Invalid id');
+  }
+
   try {
     const diagrams = await diagramsService.getDiagramsByUserAndWF(workflow_id, user_id);
     ctx.status = 200;
@@ -116,6 +120,25 @@ const getDiagramsByWorkflowId = async(ctx, next) => {
     ctx.status = 200;
     ctx.body = diagrams;  
   } catch(err) {
+    throw new Error(err);
+  }
+
+  return next();
+}
+
+const getLatestDiagramByWorkflowId = async (ctx, next) => {
+  const { id } = ctx.params;
+
+  if (!validate(id)) {
+    ctx.throw(400, 'Invalid id');
+  }
+
+  try {
+    const diagram = await diagramsService.getLatestDiagramByWorkflowId(id);
+
+    ctx.status = 200;
+    ctx.body = diagram;
+  } catch (err) {
     throw new Error(err);
   }
 
@@ -189,6 +212,7 @@ module.exports = {
   getDiagramsByUserAndWF,
   getDiagramById,
   getDiagramsByWorkflowId,
+  getLatestDiagramByWorkflowId,
   updateDiagram,
   deleteDiagram
 }

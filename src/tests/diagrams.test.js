@@ -86,16 +86,7 @@ describe('GET /diagrams/:id', () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
-    const postResponse = await request.post('/diagrams').type('form')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .send({
-        name: 'Test diagram id',
-        diagram_xml: diagramSample,
-        user_id: '4'
-      });
-    const { id } = postResponse.body;
-
-    const lastResponse = await request.get(`/diagrams/${id}`)
+    const lastResponse = await request.get('/diagrams/d655538b-95d3-4627-acaf-b391fdc25142')
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(200);
@@ -144,23 +135,49 @@ describe('GET /diagrams/workflow/:id', () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
-    const postResponse = await request.post('/diagrams').type('form')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .send({
-        name: 'Test workflow_id diagrams',
-        diagram_xml: diagramSample,
-        workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8',
-        user_id: '5'
-      });
-    const { workflow_id } = postResponse.body;
-
-    const lastResponse = await request.get(`/diagrams/workflow/${workflow_id}`)
+    const lastResponse = await request.get('/diagrams/workflow/7be513f4-98dc-43e2-8f3a-66e68a61aca8')
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(200);
     expect(lastResponse.body).toBeDefined();
   });
+
+  test('should return 400 for invalid id', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.get('/diagrams/workflow/123456')
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(400);
+    expect(lastResponse.body.message).toEqual('Invalid id');
+  });
 });
+
+describe('GET /diagrams/workflow/:id/latest', () => {
+  test('should return 200 with all diagrams of workflow', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.get('/diagrams/workflow/7be513f4-98dc-43e2-8f3a-66e68a61aca8/latest')
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(200);
+    expect(lastResponse.body.workflow_id).toEqual('7be513f4-98dc-43e2-8f3a-66e68a61aca8');
+  });
+
+  test('should return 400 for invalid id', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.get('/diagrams/workflow/123456/latest')
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(400);
+    expect(lastResponse.body.message).toEqual('Invalid id');
+  });
+});
+
 
 describe('GET /diagrams/user/:id', () => {
   test('should return 200 with diagrams of user_id', async () => {
@@ -174,6 +191,32 @@ describe('GET /diagrams/user/:id', () => {
     expect(lastResponse.body).toBeDefined();
   });
 });
+
+describe('GET /diagrams/user/:user_id/workflow/:workflow_id', () => {
+  test('should return 200 with diagrams of user_id and workflow_id', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.get('/diagrams/user/1/workflow/7be513f4-98dc-43e2-8f3a-66e68a61aca8')
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(200);
+    expect(lastResponse.body).toBeDefined();
+  });
+
+  test('should return 400 for invalid workflow_id', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.get('/diagrams/user/1/workflow/123456')
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(400);
+    expect(lastResponse.body.message).toEqual('Invalid id');
+  });
+
+});
+
 
 describe('DELETE /diagrams/:id', () => {
   test('should return 204 deleting diagram', async () => {
@@ -225,17 +268,7 @@ describe('PATCH /diagrams/:id', () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
-    const postResponse = await request.post('/diagrams').type('form')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .send({
-        name: 'Test Update',
-        diagram_xml: diagramSample,
-        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8',
-        user_id: '7'
-      });
-    const { id } = postResponse.body;
-
-    const patchResponse = await request.patch(`/diagrams/${id}`)
+    const patchResponse = await request.patch('/diagrams/d655538b-95d3-4627-acaf-b391fdc25142')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'Test Update Change Name',

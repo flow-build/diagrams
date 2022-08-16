@@ -22,6 +22,7 @@ module.exports = (opts = {}) => {
       errorHandler, diagramsController.getDiagramsByUserAndWF
     );
   diagrams.get('/user/:id', errorHandler, diagramsController.getDiagramsByUserId);
+  diagrams.get('/workflow/:id/latest', errorHandler, diagramsController.getLatestDiagramByWorkflowId);
   diagrams.get('/workflow/:id', errorHandler, diagramsController.getDiagramsByWorkflowId);
   diagrams.get('/:id', errorHandler, diagramsController.getDiagramById);
   diagrams.get('/', errorHandler, diagramsController.getAllDiagrams);
