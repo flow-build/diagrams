@@ -20,6 +20,7 @@ module.exports = (opts = {}) => {
   diagrams.post('/', errorHandler, diagramsController.saveDiagram);
   diagrams.get('/', errorHandler, diagramsController.getAllDiagrams);
   diagrams.get('/:id', errorHandler, diagramsController.getDiagramById);
+  diagrams.patch('/:id', errorHandler, diagramsController.updateDiagram);
   diagrams.del('/:id', errorHandler, diagramsController.deleteDiagram);
 
   const user = Router();

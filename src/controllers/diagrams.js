@@ -68,6 +68,29 @@ const getDiagramsByWorkflowId = async(ctx, next) => {
   return next();
 }
 
+const updateDiagram = async (ctx, next) => {
+  const { id } = ctx.params;
+  const { name, diagram_xml } = ctx.request.body;
+  const diagram = await diagramsService.updateDiagram(id, name, diagram_xml);
+
+  if (diagram) {
+    ctx.status = 200;
+    ctx.body = {
+      id: diagram.id,
+      name: diagram.name,
+      workflow_id: diagram.workflow_id,
+      user_id: diagram.user_id
+    }
+  } else {
+    ctx.status = 404;
+    ctx.body = {
+      message: 'Diagram not found'
+    }
+  }
+
+  return next();
+}
+
 const deleteDiagram = async (ctx, next) => {
   const { id } = ctx.params;
   
@@ -91,5 +114,6 @@ module.exports = {
   getAllDiagramsForUser,
   getDiagramById,
   getDiagramsByWorkflowId,
+  updateDiagram,
   deleteDiagram
 }

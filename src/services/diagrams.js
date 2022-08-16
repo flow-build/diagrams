@@ -15,7 +15,7 @@ const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
     throw new Error('Missing diagram_xml')
   }
 
-  const diagram = await db('diagrams')
+  const [ diagram ] = await db('diagrams')
     .insert({
       id: uuid(),
       name,
@@ -24,7 +24,7 @@ const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
       user_id
     }).returning('*');
   
-  return diagram[0];
+  return diagram;
 }
 
 const getAllDiagrams = async () => {
@@ -68,6 +68,33 @@ const getDiagramsByWorkflowId = async(workflow_id) => {
   return diagrams;
 }
 
+const updateDiagram = async (id, name, diagram_xml) => {
+  if (!validate(id)) {
+    throw new Error('Invalid id');
+  }
+
+  const diagram = await db('diagrams').where('id', id).first();
+
+  if (diagram) {
+
+    if (!name && !diagram_xml) {
+      throw new Error('Missing name or diagram_xml');
+    }
+
+    const [ diagramUpdated ] = await db('diagrams')
+      .where('id', id)
+      .update({
+        name,
+        diagram_xml
+      })
+      .returning('*');
+
+    return diagramUpdated;
+  } 
+
+  return;
+}
+
 const deleteDiagram = async (id) => {
 
   if (!validate(id)) {
@@ -92,5 +119,6 @@ module.exports = {
   getAllDiagramsForUser,
   getDiagramById,
   getDiagramsByWorkflowId,
+  updateDiagram,
   deleteDiagram
 }

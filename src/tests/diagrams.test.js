@@ -198,5 +198,74 @@ describe('DELETE /diagrams/:id', () => {
     expect(lastResponse.status).toBe(404);
     expect(lastResponse.body.message).toEqual('Diagram not found');
   });
-  
+});
+
+describe('PATCH /diagrams/:id', () => {
+  test('should return 200 diagram updated name', async () => {
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const postResponse = await request.post('/diagrams').type('form')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test Update',
+        diagram_xml: diagramSample,
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+      });
+    const { id } = postResponse.body;
+
+    const patchResponse = await request.patch(`/diagrams/${id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test Update Change Name',
+        diagram_xml: diagramSample,
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+      });
+
+    expect(patchResponse.status).toBe(200);
+    expect(patchResponse.body.name).toEqual('Test Update Change Name');
+  });
+
+  test('should return 400 invalid id', async () => {
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.patch('/diagrams/123456')
+    .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(400);
+    expect(lastResponse.body.message).toEqual('Invalid id');
+  });
+
+  test('should return 404 for non existing diagram', async () => {
+    const diagram_id = uuid();
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.patch(`/diagrams/${diagram_id}`)
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(404);
+    expect(lastResponse.body.message).toEqual('Diagram not found');
+  });
+
+  test('should return 400 for bad request', async () => {
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const postResponse = await request.post('/diagrams').type('form')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test Update',
+        diagram_xml: diagramSample,
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+      });
+    const { id } = postResponse.body;
+
+    const patchResponse = await request.patch(`/diagrams/${id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+
+    expect(patchResponse.status).toBe(400);
+    expect(patchResponse.body.message).toEqual('Missing name or diagram_xml');
+  });
 });
