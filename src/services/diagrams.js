@@ -27,8 +27,11 @@ const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
   return diagram[0];
 }
 
-const getAllDiagrams = async () => {
-  const diagrams = await db('diagrams').select('id', 'name', 'workflow_id', 'user_id');
+const getAllDiagramsByUserId = async (user_id) => {
+  
+  const diagrams = await db('diagrams')
+    .select('id', 'name', 'workflow_id', 'user_id')
+    .where('user_id', user_id);
 
   return diagrams;
 }
@@ -50,6 +53,6 @@ const getDiagramById = async (id) => {
 
 module.exports = {
   saveDiagram,
-  getAllDiagrams,
+  getAllDiagramsByUserId,
   getDiagramById
 }

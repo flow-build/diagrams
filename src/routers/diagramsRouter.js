@@ -18,7 +18,7 @@ module.exports = (opts = {}) => {
   const diagrams = Router();
   diagrams.prefix('/diagrams');
   diagrams.post('/', errorHandler, diagramsController.saveDiagram);
-  diagrams.get('/', errorHandler, diagramsController.getAllDiagrams);
+  diagrams.get('/', errorHandler, diagramsController.getAllDiagramsByUserId);
   diagrams.get('/:id', errorHandler, diagramsController.getDiagramById);
 
   router.use(diagrams.routes());

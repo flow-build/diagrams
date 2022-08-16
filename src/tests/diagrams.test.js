@@ -110,7 +110,7 @@ describe('GET /diagrams/:id', () => {
 });
 
 describe('GET /diagrams', () => {
-  test('should return 200 with all diagrams', async () => {
+  test('should return 200 with all users diagrams', async () => {
     const tokenResponse = await request.post('/token');
     const { jwtToken } = tokenResponse.body;
 
