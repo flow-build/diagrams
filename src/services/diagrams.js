@@ -3,18 +3,6 @@ const { v4: uuid, validate } = require('uuid');
 
 const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
 
-  if (!user_id) {
-    throw new Error('Missing user_id');
-  }
-
-  if (!name) {
-    throw new Error('Missing name');
-  }
-
-  if(!diagram_xml) {
-    throw new Error('Missing diagram_xml')
-  }
-
   const [ diagram ] = await db('diagrams')
     .insert({
       id: uuid(),
@@ -46,20 +34,12 @@ const getAllDiagramsForUser = async (user_id) => {
 
 const getDiagramById = async (id) => {
 
-  if (!validate(id)) {
-    throw new Error('Invalid id');
-  }
-
   const diagram = await db('diagrams').where('id', id).first();
 
   return diagram;
 }
 
 const getDiagramsByWorkflowId = async(workflow_id) => {
-
-  if (!validate(workflow_id)) {
-    throw new Error('Invalid id');
-  }
 
   const diagrams = await db('diagrams')
     .select('id', 'name', 'workflow_id', 'user_id')
@@ -69,17 +49,10 @@ const getDiagramsByWorkflowId = async(workflow_id) => {
 }
 
 const updateDiagram = async (id, name, diagram_xml) => {
-  if (!validate(id)) {
-    throw new Error('Invalid id');
-  }
 
   const diagram = await db('diagrams').where('id', id).first();
 
   if (diagram) {
-
-    if (!name && !diagram_xml) {
-      throw new Error('Missing name or diagram_xml');
-    }
 
     const [ diagramUpdated ] = await db('diagrams')
       .where('id', id)
@@ -96,10 +69,6 @@ const updateDiagram = async (id, name, diagram_xml) => {
 }
 
 const deleteDiagram = async (id) => {
-
-  if (!validate(id)) {
-    throw new Error('Invalid id');
-  }
 
   const diagram = await db('diagrams').where('id', id).first();
 

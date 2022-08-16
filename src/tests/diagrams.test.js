@@ -243,7 +243,12 @@ describe('PATCH /diagrams/:id', () => {
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.patch(`/diagrams/${diagram_id}`)
-      .set('Authorization', `Bearer ${jwtToken}`);
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test 404',
+        diagram_xml: diagramSample,
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+      });
 
     expect(lastResponse.status).toBe(404);
     expect(lastResponse.body.message).toEqual('Diagram not found');
