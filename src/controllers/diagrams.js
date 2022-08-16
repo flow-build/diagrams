@@ -48,11 +48,11 @@ const getAllDiagrams = async (ctx, next) => {
   return next();
 }
 
-const getAllDiagramsForUser = async (ctx, next) => {
-  const { user_id } = ctx.state.user;
+const getDiagramsByUserId = async (ctx, next) => {
+  const user_id = ctx.params.id;
 
   try {
-    const diagrams = await diagramsService.getAllDiagramsForUser(user_id);
+    const diagrams = await diagramsService.getDiagramsByUserId(user_id);
     ctx.status = 200;
     ctx.body = diagrams;
   } catch (err) {
@@ -172,7 +172,7 @@ const deleteDiagram = async (ctx, next) => {
 module.exports = {
   saveDiagram,
   getAllDiagrams,
-  getAllDiagramsForUser,
+  getDiagramsByUserId,
   getDiagramById,
   getDiagramsByWorkflowId,
   updateDiagram,

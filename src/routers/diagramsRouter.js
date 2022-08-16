@@ -17,15 +17,12 @@ module.exports = (opts = {}) => {
 
   const diagrams = Router();
   diagrams.prefix('/diagrams');
+  diagrams.get('/user/:id', errorHandler, diagramsController.getDiagramsByUserId);
   diagrams.post('/', errorHandler, diagramsController.saveDiagram);
   diagrams.get('/', errorHandler, diagramsController.getAllDiagrams);
   diagrams.get('/:id', errorHandler, diagramsController.getDiagramById);
   diagrams.patch('/:id', errorHandler, diagramsController.updateDiagram);
   diagrams.del('/:id', errorHandler, diagramsController.deleteDiagram);
-
-  const user = Router();
-  user.prefix('/user');
-  user.get('/diagrams', errorHandler, diagramsController.getAllDiagramsForUser);
 
   const workflows = Router();
   workflows.prefix('/workflows');
@@ -33,7 +30,6 @@ module.exports = (opts = {}) => {
 
   router.use(diagrams.routes());
   router.use(workflows.routes());
-  router.use(user.routes());
   
   return router; 
 }

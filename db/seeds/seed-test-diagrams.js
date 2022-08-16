@@ -8,7 +8,7 @@ exports.seed = async function(knex) {
       name: 'Test',
       diagram_xml: diagramSample,
       workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8',
-      user_id: 'c64f7de0-1cda-11ed-ad9d-99951f8b8922',
+      user_id: '1',
       created_at: new Date(),
       updated_at: new Date
     }
