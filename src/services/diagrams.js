@@ -51,8 +51,22 @@ const getDiagramById = async (id) => {
   return diagram;
 }
 
+const getDiagramsByWorkflowId = async(workflow_id) => {
+
+  if (!validate(workflow_id)) {
+    throw new Error('Invalid id');
+  }
+
+  const diagrams = await db('diagrams')
+    .select('id', 'name', 'workflow_id', 'user_id')
+    .where('workflow_id', workflow_id);
+
+  return diagrams;
+}
+
 module.exports = {
   saveDiagram,
   getAllDiagramsByUserId,
-  getDiagramById
+  getDiagramById,
+  getDiagramsByWorkflowId
 }

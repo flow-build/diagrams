@@ -72,7 +72,7 @@ describe('GET /diagrams/:id', () => {
     const postResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
-        name: 'Test',
+        name: 'Test 1',
         diagram_xml: diagramSample
       });
     const diagram_id = postResponse.body.id;
@@ -115,6 +115,29 @@ describe('GET /diagrams', () => {
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.get('/diagrams')
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(200);
+    expect(lastResponse.body).toBeDefined();
+  });
+
+});
+
+describe('GET /workflows/:id/diagrams', () => {
+  test('should return 200 with workflows diagrams', async () => {
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const postResponse = await request.post('/diagrams').type('form')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test 2',
+        diagram_xml: diagramSample,
+        workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8'
+      });
+    const { workflow_id } = postResponse.body;
+
+    const lastResponse = await request.get(`/workflows/${workflow_id}/diagrams`)
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(200);

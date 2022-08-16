@@ -47,8 +47,20 @@ const getDiagramById = async (ctx, next) => {
   return next();
 }
 
+const getDiagramsByWorkflowId = async(ctx, next) => {
+
+  const { id } = ctx.params;
+  const diagrams = await diagramsService.getDiagramsByWorkflowId(id);
+
+  ctx.status = 200;
+  ctx.body = diagrams;
+
+  return next();
+}
+
 module.exports = {
   saveDiagram,
   getAllDiagramsByUserId,
-  getDiagramById
+  getDiagramById,
+  getDiagramsByWorkflowId
 }

@@ -21,7 +21,12 @@ module.exports = (opts = {}) => {
   diagrams.get('/', errorHandler, diagramsController.getAllDiagramsByUserId);
   diagrams.get('/:id', errorHandler, diagramsController.getDiagramById);
 
+  const workflows = Router();
+  workflows.prefix('/workflows');
+  workflows.get('/:id/diagrams', errorHandler, diagramsController.getDiagramsByWorkflowId);
+
   router.use(diagrams.routes());
+  router.use(workflows.routes());
   
   return router; 
 }
