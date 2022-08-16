@@ -110,7 +110,7 @@ describe('GET /diagrams/:id', () => {
 });
 
 describe('GET /diagrams', () => {
-  test('should return 200 with all users diagrams', async () => {
+  test('should return 200 with all diagrams', async () => {
     const tokenResponse = await request.post('/token');
     const { jwtToken } = tokenResponse.body;
 
@@ -124,7 +124,7 @@ describe('GET /diagrams', () => {
 });
 
 describe('GET /workflows/:id/diagrams', () => {
-  test('should return 200 with workflows diagrams', async () => {
+  test('should return 200 with all diagrams of workflow', async () => {
     const tokenResponse = await request.post('/token');
     const { jwtToken } = tokenResponse.body;
 
@@ -144,4 +144,17 @@ describe('GET /workflows/:id/diagrams', () => {
     expect(lastResponse.body).toBeDefined();
   });
 
+});
+
+describe('GET /user/diagrams', () => {
+  test('should return 200 with all diagrams for user', async () => {
+    const tokenResponse = await request.post('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const lastResponse = await request.get('/user/diagrams')
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(lastResponse.status).toBe(200);
+    expect(lastResponse.body).toBeDefined();
+  });
 });

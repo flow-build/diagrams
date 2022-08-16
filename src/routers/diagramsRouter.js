@@ -18,8 +18,12 @@ module.exports = (opts = {}) => {
   const diagrams = Router();
   diagrams.prefix('/diagrams');
   diagrams.post('/', errorHandler, diagramsController.saveDiagram);
-  diagrams.get('/', errorHandler, diagramsController.getAllDiagramsByUserId);
+  diagrams.get('/', errorHandler, diagramsController.getAllDiagrams);
   diagrams.get('/:id', errorHandler, diagramsController.getDiagramById);
+
+  const user = Router();
+  user.prefix('/user');
+  user.get('/diagrams', errorHandler, diagramsController.getAllDiagramsForUser);
 
   const workflows = Router();
   workflows.prefix('/workflows');
@@ -27,6 +31,7 @@ module.exports = (opts = {}) => {
 
   router.use(diagrams.routes());
   router.use(workflows.routes());
+  router.use(user.routes());
   
   return router; 
 }
