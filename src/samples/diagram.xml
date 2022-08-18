@@ -1,222 +1,58 @@
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
-	xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-	xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0"
-	xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0"
-	xmlns:di="http://www.omg.org/spec/DD/20100524/DI">
-	<bpmn:process id="Global_Process" isExecutable="true">
-		<bpmn:laneSet id="Global_LaneSet">
-			<bpmn:lane id="Lane_1" name="creatorOnly">
-				<bpmn:flowNodeRef>Node_3</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_4</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_5</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_6</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_7</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_8</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_10</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_11</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_99</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_20</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_199</bpmn:flowNodeRef>
-			</bpmn:lane>
-			<bpmn:lane id="Lane_99" name="public">
-				<bpmn:flowNodeRef>Node_1</bpmn:flowNodeRef>
-				<bpmn:flowNodeRef>Node_2</bpmn:flowNodeRef>
-			</bpmn:lane>
-		</bpmn:laneSet>
-		<bpmn:startEvent xmlns:custom="http://custom/ns" id="Node_1" name="Start node"
-			custom:parameters="{&#39;input_schema&#39;:{}}">
-			<bpmn:outgoing>Flow_1_2</bpmn:outgoing>
-		</bpmn:startEvent>
-		<bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_2" name="Set to bag node"
-			custom:parameters="{&#39;input&#39;:{&#39;creatorId&#39;:{&#39;$ref&#39;:&#39;actor_data.actor_id&#39;}}}"
-			custom:category="settobag">
-			<bpmn:incoming>Flow_1_2</bpmn:incoming>
-			<bpmn:outgoing>Flow_2_7</bpmn:outgoing>
-		</bpmn:serviceTask>
-		<bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_3" name="Http node"
-			custom:parameters="{&#39;input&#39;:{},&#39;request&#39;:{&#39;url&#39;:{&#39;$mustache&#39;:&#39;https://api.{{{environment.BASE_URL}}}/user/profile&#39;},&#39;verb&#39;:&#39;GET&#39;,&#39;headers&#39;:{&#39;Authorization&#39;:{&#39;$mustache&#39;:&#39;UserLogin apikey=&#34;{{{actor_data.lendico_token}}}&#34;&#39;}}},&#39;valid_response_codes&#39;:[200,204]}"
-			custom:category="http">
-			<bpmn:outgoing>Flow_3_4</bpmn:outgoing>
-		</bpmn:serviceTask>
-		<bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_4" name="Set to bag node"
-			custom:parameters="{&#39;input&#39;:{&#39;profile&#39;:{&#39;$ref&#39;:&#39;result.data&#39;}}}"
-			custom:category="settobag">
-			<bpmn:incoming>Flow_3_4</bpmn:incoming>
-			<bpmn:outgoing>Flow_4_5</bpmn:outgoing>
-		</bpmn:serviceTask>
-		<bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_5" name="Http node"
-			custom:parameters="{&#39;input&#39;:{},&#39;request&#39;:{&#39;url&#39;:{&#39;$mustache&#39;:&#39;https://lists.{{{environment.BASE_URL}}}/api/states?order_by=rank&#39;},&#39;verb&#39;:&#39;GET&#39;},&#39;valid_response_codes&#39;:[200,204]}"
-			custom:category="http">
-			<bpmn:incoming>Flow_4_5</bpmn:incoming>
-			<bpmn:outgoing>Flow_5_6</bpmn:outgoing>
-		</bpmn:serviceTask>
-		<bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_6" name="Set to bag node"
-			custom:parameters="{&#39;input&#39;:{&#39;states&#39;:{&#39;$ref&#39;:&#39;result.data.states&#39;}}}"
-			custom:category="settobag">
-			<bpmn:incoming>Flow_5_6</bpmn:incoming>
-			<bpmn:outgoing>Flow_6_7</bpmn:outgoing>
-		</bpmn:serviceTask>
-		<bpmn:userTask xmlns:custom="http://custom/ns" id="Node_7" name="User task node"
-			custom:parameters="{&#39;input&#39;:{&#39;cpf&#39;:{&#39;$ref&#39;:&#39;bag.cpf&#39;},&#39;back&#39;:&#39;voltar&#39;,&#39;name&#39;:{&#39;$ref&#39;:&#39;bag.name&#39;},&#39;step&#39;:3,&#39;states&#39;:{&#39;$ref&#39;:&#39;bag.states&#39;},&#39;proceed&#39;:&#39;prosseguir&#39;,&#39;profile&#39;:{&#39;$ref&#39;:&#39;bag.profile&#39;},&#39;city_url&#39;:{&#39;$mustache&#39;:&#39;https://lists.{{{environment.BASE_URL}}}/api/states/:stateId/cities?order_by=rank&#38;limit=1000&#39;},&#39;current_user&#39;:{&#39;$ref&#39;:&#39;bag.creatorId&#39;},&#39;best_proposal_url&#39;:{&#39;$mustache&#39;:&#39;https://api.{{{environment.BASE_URL}}}/approval/best_proposal&#39;},&#39;authorization_header&#39;:{&#39;$mustache&#39;:&#39;UserLogin apikey=&#34;{{{actor_data.lendico_token}}}&#34;&#39;}},&#39;action&#39;:&#39;ADDRESS_INFO&#39;,&#39;activity_manager&#39;:&#39;commit&#39;}">
-			<bpmn:incoming>Flow_2_7</bpmn:incoming>
-			<bpmn:incoming>Flow_6_7</bpmn:incoming>
-			<bpmn:incoming>Flow_8_7</bpmn:incoming>
-			<bpmn:outgoing>Flow_7_8</bpmn:outgoing>
-		</bpmn:userTask>
-		<bpmn:exclusiveGateway xmlns:custom="http://custom/ns" id="Node_8" name="Flow node"
-			custom:parameters="{&#39;input&#39;:{&#39;decision&#39;:{&#39;$ref&#39;:&#39;result.activities[0].data.action&#39;}}}">
-			<bpmn:incoming>Flow_7_8</bpmn:incoming>
-			<bpmn:outgoing>Flow_8_20</bpmn:outgoing>
-			<bpmn:outgoing>Flow_8_7</bpmn:outgoing>
-			<bpmn:outgoing>Flow_8_10</bpmn:outgoing>
-		</bpmn:exclusiveGateway>
-		<bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_10" name="Http node"
-			custom:parameters="{&#39;input&#39;:{&#39;$ref&#39;:&#39;result.activities[0].data.data&#39;},&#39;request&#39;:{&#39;url&#39;:{&#39;$mustache&#39;:&#39;https://api.{{{environment.BASE_URL}}}/user/profile&#39;},&#39;verb&#39;:&#39;POST&#39;,&#39;headers&#39;:{&#39;Authorization&#39;:{&#39;$mustache&#39;:&#39;UserLogin apikey=&#34;{{{actor_data.lendico_token}}}&#34;&#39;}}},&#39;valid_response_codes&#39;:[200,204]}"
-			custom:category="http">
-			<bpmn:incoming>Flow_8_10</bpmn:incoming>
-			<bpmn:outgoing>Flow_10_11</bpmn:outgoing>
-		</bpmn:serviceTask>
-		<bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_11" name="Start process node"
-			custom:parameters="{&#39;input&#39;:{&#39;cpf&#39;:{&#39;$ref&#39;:&#39;bag.cpf&#39;},&#39;name&#39;:{&#39;$ref&#39;:&#39;bag.name&#39;}},&#39;actor_data&#39;:{&#39;$ref&#39;:&#39;actor_data&#39;},&#39;workflow_name&#39;:&#39;ATV_MOBILE_CONFIRMATION&#39;}"
-			custom:category="startprocess">
-			<bpmn:incoming>Flow_10_11</bpmn:incoming>
-			<bpmn:outgoing>Flow_11_99</bpmn:outgoing>
-		</bpmn:serviceTask>
-		<bpmn:endEvent xmlns:custom="http://custom/ns" id="Node_99" name="Finish node" custom:parameters="{}">
-			<bpmn:incoming>Flow_11_99</bpmn:incoming>
-		</bpmn:endEvent>
-		<bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_20" name="Start process node"
-			custom:parameters="{&#39;input&#39;:{&#39;cpf&#39;:{&#39;$ref&#39;:&#39;bag.cpf&#39;},&#39;name&#39;:{&#39;$ref&#39;:&#39;bag.name&#39;}},&#39;actor_data&#39;:{&#39;$ref&#39;:&#39;actor_data&#39;},&#39;workflow_name&#39;:&#39;ATV_IDENTIFICATION_INFOS&#39;}"
-			custom:category="startprocess">
-			<bpmn:incoming>Flow_8_20</bpmn:incoming>
-			<bpmn:outgoing>Flow_20_199</bpmn:outgoing>
-		</bpmn:serviceTask>
-		<bpmn:endEvent xmlns:custom="http://custom/ns" id="Node_199" name="Finish node" custom:parameters="{}">
-			<bpmn:incoming>Flow_20_199</bpmn:incoming>
-		</bpmn:endEvent>
-		<bpmn:sequenceFlow id="Flow_1_2" sourceRef="Node_1" targetRef="Node_2" />
-		<bpmn:sequenceFlow id="Flow_2_7" sourceRef="Node_2" targetRef="Node_7" />
-		<bpmn:sequenceFlow id="Flow_3_4" sourceRef="Node_3" targetRef="Node_4" />
-		<bpmn:sequenceFlow id="Flow_4_5" sourceRef="Node_4" targetRef="Node_5" />
-		<bpmn:sequenceFlow id="Flow_5_6" sourceRef="Node_5" targetRef="Node_6" />
-		<bpmn:sequenceFlow id="Flow_6_7" sourceRef="Node_6" targetRef="Node_7" />
-		<bpmn:sequenceFlow id="Flow_7_8" sourceRef="Node_7" targetRef="Node_8" />
-		<bpmn:sequenceFlow id="Flow_8_20" sourceRef="Node_8" targetRef="Node_20" />
-		<bpmn:sequenceFlow id="Flow_8_7" sourceRef="Node_8" targetRef="Node_7" />
-		<bpmn:sequenceFlow id="Flow_8_10" sourceRef="Node_8" targetRef="Node_10" />
-		<bpmn:sequenceFlow id="Flow_10_11" sourceRef="Node_10" targetRef="Node_11" />
-		<bpmn:sequenceFlow id="Flow_11_99" sourceRef="Node_11" targetRef="Node_99" />
-		<bpmn:sequenceFlow id="Flow_20_199" sourceRef="Node_20" targetRef="Node_199" />
-	</bpmn:process>
-	<bpmn:collaboration id="Global_Colab" workflowId="AVEFK_pqnmi0ttMs13lY_">
-		<bpmn:participant id="Global_Actor" name="ATV_ADDRESS" processRef="Global_Process" />
-	</bpmn:collaboration>
-	<bpmndi:BPMNDiagram id="Global_Diagram">
-		<bpmndi:BPMNPlane id="Global_Plane" bpmnElement="Global_Colab">
-			<bpmndi:BPMNShape id="Node_1_di" bpmnElement="Node_1">
-				<dc:Bounds x="114" y="392" width="36" height="36" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Node_2_di" bpmnElement="Node_2" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2"
-				color:background-color="#ffe0b2" color:border-color="#fb8c00">
-				<dc:Bounds x="180" y="370" width="100" height="80" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Node_3_di" bpmnElement="Node_3" />
-			<bpmndi:BPMNShape id="Node_4_di" bpmnElement="Node_4" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2"
-				color:background-color="#ffe0b2" color:border-color="#fb8c00" />
-			<bpmndi:BPMNShape id="Node_5_di" bpmnElement="Node_5" />
-			<bpmndi:BPMNShape id="Node_6_di" bpmnElement="Node_6" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2"
-				color:background-color="#ffe0b2" color:border-color="#fb8c00" />
-			<bpmndi:BPMNShape id="Node_7_di" bpmnElement="Node_7" bioc:stroke="#1e88e5" bioc:fill="#bbdefb"
-				color:background-color="#bbdefb" color:border-color="#1e88e5">
-				<dc:Bounds x="310" y="50" width="100" height="80" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Node_8_di" bpmnElement="Node_8">
-				<dc:Bounds x="465" y="65" width="50" height="50" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Node_10_di" bpmnElement="Node_10">
-				<dc:Bounds x="570" y="210" width="100" height="80" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Node_11_di" bpmnElement="Node_11" bioc:stroke="#43a047" bioc:fill="#c8e6c9"
-				color:background-color="#c8e6c9" color:border-color="#43a047">
-				<dc:Bounds x="700" y="210" width="100" height="80" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Node_99_di" bpmnElement="Node_99">
-				<dc:Bounds x="830" y="232" width="36" height="36" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Node_20_di" bpmnElement="Node_20" bioc:stroke="#43a047" bioc:fill="#c8e6c9"
-				color:background-color="#c8e6c9" color:border-color="#43a047">
-				<dc:Bounds x="570" y="50" width="100" height="80" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Node_199_di" bpmnElement="Node_199">
-				<dc:Bounds x="700" y="72" width="36" height="36" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNEdge id="Flow_1_2_di" bpmnElement="Flow_1_2">
-				<di:waypoint x="150" y="410" />
-				<di:waypoint x="160" y="410" />
-				<di:waypoint x="160" y="410" />
-				<di:waypoint x="180" y="410" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNEdge id="Flow_2_7_di" bpmnElement="Flow_2_7">
-				<di:waypoint x="280" y="410" />
-				<di:waypoint x="290" y="410" />
-				<di:waypoint x="290" y="90" />
-				<di:waypoint x="310" y="90" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNEdge id="Flow_3_4_di" bpmnElement="Flow_3_4" />
-			<bpmndi:BPMNEdge id="Flow_4_5_di" bpmnElement="Flow_4_5" />
-			<bpmndi:BPMNEdge id="Flow_5_6_di" bpmnElement="Flow_5_6" />
-			<bpmndi:BPMNEdge id="Flow_6_7_di" bpmnElement="Flow_6_7" />
-			<bpmndi:BPMNEdge id="Flow_7_8_di" bpmnElement="Flow_7_8">
-				<di:waypoint x="410" y="90" />
-				<di:waypoint x="420" y="90" />
-				<di:waypoint x="420" y="90" />
-				<di:waypoint x="465" y="90" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNEdge id="Flow_8_20_di" bpmnElement="Flow_8_20">
-				<di:waypoint x="515" y="90" />
-				<di:waypoint x="525" y="90" />
-				<di:waypoint x="525" y="90" />
-				<di:waypoint x="570" y="90" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNEdge id="Flow_8_7_di" bpmnElement="Flow_8_7">
-				<di:waypoint x="490" y="115" />
-				<di:waypoint x="490" y="135" />
-				<di:waypoint x="360" y="135" />
-				<di:waypoint x="360" y="130" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNEdge id="Flow_8_10_di" bpmnElement="Flow_8_10">
-				<di:waypoint x="515" y="90" />
-				<di:waypoint x="525" y="90" />
-				<di:waypoint x="525" y="250" />
-				<di:waypoint x="570" y="250" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNEdge id="Flow_10_11_di" bpmnElement="Flow_10_11">
-				<di:waypoint x="670" y="250" />
-				<di:waypoint x="680" y="250" />
-				<di:waypoint x="680" y="250" />
-				<di:waypoint x="700" y="250" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNEdge id="Flow_11_99_di" bpmnElement="Flow_11_99">
-				<di:waypoint x="800" y="250" />
-				<di:waypoint x="810" y="250" />
-				<di:waypoint x="810" y="250" />
-				<di:waypoint x="830" y="250" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNEdge id="Flow_20_199_di" bpmnElement="Flow_20_199">
-				<di:waypoint x="670" y="90" />
-				<di:waypoint x="680" y="90" />
-				<di:waypoint x="680" y="90" />
-				<di:waypoint x="700" y="90" />
-			</bpmndi:BPMNEdge>
-			<bpmndi:BPMNShape id="Lane_1_di" bpmnElement="Lane_1">
-				<dc:Bounds x="80" y="10" width="880" height="320" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Lane_99_di" bpmnElement="Lane_99">
-				<dc:Bounds x="80" y="330" width="880" height="160" />
-			</bpmndi:BPMNShape>
-			<bpmndi:BPMNShape id="Global_Actor_di" bpmnElement="Global_Actor">
-				<dc:Bounds x="50" y="10" width="910" height="480" />
-			</bpmndi:BPMNShape>
-		</bpmndi:BPMNPlane>
-	</bpmndi:BPMNDiagram>
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI">
+    <bpmn:process id="Global_Process" isExecutable="true">
+        <bpmn:laneSet id="Global_LaneSet">
+            <bpmn:lane id="Lane_anyone" name="anyone">
+                <bpmn:flowNodeRef>Node_START</bpmn:flowNodeRef>
+                <bpmn:flowNodeRef>Node_BAG</bpmn:flowNodeRef>
+                <bpmn:flowNodeRef>Node_END</bpmn:flowNodeRef>
+            </bpmn:lane>
+        </bpmn:laneSet>
+        <bpmn:startEvent xmlns:custom="http://custom/ns" id="Node_START" name="Start Example" custom:parameters="{&#39;timeout&#39;:100,&#39;input_schema&#39;:{}}">
+            <bpmn:outgoing>Flow_START_BAG</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_BAG" name="Set to bag" custom:parameters="{&#39;input&#39;:{&#39;user_id&#39;:&#39;1&#39;}}" custom:category="settobag">
+            <bpmn:incoming>Flow_START_BAG</bpmn:incoming>
+            <bpmn:outgoing>Flow_BAG_END</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:endEvent xmlns:custom="http://custom/ns" id="Node_END" name="END" custom:parameters="{}">
+            <bpmn:incoming>Flow_BAG_END</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Flow_START_BAG" sourceRef="Node_START" targetRef="Node_BAG" />
+        <bpmn:sequenceFlow id="Flow_BAG_END" sourceRef="Node_BAG" targetRef="Node_END" />
+    </bpmn:process>
+    <bpmn:collaboration id="Global_Colab" workflowId="gUv_xxzmOJx5lMYzrxYZh">
+        <bpmn:participant id="Global_Actor" name="DIAGRAM_EXAMPLE" processRef="Global_Process" />
+    </bpmn:collaboration>
+    <bpmndi:BPMNDiagram id="Global_Diagram">
+        <bpmndi:BPMNPlane id="Global_Plane" bpmnElement="Global_Colab">
+            <bpmndi:BPMNShape id="Node_START_di" bpmnElement="Node_START">
+                <dc:Bounds x="114" y="72" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Node_BAG_di" bpmnElement="Node_BAG" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#fb8c00">
+                <dc:Bounds x="180" y="50" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Node_END_di" bpmnElement="Node_END">
+                <dc:Bounds x="310" y="72" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="Flow_START_BAG_di" bpmnElement="Flow_START_BAG">
+                <di:waypoint x="150" y="90" />
+                <di:waypoint x="160" y="90" />
+                <di:waypoint x="160" y="90" />
+                <di:waypoint x="180" y="90" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_BAG_END_di" bpmnElement="Flow_BAG_END">
+                <di:waypoint x="280" y="90" />
+                <di:waypoint x="290" y="90" />
+                <di:waypoint x="290" y="90" />
+                <di:waypoint x="310" y="90" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="Lane_anyone_di" bpmnElement="Lane_anyone">
+                <dc:Bounds x="80" y="10" width="360" height="160" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Global_Actor_di" bpmnElement="Global_Actor">
+                <dc:Bounds x="50" y="10" width="390" height="160" />
+            </bpmndi:BPMNShape>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
 </bpmn:definitions>
