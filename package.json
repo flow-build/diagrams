@@ -38,9 +38,12 @@
     "koa-compose": "^4.1.0",
     "koa-jwt": "^4.0.3",
     "koa-logger": "^3.2.1",
+    "koa-static": "^5.0.0",
     "koa2-cors": "^2.0.6",
     "pg": "^8.7.3",
+    "swagger-ui-dist": "^4.14.0",
     "uuid": "^8.3.2",
-    "winston": "^3.8.1"
+    "winston": "^3.8.1",
+    "xml2js": "^0.4.23"
   }
 }
