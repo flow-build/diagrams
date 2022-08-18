@@ -244,7 +244,7 @@ describe('DELETE /diagrams/:id', () => {
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.del('/diagrams/123456')
-    .set('Authorization', `Bearer ${jwtToken}`);
+      .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(400);
     expect(lastResponse.body.message).toEqual('Invalid id');
@@ -295,7 +295,7 @@ describe('PATCH /diagrams/:id', () => {
     const { jwtToken } = tokenResponse.body;
 
     const lastResponse = await request.patch('/diagrams/123456')
-    .set('Authorization', `Bearer ${jwtToken}`);
+      .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(400);
     expect(lastResponse.body.message).toEqual('Invalid id');

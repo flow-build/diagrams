@@ -22,10 +22,10 @@ const saveDiagram = async (ctx, next) => {
     ctx.throw(400, 'Missing diagram_xml');
   }
 
-  await parseString(diagram_xml, function (err, result) {
-      if (err) {
-        ctx.throw(400, 'Invalid xml');
-      }
+  await parseString(diagram_xml, function (err) {
+    if (err) {
+      ctx.throw(400, 'Invalid xml');
+    }
   });
 
 
@@ -169,7 +169,7 @@ const updateDiagram = async (ctx, next) => {
     ctx.throw(400, 'Missing name or diagram_xml');
   }
 
-  await parseString(diagram_xml, function (err, result) {
+  await parseString(diagram_xml, function (err) {
     if (err) {
       ctx.throw(400, 'Invalid xml');
     }

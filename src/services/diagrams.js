@@ -1,5 +1,5 @@
 const { db } = require('../utils/db');
-const { v4: uuid, validate } = require('uuid');
+const { v4: uuid } = require('uuid');
 
 const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
 
@@ -56,7 +56,7 @@ const getLatestDiagramByWorkflowId = async (workflow_id) => {
     .orderBy('updated_at', 'desc')
     .first();
   
-    return diagram;
+  return diagram;
 }
 
 const getDiagramsByUserAndWF = async (workflow_id, user_id) => {

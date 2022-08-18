@@ -1,4 +1,3 @@
-const { v1: uuid } = require('uuid');
 const { createJWTToken } = require('../services/tokenGenerator');
 const { jwtSecret } = require('../utils/jwtSecret');
 
