@@ -325,7 +325,7 @@ paths:
   /diagrams/user/{id}:
     get:
       tags:
-      - diagrams
+      - diagrams/user
       summary: Get diagrams by user id
       description: >
         Get all diagrams of user by user id
@@ -375,7 +375,7 @@ paths:
   /diagrams/workflow/{id}:
     get:
       tags:
-      - diagrams
+      - diagrams/workflow
       summary: Get diagrams by workflow id
       description: >
         Get all diagrams of workflow by workflow id
@@ -439,7 +439,7 @@ paths:
   /diagrams/workflow/{id}/latest:
     get:
       tags:
-      - diagrams
+      - diagrams/workflow
       summary: Get last diagram by workflow id
       description: >
         Get last created or updated diagram of workflow by workflow id
@@ -496,7 +496,7 @@ paths:
   /diagrams/user/{user_id}/workflow/{workflow_id}:
     get:
       tags:
-      - diagrams
+      - diagrams/user/workflow
       summary: Get diagrams by user id and workflow id
       description: >
         Get all diagrams of user and workflow by user id and workflow id
