@@ -150,7 +150,7 @@ describe('GET /diagrams/workflow/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(400);
-    expect(lastResponse.body.message).toEqual('Invalid id');
+    expect(lastResponse.body.message).toEqual('Invalid workflow_id');
   });
 });
 
@@ -174,7 +174,7 @@ describe('GET /diagrams/workflow/:id/latest', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(400);
-    expect(lastResponse.body.message).toEqual('Invalid id');
+    expect(lastResponse.body.message).toEqual('Invalid workflow_id');
   });
 });
 
@@ -212,7 +212,7 @@ describe('GET /diagrams/user/:user_id/workflow/:workflow_id', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(lastResponse.status).toBe(400);
-    expect(lastResponse.body.message).toEqual('Invalid id');
+    expect(lastResponse.body.message).toEqual('Invalid workflow_id');
   });
 
 });
@@ -268,7 +268,17 @@ describe('PATCH /diagrams/:id', () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
-    const patchResponse = await request.patch('/diagrams/d655538b-95d3-4627-acaf-b391fdc25142')
+    const postResponse = await request.post('/diagrams').type('form')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test Update',
+        diagram_xml: diagramSample,
+        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8',
+        user_id: '8'
+      });
+    const { id } = postResponse.body;
+
+    const patchResponse = await request.patch(`/diagrams/${id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'Test Update Change Name',

@@ -1,5 +1,6 @@
 const diagramsService = require('../services/diagrams');
 const { validate } = require('uuid');
+const parseString = require('xml2js').parseString;
 
 const saveDiagram = async (ctx, next) => {
 
@@ -13,9 +14,20 @@ const saveDiagram = async (ctx, next) => {
     ctx.throw(400, 'Missing name');
   }
 
-  if(!diagram_xml) {
-    ctx.throw(400, 'Missing diagram_xml')
+  if (workflow_id && !validate(workflow_id)) {
+    ctx.throw(400, 'Invalid workflow_id');
   }
+
+  if (!diagram_xml) {
+    ctx.throw(400, 'Missing diagram_xml');
+  }
+
+  await parseString(diagram_xml, function (err, result) {
+      if (err) {
+        ctx.throw(400, 'Invalid xml');
+      }
+  });
+
 
   try {
     const diagram = await diagramsService.saveDiagram(name, diagram_xml, workflow_id, user_id);
@@ -65,7 +77,7 @@ const getDiagramsByUserAndWF = async (ctx, next) => {
   const { workflow_id, user_id } = ctx.params;
 
   if (!validate(workflow_id)) {
-    ctx.throw(400, 'Invalid id');
+    ctx.throw(400, 'Invalid workflow_id');
   }
 
   try {
@@ -111,7 +123,7 @@ const getDiagramsByWorkflowId = async(ctx, next) => {
   const { id } = ctx.params;
 
   if (!validate(id)) {
-    ctx.throw(400, 'Invalid id');
+    ctx.throw(400, 'Invalid workflow_id');
   }
 
   try {
@@ -130,7 +142,7 @@ const getLatestDiagramByWorkflowId = async (ctx, next) => {
   const { id } = ctx.params;
 
   if (!validate(id)) {
-    ctx.throw(400, 'Invalid id');
+    ctx.throw(400, 'Invalid workflow_id');
   }
 
   try {
@@ -156,6 +168,12 @@ const updateDiagram = async (ctx, next) => {
   if (!name && !diagram_xml) {
     ctx.throw(400, 'Missing name or diagram_xml');
   }
+
+  await parseString(diagram_xml, function (err, result) {
+    if (err) {
+      ctx.throw(400, 'Invalid xml');
+    }
+  });
 
   try {
     const diagram = await diagramsService.updateDiagram(id, name, diagram_xml);
