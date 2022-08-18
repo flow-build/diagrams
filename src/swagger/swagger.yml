@@ -1,0 +1,565 @@
+openapi: '3.0.0'
+info:
+  version: 0.0.1
+  title: Diagrams API
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /token:
+    get:
+      tags:
+        - token
+      summary: Generate a new token
+      description: Generate a new token that grants access do Diagrams API methods
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwtToken:
+                    type: string
+              example: { 'jwtToken': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.Fzyj62HwBhH2bNZkd9x1fd2s8TIuzUO8JmDMLAcPALY' }
+        '500':
+          description: Internal Server Error
+  /diagrams:
+    post:
+      tags:
+      - diagrams
+      summary: Save new diagram
+      description: >
+        Create a new diagram
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Diagram name
+                workflow_id:
+                  type: string
+                  format: uuid
+                  description: Id of diagram workflow
+                user_id:
+                  type: string
+                  description: Id of user that made the diagram
+                diagram_xml:
+                  type: xml
+                  description: Diagram xml
+              required:
+                - name
+                - diagram_xml
+                - user_id
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  workflow_id:
+                    type: string
+                    format: uuid
+                  user_id:
+                    type: string
+              example:
+                id: 'd655538b-95d3-4627-acaf-b391fdc25142'
+                name: 'Test'
+                workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+                user_id: '1'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Missing user_id"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - diagrams
+      summary: Get all diagrams
+      description: >
+        Get all diagrams from server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    workflow_id:
+                      type: string
+                    user_id:
+                      type: string
+              example:
+                  [
+                    {
+                      "id": "d655538b-95d3-4627-acaf-b391fdc25142",
+                      "name": "Test",
+                      "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                      "user_id": "1"
+                    },
+                    {
+                      "id": "2ed18cca-7b17-4b30-b53c-ee8b4c771f93",
+                      "name": "Test 2",
+                      "workflow_id": null,
+                      "user_id": "2"
+                    },
+                  ]
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error 
+  /diagrams/{id}:
+    get:
+      tags:
+      - diagrams
+      summary: Get diagram by id
+      description: >
+        Get a specific diagram xml by the diagram id
+      parameters:
+        - in: path
+          name: id
+          description: Diagram id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            text/html; charset=utf-8:
+              example: <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"><bpmn:process id="Global_Process" isExecutable="true"><bpmn:laneSet id="Global_LaneSet"><bpmn:lane id="Lane_anyone" name="anyone"><bpmn:flowNodeRef>Node_START</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_BAG</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_END</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet><bpmn:startEvent xmlns:custom="http://custom/ns" id="Node_START" name="Start Example" custom:parameters="{&#39;timeout&#39;:100,&#39;input_schema&#39;:{}}"><bpmn:outgoing>Flow_START_BAG</bpmn:outgoing></bpmn:startEvent><bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_BAG" name="Set to bag" custom:parameters="{&#39;input&#39;:{&#39;user_id&#39;:&#39;1&#39;}}" custom:category="settobag"><bpmn:incoming>Flow_START_BAG</bpmn:incoming><bpmn:outgoing>Flow_BAG_END</bpmn:outgoing></bpmn:serviceTask><bpmn:endEvent xmlns:custom="http://custom/ns" id="Node_END" name="END" custom:parameters="{}"><bpmn:incoming>Flow_BAG_END</bpmn:incoming></bpmn:endEvent><bpmn:sequenceFlow id="Flow_START_BAG" sourceRef="Node_START" targetRef="Node_BAG" /><bpmn:sequenceFlow id="Flow_BAG_END" sourceRef="Node_BAG" targetRef="Node_END" /></bpmn:process><bpmn:collaboration id="Global_Colab" workflowId="gUv_xxzmOJx5lMYzrxYZh"><bpmn:participant id="Global_Actor" name="DIAGRAM_EXAMPLE" processRef="Global_Process" /></bpmn:collaboration><bpmndi:BPMNDiagram id="Global_Diagram"><bpmndi:BPMNPlane id="Global_Plane" bpmnElement="Global_Colab"><bpmndi:BPMNShape id="Node_START_di" bpmnElement="Node_START"><dc:Bounds x="114" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_BAG_di" bpmnElement="Node_BAG" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#fb8c00"><dc:Bounds x="180" y="50" width="100" height="80" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_END_di" bpmnElement="Node_END"><dc:Bounds x="310" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNEdge id="Flow_START_BAG_di" bpmnElement="Flow_START_BAG"><di:waypoint x="150" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="180" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="Flow_BAG_END_di" bpmnElement="Flow_BAG_END"><di:waypoint x="280" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="310" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNShape id="Lane_anyone_di" bpmnElement="Lane_anyone"><dc:Bounds x="80" y="10" width="360" height="160" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Global_Actor_di" bpmnElement="Global_Actor"><dc:Bounds x="50" y="10" width="390" height="160" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Invalid id"
+                }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Diagram not found"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    patch:
+      tags:
+      - diagrams
+      summary: Update a diagram by id
+      description: >
+        Update a specific diagram by the diagram id
+      parameters:
+        - in: path
+          name: id
+          description: Diagram id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Diagram name
+                diagram_xml:
+                  type: xml
+                  description: Diagram xml
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  workflow_id:
+                    type: string
+                    format: uuid
+                  user_id:
+                    type: string
+              example:
+                id: 'd655538b-95d3-4627-acaf-b391fdc25142'
+                name: 'Test Updated'
+                workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+                user_id: '1'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Missing name or diagram_xml"
+                }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Diagram not found"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    delete:
+      tags:
+      - diagrams
+      summary: Delete diagram by id
+      description: >
+        Delete a specific diagram by the diagram id
+      parameters:
+        - in: path
+          name: id
+          description: Diagram id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Invalid id"
+                }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Diagram not found"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /diagrams/user/{id}:
+    get:
+      tags:
+      - diagrams
+      summary: Get diagrams by user id
+      description: >
+        Get all diagrams of user by user id
+      parameters:
+        - in: path
+          name: id
+          description: User id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    workflow_id:
+                      type: string
+                    user_id:
+                      type: string
+              example:
+                  [
+                    {
+                      "id": "d655538b-95d3-4627-acaf-b391fdc25142",
+                      "name": "Test",
+                      "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                      "user_id": "1"
+                    },
+                    {
+                      "id": "2ed18cca-7b17-4b30-b53c-ee8b4c771f93",
+                      "name": "Test 2",
+                      "workflow_id": null,
+                      "user_id": "1"
+                    },
+                  ]
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /diagrams/workflow/{id}:
+    get:
+      tags:
+      - diagrams
+      summary: Get diagrams by workflow id
+      description: >
+        Get all diagrams of workflow by workflow id
+      parameters:
+        - in: path
+          name: id
+          description: Workflow id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    workflow_id:
+                      type: string
+                    user_id:
+                      type: string
+              example:
+                  [
+                    {
+                        "id": "046bd188-3613-41b3-b2f4-0748b194514e",
+                        "name": "Test",
+                        "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
+                        "user_id": "1"
+                    },
+                    {
+                        "id": "70ad91d8-aa66-475f-9006-8f6400e31f20",
+                        "name": "Test 2",
+                        "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
+                        "user_id": "2"
+                    }
+                ]
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Invalid workflow_id"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /diagrams/workflow/{id}/latest:
+    get:
+      tags:
+      - diagrams
+      summary: Get last diagram by workflow id
+      description: >
+        Get last created or updated diagram of workflow by workflow id
+      parameters:
+        - in: path
+          name: id
+          description: Workflow id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  workflow_id:
+                    type: string
+                  user_id:
+                    type: string
+              example:
+                  {
+                      "id": "046bd188-3613-41b3-b2f4-0748b194514e",
+                      "name": "Test",
+                      "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
+                      "user_id": "1"
+                  }
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Invalid workflow_id"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /diagrams/user/{user_id}/workflow/{workflow_id}:
+    get:
+      tags:
+      - diagrams
+      summary: Get diagrams by user id and workflow id
+      description: >
+        Get all diagrams of user and workflow by user id and workflow id
+      parameters:
+        - in: path
+          name: user_id
+          description: User id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: workflow_id
+          description: Workflow id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    workflow_id:
+                      type: string
+                    user_id:
+                      type: string
+              example:
+                  [
+                    {
+                      "id": "d655538b-95d3-4627-acaf-b391fdc25142",
+                      "name": "Test",
+                      "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
+                      "user_id": "1"
+                    },
+                    {
+                      "id": "2ed18cca-7b17-4b30-b53c-ee8b4c771f93",
+                      "name": "Test 1",
+                      "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
+                      "user_id": "1"
+                    },
+                  ]
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Invalid workflow_id"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error

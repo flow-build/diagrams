@@ -6,6 +6,8 @@ const { jwtSecret } = require('./utils/jwtSecret');
 const { logger } = require('./utils/logger');
 const freeRouter = require('./routers/freeRouter');
 const diagramsRouter = require('./routers/diagramsRouter');
+const serve = require('koa-static')
+const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
 
 const startServer = (port) => {
   const app = new Koa();
@@ -18,6 +20,10 @@ const startServer = (port) => {
 
   app.use(cors(corsOptions));
   app.use(koaLogger(logger));
+
+  app.use(serve(pathToSwaggerUi, { index: false }))
+  app.use(serve('public/swagger-ui', { index: false }))
+  app.use(serve('src/swagger', { index: false }))
   
   app.use(freeRouter({ corsOptions }).routes());
 
