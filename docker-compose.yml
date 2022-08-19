@@ -2,7 +2,7 @@ version: '3.8'
 
 services: 
   postgres:
-    image: postgres:14.2
+    image: postgres:14.5
     container_name: diagrams_db
     restart: always
     environment:
@@ -13,7 +13,7 @@ services:
       - 5432:5432
   
   app:
-    image: node:16.14
+    image: node:16.15
     environment:
       NODE_ENV: docker
       KNEX_ENV: docker
