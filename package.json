@@ -17,8 +17,8 @@
     "type": "git",
     "url": "git+https://github.com/flow-build/diagrams.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["bpmn","flowbuild","processes"],
+  "author": "Pedro Assis",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/flow-build/diagrams/issues"
