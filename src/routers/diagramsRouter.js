@@ -1,6 +1,8 @@
 const Router = require('@koa/router');
 const bodyParser = require('koa-bodyparser');
 const cors = require('koa2-cors');
+const baseValidator = require('../validators/base');
+const diagramsValidator = require('../validators/diagrams');
 const diagramsController = require('../controllers/diagrams');
 
 module.exports = (opts = {}) => {
@@ -16,18 +18,28 @@ module.exports = (opts = {}) => {
 
   const diagrams = Router();
   diagrams.prefix('/diagrams');
-  diagrams
-    .get('/user/:user_id/workflow/:workflow_id', 
-      diagramsController.getDiagramsByUserAndWF
-    );
+  diagrams.get(
+    '/user/:user_id/workflow/:workflow_id',
+    baseValidator.validateUUID,
+    diagramsController.getDiagramsByUserAndWF
+  );
   diagrams.get('/user/:id', diagramsController.getDiagramsByUserId);
-  diagrams.get('/workflow/:id/latest', diagramsController.getLatestDiagramByWorkflowId);
-  diagrams.get('/workflow/:id', diagramsController.getDiagramsByWorkflowId);
-  diagrams.get('/:id', diagramsController.getDiagramById);
+  diagrams.get(
+    '/workflow/:id/latest',
+    baseValidator.validateUUID,
+    diagramsController.getLatestDiagramByWorkflowId
+  );
+  diagrams.get('/workflow/:id', baseValidator.validateUUID, diagramsController.getDiagramsByWorkflowId);
+  diagrams.get('/:id', baseValidator.validateUUID, diagramsController.getDiagramById);
   diagrams.get('/', diagramsController.getAllDiagrams);
-  diagrams.post('/', diagramsController.saveDiagram);
-  diagrams.patch('/:id', diagramsController.updateDiagram);
-  diagrams.del('/:id', diagramsController.deleteDiagram);
+  diagrams.post('/', diagramsValidator.validateSaveDiagram, diagramsController.saveDiagram);
+  diagrams.patch(
+    '/:id',
+    baseValidator.validateUUID,
+    diagramsValidator.validateUpdateDiagram,
+    diagramsController.updateDiagram
+  );
+  diagrams.del('/:id', baseValidator.validateUUID, diagramsController.deleteDiagram);
 
   router.use(diagrams.routes());
   
