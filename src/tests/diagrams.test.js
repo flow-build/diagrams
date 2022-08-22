@@ -55,7 +55,8 @@ describe('POST /diagrams', () => {
       })
 
     expect(postResponse.status).toBe(400);
-    expect(postResponse.body.message).toEqual('Missing name');
+    expect(postResponse.body.message).toEqual('Invalid Request Body');
+    expect(postResponse.body.error[0].message).toEqual("must have required property 'name'");
   });
 
   test('should return 400 if doesnt have diagram_xml', async () => {
@@ -70,7 +71,8 @@ describe('POST /diagrams', () => {
       })
 
     expect(postResponse.status).toBe(400);
-    expect(postResponse.body.message).toEqual('Missing diagram_xml');
+    expect(postResponse.body.message).toEqual('Invalid Request Body');
+    expect(postResponse.body.error[0].message).toEqual("must have required property 'diagram_xml'");
   });
 
   test('should return 400 if doesnt have user_id', async () => {
@@ -85,7 +87,8 @@ describe('POST /diagrams', () => {
       })
 
     expect(postResponse.status).toBe(400);
-    expect(postResponse.body.message).toEqual('Missing user_id');
+    expect(postResponse.body.message).toEqual('Invalid Request Body');
+    expect(postResponse.body.error[0].message).toEqual("must have required property 'user_id'");
   });
 
 });
@@ -133,7 +136,7 @@ describe('GET /diagrams/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(getResponse.status).toBe(400);
-    expect(getResponse.body.message).toEqual('Invalid id');
+    expect(getResponse.body.message).toEqual('Invalid uuid');
   });
 });
 
@@ -188,7 +191,7 @@ describe('GET /diagrams/workflow/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(getResponse.status).toBe(400);
-    expect(getResponse.body.message).toEqual('Invalid workflow_id');
+    expect(getResponse.body.message).toEqual('Invalid uuid');
   });
 });
 
@@ -221,7 +224,7 @@ describe('GET /diagrams/workflow/:id/latest', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(getResponse.status).toBe(400);
-    expect(getResponse.body.message).toEqual('Invalid workflow_id');
+    expect(getResponse.body.message).toEqual('Invalid uuid');
   });
 });
 
@@ -277,7 +280,7 @@ describe('GET /diagrams/user/:user_id/workflow/:workflow_id', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(getResponse.status).toBe(400);
-    expect(getResponse.body.message).toEqual('Invalid workflow_id');
+    expect(getResponse.body.message).toEqual('Invalid uuid');
   });
 
 });
@@ -312,7 +315,7 @@ describe('DELETE /diagrams/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(deleteResponse.status).toBe(400);
-    expect(deleteResponse.body.message).toEqual('Invalid id');
+    expect(deleteResponse.body.message).toEqual('Invalid uuid');
   });
 
   test('should return 404 for non existing diagram', async () => {
@@ -347,8 +350,7 @@ describe('PATCH /diagrams/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'Test Update Change Name',
-        diagram_xml: diagramSample,
-        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+        diagram_xml: diagramSample
       });
 
     expect(patchResponse.status).toBe(200);
@@ -363,7 +365,7 @@ describe('PATCH /diagrams/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(patchResponse.status).toBe(400);
-    expect(patchResponse.body.message).toEqual('Invalid id');
+    expect(patchResponse.body.message).toEqual('Invalid uuid');
   });
 
   test('should return 404 for non existing diagram', async () => {
@@ -375,15 +377,14 @@ describe('PATCH /diagrams/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'Test 404',
-        diagram_xml: diagramSample,
-        workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
+        diagram_xml: diagramSample
       });
 
     expect(patchResponse.status).toBe(404);
     expect(patchResponse.body.message).toEqual('Diagram not found');
   });
 
-  test('should return 400 for bad request', async () => {
+  test('should return 400 if doesnt have name or diagram_xml', async () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
@@ -401,6 +402,6 @@ describe('PATCH /diagrams/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`)
 
     expect(patchResponse.status).toBe(400);
-    expect(patchResponse.body.message).toEqual('Missing name or diagram_xml');
+    expect(patchResponse.body.message).toEqual('Invalid Request Body');
   });
 });
