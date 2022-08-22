@@ -1,5 +1,16 @@
 # Diagrams Manager
 
+## Environment variables
+
+Add a .env file with the following variables:
+
+- JWT_KEY (default = 1234)
+- KNEX_ENV (suggested value = docker)
+- NODE_ENV (suggested value = docker)
+- POSTGRES_USER (suggested value = postgres)
+- POSTGRES_PASSWORD (suggested value = postgres)
+- POSTGRES_DB (suggested value = diagrams)
+
 ## Run the project on docker
 
 To run app on docker, just run the command:
