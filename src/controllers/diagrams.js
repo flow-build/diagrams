@@ -1,8 +1,10 @@
 const diagramsService = require('../services/diagrams');
 const { validate } = require('uuid');
+const { logger } = require('../utils/logger');
 const parseString = require('xml2js').parseString;
 
 const saveDiagram = async (ctx, next) => {
+  logger.debug('saveDiagram controller called');
 
   const { name, diagram_xml, workflow_id, user_id } = ctx.request.body;
 
@@ -49,6 +51,7 @@ const saveDiagram = async (ctx, next) => {
 }
 
 const getAllDiagrams = async (ctx, next) => {
+  logger.debug('getAllDiagrams controller called');
 
   try {
     const diagrams = await diagramsService.getAllDiagrams();
@@ -62,6 +65,8 @@ const getAllDiagrams = async (ctx, next) => {
 }
 
 const getDiagramsByUserId = async (ctx, next) => {
+  logger.debug('getDiagramsByUserId controller called');
+
   const user_id = ctx.params.id;
 
   try {
@@ -76,6 +81,8 @@ const getDiagramsByUserId = async (ctx, next) => {
 }
 
 const getDiagramsByUserAndWF = async (ctx, next) => {
+  logger.debug('getDiagramsByUserAndWF controller called');
+
   const { workflow_id, user_id } = ctx.params;
 
   if (!validate(workflow_id)) {
@@ -94,6 +101,7 @@ const getDiagramsByUserAndWF = async (ctx, next) => {
 }
 
 const getDiagramById = async (ctx, next) => {
+  logger.debug('getDiagramById controller called');
 
   const { id } = ctx.params;
 
@@ -121,6 +129,7 @@ const getDiagramById = async (ctx, next) => {
 }
 
 const getDiagramsByWorkflowId = async(ctx, next) => {
+  logger.debug('getDiagramsByWorkflowId controller called');
 
   const { id } = ctx.params;
 
@@ -141,6 +150,8 @@ const getDiagramsByWorkflowId = async(ctx, next) => {
 }
 
 const getLatestDiagramByWorkflowId = async (ctx, next) => {
+  logger.debug('getLatestDiagramByWorkflowId controller called');
+
   const { id } = ctx.params;
 
   if (!validate(id)) {
@@ -160,6 +171,8 @@ const getLatestDiagramByWorkflowId = async (ctx, next) => {
 }
 
 const updateDiagram = async (ctx, next) => {
+  logger.debug('updateDiagram controller called');
+
   const { id } = ctx.params;
   const { name, diagram_xml } = ctx.request.body;
 
@@ -203,6 +216,8 @@ const updateDiagram = async (ctx, next) => {
 }
 
 const deleteDiagram = async (ctx, next) => {
+  logger.debug('deleteDiagram controller called');
+
   const { id } = ctx.params;
   
   if (!validate(id)) {

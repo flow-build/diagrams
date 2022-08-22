@@ -1,6 +1,9 @@
 const rs = require('jsrsasign');
+const { logger } = require('../utils/logger');
 
 const createJWTToken = (secret, duration) => {
+  logger.debug('createJWTToken service called');
+
   const jwtHeader = { alg: 'HS256', typ: 'JWT' };
 
   const tNow = rs.KJUR.jws.IntDate.get('now');

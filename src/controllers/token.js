@@ -1,7 +1,10 @@
 const { createJWTToken } = require('../services/tokenGenerator');
 const { jwtSecret } = require('../utils/jwtSecret');
+const { logger } = require('../utils/logger');
 
 const getToken = (ctx, next) => {
+  logger.debug('getToken controller called');
+
   const secret = ctx.get("x-secret") || jwtSecret;
   const duration = parseInt(ctx.get("x-duration")) || 3600;
 

@@ -1,7 +1,9 @@
 const { db } = require('../utils/db');
 const { v4: uuid } = require('uuid');
+const { logger } = require('../utils/logger');
 
 const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
+  logger.debug('saveDiagram service called');
 
   const [ diagram ] = await db('diagrams')
     .insert({
@@ -16,6 +18,7 @@ const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
 }
 
 const getAllDiagrams = async () => {
+  logger.debug('getAllDiagrams service called');
   
   const diagrams = await db('diagrams')
     .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at');
@@ -24,6 +27,7 @@ const getAllDiagrams = async () => {
 }
 
 const getDiagramsByUserId = async (user_id) => {
+  logger.debug('getDiagramsByUserId service called');
 
   const diagrams = await db('diagrams')
     .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at')
@@ -33,6 +37,7 @@ const getDiagramsByUserId = async (user_id) => {
 }
 
 const getDiagramById = async (id) => {
+  logger.debug('getDiagramById service called');
 
   const diagram = await db('diagrams').where('id', id).first();
 
@@ -40,6 +45,7 @@ const getDiagramById = async (id) => {
 }
 
 const getDiagramsByWorkflowId = async (workflow_id) => {
+  logger.debug('getDiagramsByWorkflowId service called');
 
   const diagrams = await db('diagrams')
     .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at')
@@ -49,6 +55,7 @@ const getDiagramsByWorkflowId = async (workflow_id) => {
 }
 
 const getLatestDiagramByWorkflowId = async (workflow_id) => {
+  logger.debug('getLatestDiagramByWorkflowId service called');
   
   const diagram = await db('diagrams')
     .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at')
@@ -60,6 +67,7 @@ const getLatestDiagramByWorkflowId = async (workflow_id) => {
 }
 
 const getDiagramsByUserAndWF = async (workflow_id, user_id) => {
+  logger.debug('getDiagramsByUserAndWF service called');
   
   const diagrams = await db('diagrams')
     .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at')
@@ -70,6 +78,7 @@ const getDiagramsByUserAndWF = async (workflow_id, user_id) => {
 }
 
 const updateDiagram = async (id, name, diagram_xml) => {
+  logger.debug('updateDiagram service called');
 
   const diagram = await db('diagrams').where('id', id).first();
 
@@ -91,6 +100,7 @@ const updateDiagram = async (id, name, diagram_xml) => {
 }
 
 const deleteDiagram = async (id) => {
+  logger.debug('deleteDiagram service called');
 
   const diagram = await db('diagrams').where('id', id).first();
 

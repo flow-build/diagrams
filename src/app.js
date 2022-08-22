@@ -1,5 +1,5 @@
 const Koa = require('koa');
-const koaLogger = require('koa-logger');
+const koaLogger = require('koa-logger-winston');
 const cors = require('koa2-cors');
 const jwt = require('koa-jwt');
 const { jwtSecret } = require('./utils/jwtSecret');
@@ -38,7 +38,7 @@ const startServer = (port) => {
   );
 
   return app.listen(port, () => {
-    logger.info(`Diagrams Server running on port: ${port}`)
+    logger.info(`Server running on port: ${port}`)
   });
 }
 
