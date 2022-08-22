@@ -5,23 +5,15 @@ services:
     image: postgres:14.5
     container_name: diagrams_db
     restart: always
-    environment:
-      POSTGRES_DB: diagrams
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - ./.env.docker
     ports:
       - 5432:5432
   
   app:
     image: node:16.15
-    environment:
-      NODE_ENV: docker
-      KNEX_ENV: docker
-      POSTGRES_PORT: 5432
-      POSTGRES_HOST: diagrams_db
-      POSTGRES_DATABASE: diagrams
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - ./.env.docker
     container_name: diagrams_app
     restart: on-failure:10
     depends_on:
