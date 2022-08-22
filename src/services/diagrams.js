@@ -18,7 +18,7 @@ const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
 const getAllDiagrams = async () => {
   
   const diagrams = await db('diagrams')
-    .select('id', 'name', 'workflow_id', 'user_id');
+    .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at');
 
   return diagrams;
 }
@@ -26,7 +26,7 @@ const getAllDiagrams = async () => {
 const getDiagramsByUserId = async (user_id) => {
 
   const diagrams = await db('diagrams')
-    .select('id', 'name', 'workflow_id', 'user_id')
+    .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at')
     .where('user_id', user_id);
 
   return diagrams;
@@ -42,7 +42,7 @@ const getDiagramById = async (id) => {
 const getDiagramsByWorkflowId = async (workflow_id) => {
 
   const diagrams = await db('diagrams')
-    .select('id', 'name', 'workflow_id', 'user_id')
+    .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at')
     .where('workflow_id', workflow_id);
 
   return diagrams;
@@ -51,7 +51,7 @@ const getDiagramsByWorkflowId = async (workflow_id) => {
 const getLatestDiagramByWorkflowId = async (workflow_id) => {
   
   const diagram = await db('diagrams')
-    .select('id', 'name', 'workflow_id', 'user_id')
+    .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at')
     .where('workflow_id', workflow_id)
     .orderBy('updated_at', 'desc')
     .first();
@@ -62,7 +62,7 @@ const getLatestDiagramByWorkflowId = async (workflow_id) => {
 const getDiagramsByUserAndWF = async (workflow_id, user_id) => {
   
   const diagrams = await db('diagrams')
-    .select('id', 'name', 'workflow_id', 'user_id')
+    .select('id', 'name', 'workflow_id', 'user_id', 'created_at', 'updated_at')
     .where('workflow_id', workflow_id)
     .andWhere('user_id', user_id);
   

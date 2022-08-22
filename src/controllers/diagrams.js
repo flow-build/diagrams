@@ -37,7 +37,9 @@ const saveDiagram = async (ctx, next) => {
       id: diagram.id,
       name: diagram.name,
       workflow_id: diagram.workflow_id,
-      user_id: diagram.user_id
+      user_id: diagram.user_id,
+      created_at: diagram.created_at,
+      updated_at: diagram.updated_at
     }
   } catch(err) {
     throw new Error(err);
@@ -183,7 +185,9 @@ const updateDiagram = async (ctx, next) => {
         id: diagram.id,
         name: diagram.name,
         workflow_id: diagram.workflow_id,
-        user_id: diagram.user_id
+        user_id: diagram.user_id,
+        created_at: diagram.created_at,
+        updated_at: diagram.updated_at
       }
     } else {
       ctx.status = 404;
