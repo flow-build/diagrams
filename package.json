@@ -17,7 +17,11 @@
     "type": "git",
     "url": "git+https://github.com/flow-build/diagrams.git"
   },
-  "keywords": ["bpmn","flowbuild","processes"],
+  "keywords": [
+    "bpmn",
+    "flowbuild",
+    "processes"
+  ],
   "author": "Pedro Assis",
   "license": "ISC",
   "bugs": {
@@ -39,7 +43,7 @@
     "koa-bodyparser": "4.3.0",
     "koa-compose": "4.1.0",
     "koa-jwt": "4.0.3",
-    "koa-logger": "3.2.1",
+    "koa-logger-winston": "0.0.2",
     "koa-static": "5.0.0",
     "koa2-cors": "2.0.6",
     "pg": "8.7.3",
