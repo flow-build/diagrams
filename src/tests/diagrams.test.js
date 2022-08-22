@@ -3,6 +3,7 @@ const { validate } = require('uuid');
 const { v1: uuid } = require('uuid');
 const supertest = require('supertest');
 const { startServer } = require('../app');
+const { db } = require('../utils/db');
 const diagramSample = require('fs').readFileSync('./src/samples/diagram.xml', 'utf8');
 
 let server;
@@ -11,6 +12,14 @@ beforeAll(async () => {
   server = startServer(5001);
   request = supertest(server);
 })
+
+beforeEach(() => {
+  return db.raw('START TRANSACTION');
+});
+
+afterEach(() => {
+  return db.raw('ROLLBACK');
+});
 
 afterAll(async () => {
   await server.close();
