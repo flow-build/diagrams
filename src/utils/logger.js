@@ -1,13 +1,15 @@
+require('dotenv').config();
 const { createLogger, format, transports } = require('winston');
 
 const logger = createLogger({
-  level: 'info',
+  level: process.env.LOG_LEVEL || 'info',
   format: format.combine(
     format.colorize(),
     format.timestamp(),
-    format.printf((info) => `${info.timestamp} ${info.level} ${info.message}`)
+    format.label({ label: 'Diagrams'}),
+    format.printf((info) => `${info.timestamp} ${info.level}: [${info.label}] ${info.message}`)
   ),
-  transports: [new transports.Console()],
+  transports: [ new transports.Console() ],
   exceptionHandlers: [
     new transports.Console({
       format: format.errors()
