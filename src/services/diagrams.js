@@ -79,7 +79,8 @@ const updateDiagram = async (id, name, diagram_xml) => {
       .where('id', id)
       .update({
         name,
-        diagram_xml
+        diagram_xml,
+        updated_at: 'now'
       })
       .returning('*');
 
