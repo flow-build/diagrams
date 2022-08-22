@@ -1,7 +1,6 @@
 const Router = require('@koa/router');
 const bodyParser = require('koa-bodyparser');
 const cors = require('koa2-cors');
-const errorHandler = require('../middlewares/errorHandler');
 const diagramsController = require('../controllers/diagrams');
 
 module.exports = (opts = {}) => {
@@ -19,16 +18,16 @@ module.exports = (opts = {}) => {
   diagrams.prefix('/diagrams');
   diagrams
     .get('/user/:user_id/workflow/:workflow_id', 
-      errorHandler, diagramsController.getDiagramsByUserAndWF
+      diagramsController.getDiagramsByUserAndWF
     );
-  diagrams.get('/user/:id', errorHandler, diagramsController.getDiagramsByUserId);
-  diagrams.get('/workflow/:id/latest', errorHandler, diagramsController.getLatestDiagramByWorkflowId);
-  diagrams.get('/workflow/:id', errorHandler, diagramsController.getDiagramsByWorkflowId);
-  diagrams.get('/:id', errorHandler, diagramsController.getDiagramById);
-  diagrams.get('/', errorHandler, diagramsController.getAllDiagrams);
-  diagrams.post('/', errorHandler, diagramsController.saveDiagram);
-  diagrams.patch('/:id', errorHandler, diagramsController.updateDiagram);
-  diagrams.del('/:id', errorHandler, diagramsController.deleteDiagram);
+  diagrams.get('/user/:id', diagramsController.getDiagramsByUserId);
+  diagrams.get('/workflow/:id/latest', diagramsController.getLatestDiagramByWorkflowId);
+  diagrams.get('/workflow/:id', diagramsController.getDiagramsByWorkflowId);
+  diagrams.get('/:id', diagramsController.getDiagramById);
+  diagrams.get('/', diagramsController.getAllDiagrams);
+  diagrams.post('/', diagramsController.saveDiagram);
+  diagrams.patch('/:id', diagramsController.updateDiagram);
+  diagrams.del('/:id', diagramsController.deleteDiagram);
 
   router.use(diagrams.routes());
   
