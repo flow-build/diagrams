@@ -7,9 +7,12 @@ Add a .env file with the following variables:
 - JWT_KEY (default = 1234)
 - KNEX_ENV (suggested value = docker)
 - NODE_ENV (suggested value = docker)
-- POSTGRES_USER (suggested value = postgres)
-- POSTGRES_PASSWORD (suggested value = postgres)
-- POSTGRES_DB (suggested value = diagrams)
+- POSTGRES_USER (default = postgres)
+- POSTGRES_PASSWORD (default = postgres)
+- POSTGRES_DB (default = diagrams)
+- POSTGRES_HOST (default = localhost)
+- POSTGRES_PORT (default = 5432)
+- LOG_LEVEL (default = info)
 
 ## Run the project on docker
 
