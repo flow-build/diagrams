@@ -355,6 +355,7 @@ describe('PATCH /diagrams/:id', () => {
 
     expect(patchResponse.status).toBe(200);
     expect(patchResponse.body.name).toEqual('Test Update Change Name');
+    expect(patchResponse.body.workflow_id).toEqual('44f43700-5128-11ec-baa3-5db1e80779a8');
   });
 
   test('should return 400 invalid id', async () => {
