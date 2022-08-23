@@ -72,19 +72,25 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uuid
                   name:
+                    type: string
+                  user_id:
                     type: string
                   workflow_id:
                     type: string
-                    format: uuid
-                  user_id:
+                  created_at:
+                    type: string
+                  updated_at:
                     type: string
               example:
-                id: 'd655538b-95d3-4627-acaf-b391fdc25142'
-                name: 'Test'
-                workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
-                user_id: '1'
+                {
+                  "id": "9d99e4a3-1820-4893-b5d9-2f7115c490b1",
+                  "name": "Example Number 1",
+                  "user_id": "0",
+                  "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca9",
+                  "created_at": "2022-08-23T19:36:37.804Z",
+                  "updated_at": "2022-08-23T19:36:37.804Z"
+                }
         '400':
           description: Bad Request
           content:
@@ -96,7 +102,13 @@ paths:
                     type: string
               example:
                 {
-                  "message": "Missing user_id"
+                  "message": "Invalid Request Body",
+                  "error": [
+                    {
+                        "field": "",
+                        "message": "must have required property 'name'"
+                    }
+                  ]
                 }
         '401':
           description: Unauthorized
@@ -116,30 +128,39 @@ paths:
               schema:
                 type: array
                 items:
+                  type: object
                   properties:
                     id:
                       type: string
                     name:
                       type: string
-                    workflow_id:
-                      type: string
                     user_id:
                       type: string
+                    workflow_id:
+                      type: string
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
               example:
-                  [
-                    {
-                      "id": "d655538b-95d3-4627-acaf-b391fdc25142",
-                      "name": "Test",
-                      "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                      "user_id": "1"
-                    },
-                    {
-                      "id": "2ed18cca-7b17-4b30-b53c-ee8b4c771f93",
-                      "name": "Test 2",
-                      "workflow_id": null,
-                      "user_id": "2"
-                    },
-                  ]
+                [
+                  {
+                    "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
+                    "name": "First Example",
+                    "user_id": "1",
+                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "created_at": "2022-08-23T19:28:19.024Z",
+                    "updated_at": "2022-08-23T19:28:32.693Z"
+                  },
+                  {
+                    "id": "0930048b-2cf7-4de9-ac4d-65f6c2afa016",
+                    "name": "Second Example",
+                    "user_id": "2",
+                    "workflow_id": null,
+                    "created_at": "2022-08-23T15:13:26.869Z",
+                    "updated_at": "2022-08-23T16:03:49.115Z"
+                  },
+                ]
         '401':
           description: Unauthorized
         '500':
@@ -176,7 +197,7 @@ paths:
                     type: string
               example:
                 {
-                  "message": "Invalid id"
+                  "message": "Invalid uuid"
                 }
         '404':
           description: Not Found
@@ -232,19 +253,25 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uuid
                   name:
+                    type: string
+                  user_id:
                     type: string
                   workflow_id:
                     type: string
-                    format: uuid
-                  user_id:
+                  created_at:
+                    type: string
+                  updated_at:
                     type: string
               example:
-                id: 'd655538b-95d3-4627-acaf-b391fdc25142'
-                name: 'Test Updated'
-                workflow_id: '44f43700-5128-11ec-baa3-5db1e80779a8'
-                user_id: '1'
+                {
+                  "id": "9d99e4a3-1820-4893-b5d9-2f7115c490b1",
+                  "name": "Example 1 Updated",
+                  "user_id": "0",
+                  "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca9",
+                  "created_at": "2022-08-23T19:36:37.804Z",
+                  "updated_at": "2022-08-23T19:36:37.804Z"
+                }
         '400':
           description: Bad Request
           content:
@@ -256,7 +283,25 @@ paths:
                     type: string
               example:
                 {
-                  "message": "Missing name or diagram_xml"
+                  "message": "Invalid Request Body",
+                  "errors": [
+                    {
+                      "field": "",
+                      "message": "must have required property 'name'"
+                    },
+                    {
+                      "field": "",
+                      "message": "must have required property 'diagram_xml'"
+                    },
+                    {
+                      "field": "",
+                      "message": "must match a schema in anyOf"
+                    },
+                    {
+                      "field": "",
+                      "message": "must pass \"anyRequired\" keyword validation"
+                    }
+                  ]
                 }
         '404':
           description: Not Found
@@ -303,7 +348,7 @@ paths:
                     type: string
               example:
                 {
-                  "message": "Invalid id"
+                  "message": "Invalid uuid"
                 }
         '404':
           description: Not Found
@@ -344,30 +389,39 @@ paths:
               schema:
                 type: array
                 items:
+                  type: object
                   properties:
                     id:
                       type: string
                     name:
                       type: string
-                    workflow_id:
-                      type: string
                     user_id:
                       type: string
+                    workflow_id:
+                      type: string
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
               example:
-                  [
-                    {
-                      "id": "d655538b-95d3-4627-acaf-b391fdc25142",
-                      "name": "Test",
-                      "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                      "user_id": "1"
-                    },
-                    {
-                      "id": "2ed18cca-7b17-4b30-b53c-ee8b4c771f93",
-                      "name": "Test 2",
-                      "workflow_id": null,
-                      "user_id": "1"
-                    },
-                  ]
+                [
+                  {
+                    "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
+                    "name": "Just An Example",
+                    "user_id": "1",
+                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "created_at": "2022-08-23T19:28:19.024Z",
+                    "updated_at": "2022-08-23T19:28:32.693Z"
+                  },
+                  {
+                    "id": "0930048b-2cf7-4de9-ac4d-65f6c2afa016",
+                    "name": "Any Example",
+                    "user_id": "1",
+                    "workflow_id": null,
+                    "created_at": "2022-08-23T15:13:26.869Z",
+                    "updated_at": "2022-08-23T16:03:49.115Z"
+                  },
+                ]
         '401':
           description: Unauthorized
         '500':
@@ -395,29 +449,38 @@ paths:
               schema:
                 type: array
                 items:
+                  type: object
                   properties:
                     id:
                       type: string
                     name:
                       type: string
-                    workflow_id:
-                      type: string
                     user_id:
                       type: string
+                    workflow_id:
+                      type: string
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
               example:
-                  [
-                    {
-                        "id": "046bd188-3613-41b3-b2f4-0748b194514e",
-                        "name": "Test",
-                        "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
-                        "user_id": "1"
-                    },
-                    {
-                        "id": "70ad91d8-aa66-475f-9006-8f6400e31f20",
-                        "name": "Test 2",
-                        "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
-                        "user_id": "2"
-                    }
+                [
+                  {
+                    "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
+                    "name": "Some Example",
+                    "user_id": "1",
+                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "created_at": "2022-08-23T19:28:19.024Z",
+                    "updated_at": "2022-08-23T19:28:32.693Z"
+                  },
+                  {
+                    "id": "0930048b-2cf7-4de9-ac4d-65f6c2afa016",
+                    "name": "Another Example",
+                    "user_id": "2",
+                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "created_at": "2022-08-23T15:13:26.869Z",
+                    "updated_at": "2022-08-23T16:03:49.115Z"
+                  },
                 ]
         '400':
           description: Bad Request
@@ -430,7 +493,7 @@ paths:
                     type: string
               example:
                 {
-                  "message": "Invalid workflow_id"
+                  "message": "Invalid uuid"
                 }
         '401':
           description: Unauthorized
@@ -463,17 +526,23 @@ paths:
                     type: string
                   name:
                     type: string
-                  workflow_id:
-                    type: string
                   user_id:
                     type: string
+                  workflow_id:
+                    type: string
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
               example:
-                  {
-                      "id": "046bd188-3613-41b3-b2f4-0748b194514e",
-                      "name": "Test",
-                      "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
-                      "user_id": "1"
-                  }
+                {
+                  "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
+                  "name": "Latest Example",
+                  "user_id": "1",
+                  "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                  "created_at": "2022-08-23T19:28:19.024Z",
+                  "updated_at": "2022-08-23T19:28:32.693Z"
+                }
         '204':
           description: No Content
         '400':
@@ -487,7 +556,7 @@ paths:
                     type: string
               example:
                 {
-                  "message": "Invalid workflow_id"
+                  "message": "Invalid uuid"
                 }
         '401':
           description: Unauthorized
@@ -522,30 +591,39 @@ paths:
               schema:
                 type: array
                 items:
+                  type: object
                   properties:
                     id:
                       type: string
                     name:
                       type: string
-                    workflow_id:
-                      type: string
                     user_id:
                       type: string
+                    workflow_id:
+                      type: string
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
               example:
-                  [
-                    {
-                      "id": "d655538b-95d3-4627-acaf-b391fdc25142",
-                      "name": "Test",
-                      "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
-                      "user_id": "1"
-                    },
-                    {
-                      "id": "2ed18cca-7b17-4b30-b53c-ee8b4c771f93",
-                      "name": "Test 1",
-                      "workflow_id": "44f43700-5128-11ec-baa3-5db1e80779a8",
-                      "user_id": "1"
-                    },
-                  ]
+                [
+                  {
+                    "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
+                    "name": "Somewhat of Example",
+                    "user_id": "3",
+                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "created_at": "2022-08-23T19:28:19.024Z",
+                    "updated_at": "2022-08-23T19:28:32.693Z"
+                  },
+                  {
+                    "id": "0930048b-2cf7-4de9-ac4d-65f6c2afa016",
+                    "name": "Another One",
+                    "user_id": "3",
+                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "created_at": "2022-08-23T15:13:26.869Z",
+                    "updated_at": "2022-08-23T16:03:49.115Z"
+                  },
+                ]
         '400':
           description: Bad Request
           content:
@@ -557,7 +635,7 @@ paths:
                     type: string
               example:
                 {
-                  "message": "Invalid workflow_id"
+                  "message": "Invalid uuid"
                 }
         '401':
           description: Unauthorized
