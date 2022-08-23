@@ -1,21 +1,29 @@
-const diagramsService = require('../services/diagrams');
+const Diagram = require('../services/diagrams');
 const { logger } = require('../utils/logger');
+
+const serializeDiagramXml = (diagram) => {
+  return diagram.diagram_xml;
+}
+
+const serializeDiagramNoXml = (diagram) => {
+  return {
+    id: diagram.id,
+    name: diagram.name,
+    user_id: diagram.user_id,
+    workflow_id: diagram.workflow_id,
+    created_at: diagram.created_at,
+    updated_at: diagram.updated_at
+  }
+}
 
 const saveDiagram = async (ctx, next) => {
   logger.debug('saveDiagram controller called');
 
   try {
-    const diagram = await diagramsService.saveDiagram(ctx.request.body);
+    const diagram = await Diagram.saveDiagram(ctx.request.body);
   
     ctx.status = 201;
-    ctx.body = {
-      id: diagram.id,
-      name: diagram.name,
-      workflow_id: diagram.workflow_id,
-      user_id: diagram.user_id,
-      created_at: diagram.created_at,
-      updated_at: diagram.updated_at
-    }
+    ctx.body = serializeDiagramNoXml(diagram);
   } catch(err) {
     throw new Error(err);
   }
@@ -27,9 +35,9 @@ const getAllDiagrams = async (ctx, next) => {
   logger.debug('getAllDiagrams controller called');
 
   try {
-    const diagrams = await diagramsService.getAllDiagrams();
+    const diagrams = await Diagram.getAllDiagrams();
     ctx.status = 200;
-    ctx.body = diagrams;  
+    ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));  
   } catch(err) {
     throw new Error(err);
   }
@@ -43,9 +51,9 @@ const getDiagramsByUserId = async (ctx, next) => {
   const user_id = ctx.params.id;
 
   try {
-    const diagrams = await diagramsService.getDiagramsByUserId(user_id);
+    const diagrams = await Diagram.getDiagramsByUserId(user_id);
     ctx.status = 200;
-    ctx.body = diagrams;
+    ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram)); 
   } catch (err) {
     throw new Error(err);
   }
@@ -59,9 +67,9 @@ const getDiagramsByUserAndWF = async (ctx, next) => {
   const { workflow_id, user_id } = ctx.params;
 
   try {
-    const diagrams = await diagramsService.getDiagramsByUserAndWF(workflow_id, user_id);
+    const diagrams = await Diagram.getDiagramsByUserAndWF(user_id, workflow_id);
     ctx.status = 200;
-    ctx.body = diagrams;
+    ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram)); 
   } catch (err) {
     throw new Error(err);
   }
@@ -75,11 +83,11 @@ const getDiagramById = async (ctx, next) => {
   const { id } = ctx.params;
 
   try {
-    const diagram = await diagramsService.getDiagramById(id);
+    const diagram = await Diagram.getDiagramById(id);
   
     if (diagram) {
       ctx.status = 200;
-      ctx.body = diagram.diagram_xml;
+      ctx.body = serializeDiagramXml(diagram);
     } else {
       ctx.status = 404;
       ctx.body = {
@@ -99,10 +107,10 @@ const getDiagramsByWorkflowId = async(ctx, next) => {
   const { id } = ctx.params;
 
   try {
-    const diagrams = await diagramsService.getDiagramsByWorkflowId(id);
+    const diagrams = await Diagram.getDiagramsByWorkflowId(id);
 
     ctx.status = 200;
-    ctx.body = diagrams;  
+    ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
   } catch(err) {
     throw new Error(err);
   }
@@ -116,10 +124,10 @@ const getLatestDiagramByWorkflowId = async (ctx, next) => {
   const { id } = ctx.params;
 
   try {
-    const diagram = await diagramsService.getLatestDiagramByWorkflowId(id);
+    const diagram = await Diagram.getLatestDiagramByWorkflowId(id);
 
     ctx.status = 200;
-    ctx.body = diagram;
+    ctx.body = serializeDiagramNoXml(diagram);
   } catch (err) {
     throw new Error(err);
   }
@@ -133,7 +141,7 @@ const updateDiagram = async (ctx, next) => {
   const { id } = ctx.params;
 
   try {
-    const diagram = await diagramsService.getDiagramById(id);
+    const diagram = await Diagram.getDiagramById(id);
 
     if (!diagram) {
       ctx.status = 404;
@@ -142,18 +150,9 @@ const updateDiagram = async (ctx, next) => {
       }
       return;
     }
-
-    const diagramUpdated = await diagramsService.updateDiagram(id, ctx.request.body);
-    
+    const diagramUpdated = await Diagram.updateDiagram(id, ctx.request.body);
     ctx.status = 200;
-    ctx.body = {
-      id: diagramUpdated.id,
-      name: diagramUpdated.name,
-      workflow_id: diagramUpdated.workflow_id,
-      user_id: diagramUpdated.user_id,
-      created_at: diagramUpdated.created_at,
-      updated_at: diagramUpdated.updated_at
-    }
+    ctx.body = serializeDiagramNoXml(diagramUpdated)
   } catch(err) {
     throw new Error(err);
   }
@@ -167,7 +166,7 @@ const deleteDiagram = async (ctx, next) => {
   const { id } = ctx.params;
 
   try {
-    const diagramDeleted = await diagramsService.deleteDiagram(id);
+    const diagramDeleted = await Diagram.deleteDiagram(id);
 
     if (diagramDeleted) {
       ctx.status = 204;
