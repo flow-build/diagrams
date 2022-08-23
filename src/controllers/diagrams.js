@@ -2,17 +2,17 @@ const Diagram = require('../services/diagrams');
 const { logger } = require('../utils/logger');
 
 const serializeDiagramXml = (diagram) => {
-  return diagram.diagram_xml;
+  return diagram.xml;
 }
 
 const serializeDiagramNoXml = (diagram) => {
   return {
     id: diagram.id,
     name: diagram.name,
-    user_id: diagram.user_id,
-    workflow_id: diagram.workflow_id,
-    created_at: diagram.created_at,
-    updated_at: diagram.updated_at
+    user_id: diagram.userId,
+    workflow_id: diagram.workflowId,
+    created_at: diagram.createdAt,
+    updated_at: diagram.updatedAt
   }
 }
 
@@ -64,7 +64,7 @@ const getDiagramsByUserId = async (ctx, next) => {
 const getDiagramsByUserAndWF = async (ctx, next) => {
   logger.debug('getDiagramsByUserAndWF controller called');
 
-  const { workflow_id, user_id } = ctx.params;
+  const { user_id, workflow_id } = ctx.params;
 
   try {
     const diagrams = await Diagram.getDiagramsByUserAndWF(user_id, workflow_id);

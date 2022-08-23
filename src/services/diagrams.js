@@ -1,39 +1,50 @@
 const { db } = require('../utils/db');
 const { v4: uuid } = require('uuid');
 const { logger } = require('../utils/logger');
+const _ = require('lodash');
 
 class Diagram {
+
+  static deserialize(serialized) {
+    if(!serialized) { 
+      return;
+    }
+    
+    if (_.isArray(serialized)) {
+      return serialized.map((data) => this._deserialized(data));
+    } else {
+      return this._deserialized(serialized);
+    }
+  }
+
+  static _deserialized(data) {
+    return {
+      id: data.id,
+      name: data.name,
+      workflowId: data.workflow_id,
+      userId: data.user_id,
+      xml: data.diagram_xml,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    }
+  }
 
   static serialize(diagram) {
     return {
       id: diagram.id,
       name: diagram.name,
-      user_id: diagram.user_id,
-      diagram_xml: diagram.diagram_xml,
-      workflow_id: diagram.workflow_id
-    }
-  }
-
-  static deserialize(serialized) {
-    if (serialized) {
-      const diagram = new Diagram(serialized.name, serialized.user_id, serialized.diagram_xml);
-      diagram.id = serialized.id;
-      diagram.workflow_id = serialized.workflow_id;
-      diagram.created_at = serialized.created_at;
-      diagram.updated_at = serialized.updated_at;
-
-      return diagram;
-    } else {
-      return undefined;
+      user_id: diagram.userId,
+      diagram_xml: diagram.xml,
+      workflow_id: diagram.workflowId
     }
   }
 
   constructor(name, user_id, diagram_xml, workflow_id = null, id = null) {
     this.id = id || uuid();
     this.name = name;
-    this.user_id = user_id;
-    this.diagram_xml = diagram_xml;
-    this.workflow_id = workflow_id;
+    this.userId = user_id;
+    this.xml = diagram_xml;
+    this.workflowId = workflow_id;
   }
 
   static async saveDiagram(diagramObj) {
@@ -59,7 +70,7 @@ class Diagram {
       .select('*')
       .orderBy('updated_at', 'desc');
 
-    return diagrams.map((diagram) => this.deserialize(diagram));
+    return this.deserialize(diagrams);
   }
 
   static async getDiagramsByUserId(user_id) {
@@ -70,7 +81,7 @@ class Diagram {
       .where('user_id', user_id)
       .orderBy('updated_at', 'desc');
 
-    return diagrams.map((diagram) => this.deserialize(diagram));
+    return this.deserialize(diagrams);
   }
 
   static async getDiagramById(id) {
@@ -89,7 +100,7 @@ class Diagram {
       .where('workflow_id', workflow_id)
       .orderBy('updated_at', 'desc');
 
-    return diagrams.map((diagram) => this.deserialize(diagram));
+    return this.deserialize(diagrams);
   }
 
   static async getLatestDiagramByWorkflowId(workflow_id) {
@@ -112,19 +123,18 @@ class Diagram {
       .where('workflow_id', workflow_id)
       .andWhere('user_id', user_id);
     
-    return diagrams.map((diagram) => this.deserialize(diagram));
+    return this.deserialize(diagrams);
   }
 
-  static async updateDiagram(id, diagram) {
+  static async updateDiagram(id, diagramObj) {
     logger.debug('updateDiagram service called');
 
-    const { name, diagram_xml } = diagram;
+    const diagram = this.serialize(diagramObj);
 
     const [ diagramUpdated ] = await db('diagrams')
       .where('id', id)
       .update({
-        name,
-        diagram_xml,
+        ...diagram,
         updated_at: 'now'
       })
       .returning('*');
