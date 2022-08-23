@@ -2,10 +2,12 @@ const { db } = require('../utils/db');
 const { v4: uuid } = require('uuid');
 const { logger } = require('../utils/logger');
 
-const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
+const saveDiagram = async (diagram) => {
   logger.debug('saveDiagram service called');
 
-  const [ diagram ] = await db('diagrams')
+  const { name, diagram_xml, workflow_id, user_id } = diagram;
+
+  const [ diagramCreated ] = await db('diagrams')
     .insert({
       id: uuid(),
       name,
@@ -14,7 +16,7 @@ const saveDiagram = async (name, diagram_xml, workflow_id, user_id) => {
       user_id
     }).returning('*');
   
-  return diagram;
+  return diagramCreated;
 }
 
 const getAllDiagrams = async () => {
@@ -77,26 +79,21 @@ const getDiagramsByUserAndWF = async (workflow_id, user_id) => {
   return diagrams;
 }
 
-const updateDiagram = async (id, name, diagram_xml) => {
+const updateDiagram = async (id, diagram) => {
   logger.debug('updateDiagram service called');
 
-  const diagram = await db('diagrams').where('id', id).first();
+  const { name, diagram_xml } = diagram;
 
-  if (diagram) {
+  const [ diagramUpdated ] = await db('diagrams')
+    .where('id', id)
+    .update({
+      name,
+      diagram_xml,
+      updated_at: 'now'
+    })
+    .returning('*');
 
-    const [ diagramUpdated ] = await db('diagrams')
-      .where('id', id)
-      .update({
-        name,
-        diagram_xml,
-        updated_at: 'now'
-      })
-      .returning('*');
-
-    return diagramUpdated;
-  } 
-
-  return;
+  return diagramUpdated;
 }
 
 const deleteDiagram = async (id) => {

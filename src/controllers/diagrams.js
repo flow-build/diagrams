@@ -4,10 +4,8 @@ const { logger } = require('../utils/logger');
 const saveDiagram = async (ctx, next) => {
   logger.debug('saveDiagram controller called');
 
-  const { name, diagram_xml, workflow_id, user_id } = ctx.request.body;
-
   try {
-    const diagram = await diagramsService.saveDiagram(name, diagram_xml, workflow_id, user_id);
+    const diagram = await diagramsService.saveDiagram(ctx.request.body);
   
     ctx.status = 201;
     ctx.body = {
@@ -133,26 +131,28 @@ const updateDiagram = async (ctx, next) => {
   logger.debug('updateDiagram controller called');
 
   const { id } = ctx.params;
-  const { name, diagram_xml } = ctx.request.body;
 
   try {
-    const diagram = await diagramsService.updateDiagram(id, name, diagram_xml);
-    
-    if (diagram) {
-      ctx.status = 200;
-      ctx.body = {
-        id: diagram.id,
-        name: diagram.name,
-        workflow_id: diagram.workflow_id,
-        user_id: diagram.user_id,
-        created_at: diagram.created_at,
-        updated_at: diagram.updated_at
-      }
-    } else {
+    const diagram = await diagramsService.getDiagramById(id);
+
+    if (!diagram) {
       ctx.status = 404;
       ctx.body = {
         message: 'Diagram not found'
       }
+      return;
+    }
+
+    const diagramUpdated = await diagramsService.updateDiagram(id, ctx.request.body);
+    
+    ctx.status = 200;
+    ctx.body = {
+      id: diagramUpdated.id,
+      name: diagramUpdated.name,
+      workflow_id: diagramUpdated.workflow_id,
+      user_id: diagramUpdated.user_id,
+      created_at: diagramUpdated.created_at,
+      updated_at: diagramUpdated.updated_at
     }
   } catch(err) {
     throw new Error(err);
