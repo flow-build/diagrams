@@ -56,7 +56,7 @@ describe('POST /diagrams', () => {
 
     expect(postResponse.status).toBe(400);
     expect(postResponse.body.message).toEqual('Invalid Request Body');
-    expect(postResponse.body.error[0].message).toEqual("must have required property 'name'");
+    expect(postResponse.body.errors[0].message).toEqual("must have required property 'name'");
   });
 
   test('should return 400 if doesnt have diagram_xml', async () => {
@@ -72,7 +72,7 @@ describe('POST /diagrams', () => {
 
     expect(postResponse.status).toBe(400);
     expect(postResponse.body.message).toEqual('Invalid Request Body');
-    expect(postResponse.body.error[0].message).toEqual("must have required property 'diagram_xml'");
+    expect(postResponse.body.errors[0].message).toEqual("must have required property 'diagram_xml'");
   });
 
   test('should return 400 if doesnt have user_id', async () => {
@@ -88,7 +88,7 @@ describe('POST /diagrams', () => {
 
     expect(postResponse.status).toBe(400);
     expect(postResponse.body.message).toEqual('Invalid Request Body');
-    expect(postResponse.body.error[0].message).toEqual("must have required property 'user_id'");
+    expect(postResponse.body.errors[0].message).toEqual("must have required property 'user_id'");
   });
 
 });
@@ -404,5 +404,6 @@ describe('PATCH /diagrams/:id', () => {
 
     expect(patchResponse.status).toBe(400);
     expect(patchResponse.body.message).toEqual('Invalid Request Body');
+    expect(patchResponse.body.errors[0].message).toEqual("must have required property 'name'");
   });
 });

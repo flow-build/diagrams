@@ -6,11 +6,11 @@ module.exports = async (ctx, next) => {
   } catch(err) {
     logger.error(err);
     
-    if (err.error) {
+    if (err.errors) {
       ctx.status = err.status || err.statusCode || 500;
       ctx.body = { 
         message: err.message || 'Internal Server Error',
-        error: err.error
+        errors: err.errors
       }
     } else {
       ctx.status = err.status || err.statusCode || 500;

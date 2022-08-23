@@ -20,7 +20,7 @@ const validateBody = (schema) => {
       
       ctx.throw(400, {
         message: 'Invalid Request Body',
-        error: ajv.errors.map((err) => {
+        errors: ajv.errors.map((err) => {
           const response = {
             field: err.instancePath, 
             message: err.message
