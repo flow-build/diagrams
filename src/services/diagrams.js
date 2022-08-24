@@ -148,7 +148,7 @@ class Diagram {
     const diagram = await db('diagrams').where('id', id).first();
 
     if (diagram) {
-      const diagramDeleted = await db('diagrams')
+      const [ diagramDeleted ] = await db('diagrams')
         .where('id', id).del().returning('*');
 
       return this.deserialize(diagramDeleted);
