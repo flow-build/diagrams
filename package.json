@@ -1,7 +1,7 @@
 {
   "name": "diagrams",
-  "version": "0.0.1",
-  "description": "",
+  "version": "1.0.0",
+  "description": "Service to handle diagrams manager",
   "main": "src/server.js",
   "scripts": {
     "start": "nodemon src/server.js",
@@ -23,7 +23,7 @@
     "processes"
   ],
   "author": "Pedro Assis",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/flow-build/diagrams/issues"
   },
