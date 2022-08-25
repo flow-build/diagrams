@@ -4,13 +4,23 @@ const cors = require('koa2-cors');
 const jwt = require('koa-jwt');
 const { jwtSecret } = require('./utils/jwtSecret');
 const { logger } = require('./utils/logger');
+const { DiagramCore } = require('flowbuild-diagrams-core');
+const { db } = require('./utils/db');
 const freeRouter = require('./routers/freeRouter');
 const diagramsRouter = require('./routers/diagramsRouter');
 const serve = require('koa-static');
 const errorHandler = require('./middlewares/errorHandler');
+const { getDiagramCore, setDiagramCore } = require('./diagramCore');
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
 
 const startServer = (port) => {
+  
+  let diagramCore = getDiagramCore();
+  if (!diagramCore) {
+    diagramCore = new DiagramCore(db);
+    setDiagramCore(diagramCore);
+  }
+
   const app = new Koa();
 
   const corsOptions = {

@@ -1,26 +1,27 @@
-const Diagram = require('../services/diagrams');
 const { logger } = require('../utils/logger');
+const { getDiagramCore } = require('../diagramCore');
 
 const serializeDiagramXml = (diagram) => {
-  return diagram.xml;
+  return diagram.diagram_xml;
 }
 
 const serializeDiagramNoXml = (diagram) => {
   return {
     id: diagram.id,
     name: diagram.name,
-    user_id: diagram.userId,
-    workflow_id: diagram.workflowId,
-    created_at: diagram.createdAt,
-    updated_at: diagram.updatedAt
+    user_id: diagram.user_id,
+    workflow_id: diagram.workflow_id,
+    created_at: diagram.created_at,
+    updated_at: diagram.updated_at
   }
 }
 
 const saveDiagram = async (ctx, next) => {
   logger.debug('saveDiagram controller called');
+  const diagramCore = getDiagramCore();
 
   try {
-    const diagram = await Diagram.saveDiagram(ctx.request.body);
+    const diagram = await diagramCore.saveDiagram(ctx.request.body);
   
     ctx.status = 201;
     ctx.body = serializeDiagramNoXml(diagram);
@@ -33,9 +34,10 @@ const saveDiagram = async (ctx, next) => {
 
 const getAllDiagrams = async (ctx, next) => {
   logger.debug('getAllDiagrams controller called');
+  const diagramCore = getDiagramCore();
 
   try {
-    const diagrams = await Diagram.getAllDiagrams();
+    const diagrams = await diagramCore.getAllDiagrams();
     ctx.status = 200;
     ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));  
   } catch(err) {
@@ -47,11 +49,12 @@ const getAllDiagrams = async (ctx, next) => {
 
 const getDiagramsByUserId = async (ctx, next) => {
   logger.debug('getDiagramsByUserId controller called');
+  const diagramCore = getDiagramCore();
 
   const user_id = ctx.params.id;
 
   try {
-    const diagrams = await Diagram.getDiagramsByUserId(user_id);
+    const diagrams = await diagramCore.getDiagramsByUserId(user_id);
     ctx.status = 200;
     ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram)); 
   } catch (err) {
@@ -63,11 +66,12 @@ const getDiagramsByUserId = async (ctx, next) => {
 
 const getDiagramsByUserAndWF = async (ctx, next) => {
   logger.debug('getDiagramsByUserAndWF controller called');
+  const diagramCore = getDiagramCore();
 
   const { user_id, workflow_id } = ctx.params;
 
   try {
-    const diagrams = await Diagram.getDiagramsByUserAndWF(user_id, workflow_id);
+    const diagrams = await diagramCore.getDiagramsByUserAndWF(user_id, workflow_id);
     ctx.status = 200;
     ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram)); 
   } catch (err) {
@@ -79,11 +83,12 @@ const getDiagramsByUserAndWF = async (ctx, next) => {
 
 const getDiagramById = async (ctx, next) => {
   logger.debug('getDiagramById controller called');
+  const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
 
   try {
-    const diagram = await Diagram.getDiagramById(id);
+    const diagram = await diagramCore.getDiagramById(id);
   
     if (diagram) {
       ctx.status = 200;
@@ -103,11 +108,12 @@ const getDiagramById = async (ctx, next) => {
 
 const getDiagramsByWorkflowId = async(ctx, next) => {
   logger.debug('getDiagramsByWorkflowId controller called');
+  const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
 
   try {
-    const diagrams = await Diagram.getDiagramsByWorkflowId(id);
+    const diagrams = await diagramCore.getDiagramsByWorkflowId(id);
 
     ctx.status = 200;
     ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
@@ -120,11 +126,12 @@ const getDiagramsByWorkflowId = async(ctx, next) => {
 
 const getLatestDiagramByWorkflowId = async (ctx, next) => {
   logger.debug('getLatestDiagramByWorkflowId controller called');
+  const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
 
   try {
-    const diagram = await Diagram.getLatestDiagramByWorkflowId(id);
+    const diagram = await diagramCore.getLatestDiagramByWorkflowId(id);
 
     ctx.status = 200;
     ctx.body = serializeDiagramNoXml(diagram);
@@ -137,11 +144,12 @@ const getLatestDiagramByWorkflowId = async (ctx, next) => {
 
 const updateDiagram = async (ctx, next) => {
   logger.debug('updateDiagram controller called');
+  const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
 
   try {
-    const diagram = await Diagram.getDiagramById(id);
+    const diagram = await diagramCore.getDiagramById(id);
 
     if (!diagram) {
       ctx.status = 404;
@@ -150,7 +158,7 @@ const updateDiagram = async (ctx, next) => {
       }
       return;
     }
-    const diagramUpdated = await Diagram.updateDiagram(id, ctx.request.body);
+    const diagramUpdated = await diagramCore.updateDiagram(id, ctx.request.body);
     ctx.status = 200;
     ctx.body = serializeDiagramNoXml(diagramUpdated)
   } catch(err) {
@@ -162,11 +170,12 @@ const updateDiagram = async (ctx, next) => {
 
 const deleteDiagram = async (ctx, next) => {
   logger.debug('deleteDiagram controller called');
+  const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
 
   try {
-    const diagramDeleted = await Diagram.deleteDiagram(id);
+    const diagramDeleted = await diagramCore.deleteDiagram(id);
 
     if (diagramDeleted) {
       ctx.status = 204;
