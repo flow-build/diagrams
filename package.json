@@ -1,6 +1,6 @@
 {
   "name": "diagrams",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Service to handle diagrams manager",
   "main": "src/server.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "ajv-keywords": "5.1.0",
     "dotenv": "16.0.1",
     "flowbuild-diagrams-core": "1.0.2",
-    "jsrsasign": "10.5.26",
+    "jsrsasign": "10.5.27",
     "knex": "2.2.0",
     "koa": "2.13.4",
     "koa-bodyparser": "4.3.0",
@@ -50,7 +50,7 @@
     "koa-static": "5.0.0",
     "koa2-cors": "2.0.6",
     "lodash": "4.17.21",
-    "pg": "8.7.3",
+    "pg": "8.8.0",
     "swagger-ui-dist": "4.14.0",
     "uuid": "8.3.2",
     "winston": "3.8.1",

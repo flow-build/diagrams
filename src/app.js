@@ -1,8 +1,6 @@
 const Koa = require('koa');
 const koaLogger = require('koa-logger-winston');
 const cors = require('koa2-cors');
-const jwt = require('koa-jwt');
-const { jwtSecret } = require('./utils/jwtSecret');
 const { logger } = require('./utils/logger');
 const { DiagramCore } = require('flowbuild-diagrams-core');
 const { db } = require('./utils/db');
@@ -43,7 +41,7 @@ const startServer = (port) => {
   app.use(
     diagramsRouter({
       corsOptions,
-      middlewares: [jwt({ secret: jwtSecret, debug: true })],
+      middlewares: [],
     }).routes()
   );
 
