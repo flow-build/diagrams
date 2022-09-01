@@ -1,6 +1,6 @@
 {
   "name": "diagrams",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Service to handle diagrams manager",
   "main": "src/server.js",
   "scripts": {
@@ -35,12 +35,12 @@
     "supertest": "6.2.4"
   },
   "dependencies": {
+    "@flowbuild/diagrams-core": "^1.0.1",
     "@koa/router": "12.0.0",
     "ajv": "8.11.0",
     "ajv-formats": "2.1.1",
     "ajv-keywords": "5.1.0",
     "dotenv": "16.0.1",
-    "flowbuild-diagrams-core": "1.0.2",
     "jsrsasign": "10.5.26",
     "knex": "2.2.0",
     "koa": "2.13.4",
