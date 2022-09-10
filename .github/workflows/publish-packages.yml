@@ -84,8 +84,7 @@ jobs:
 
   build:
     name: 'Build image on DockerHub'
-    needs:
-      - release
+    needs: version
     runs-on: ubuntu-latest
     steps:
       - name: Print Version
