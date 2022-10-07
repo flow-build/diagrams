@@ -1,5 +1,7 @@
 const { logger } = require('../utils/logger');
 const { getDiagramCore } = require('../diagramCore');
+const { checkAlignment } = require('../utils/alignment');
+const { getWorkflowFromFlowbuild } = require('../services/getFlowbuildBlueprint');
 
 const serializeDiagramXml = (diagram) => {
   return diagram.diagram_xml;
@@ -11,6 +13,7 @@ const serializeDiagramNoXml = (diagram) => {
     name: diagram.name,
     user_id: diagram.user_id,
     workflow_id: diagram.workflow_id,
+    aligned: diagram.aligned,
     created_at: diagram.created_at,
     updated_at: diagram.updated_at
   }
@@ -21,8 +24,23 @@ const saveDiagram = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   try {
-    const diagram = await diagramCore.saveDiagram(ctx.request.body);
-  
+    const { workflow_id, diagram_xml } = ctx.request.body;
+    let aligned = null;
+
+    if (workflow_id) {
+      const { blueprint, error } = await getWorkflowFromFlowbuild(workflow_id);
+
+      if (error) {
+        ctx.status = 502;
+        ctx.body = {
+          message: 'Flowbuild server unavailable'
+        }
+      } else if (!!blueprint) {
+        aligned = await checkAlignment(blueprint, diagram_xml);
+      }
+    } 
+    const diagram = await diagramCore.saveDiagram({ ...ctx.request.body, aligned });
+    
     ctx.status = 201;
     ctx.body = serializeDiagramNoXml(diagram);
   } catch(err) {
@@ -147,7 +165,8 @@ const updateDiagram = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
-
+  const { diagram_xml } = ctx.request.body;
+  
   try {
     const diagram = await diagramCore.getDiagramById(id);
 
@@ -158,7 +177,21 @@ const updateDiagram = async (ctx, next) => {
       }
       return;
     }
-    const diagramUpdated = await diagramCore.updateDiagram(id, ctx.request.body);
+    let aligned;
+
+    if (diagram.workflow_id && diagram_xml) {
+      const { blueprint, error } = await getWorkflowFromFlowbuild(diagram.workflow_id);
+
+      if (error) {
+        ctx.status = 502;
+        ctx.body = {
+          message: 'Flowbuild server unavailable'
+        }
+      } else if (!!blueprint) {
+        aligned = await checkAlignment(blueprint, diagram_xml);
+      }
+    } 
+    const diagramUpdated = await diagramCore.updateDiagram(id, {...ctx.request.body, aligned});
     ctx.status = 200;
     ctx.body = serializeDiagramNoXml(diagramUpdated)
   } catch(err) {
