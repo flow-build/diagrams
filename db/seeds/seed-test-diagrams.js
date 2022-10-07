@@ -8,6 +8,7 @@ exports.seed = async function(knex) {
       name: 'Example Diagram',
       diagram_xml: diagramSample,
       workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8',
+      aligned: true,
       user_id: '1'
     }
   ]);
