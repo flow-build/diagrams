@@ -4,6 +4,15 @@ const supertest = require('supertest');
 const { startServer } = require('../app');
 const { db } = require('../utils/db');
 const diagramSample = require('fs').readFileSync('./src/samples/diagram.xml', 'utf8');
+const diagramMisaligned = require('fs').readFileSync('./src/samples/diagramMisaligned.xml', 'utf8');
+const blueprintSample = require('../samples/blueprint');
+const nock = require('nock');
+
+nock(process.env.FLOWBUILD_URL)
+  .post('/token')
+  .reply(200, {
+    jwtToken: 'genericTestToken'
+  });
 
 let server;
 
@@ -40,6 +49,30 @@ describe('POST /diagrams', () => {
     expect(postResponse.status).toBe(201);
     expect(validate(postResponse.body.id)).toBeTruthy();
     expect(postResponse.body.name).toEqual('Test Save Diagram');
+  });
+
+  test('should return 201', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    nock(process.env.FLOWBUILD_URL)
+      .get('/workflows/7be513f4-98dc-43e2-8f3a-66e68a61aca8')
+      .reply(200, blueprintSample);
+
+    const postResponse = await request.post('/diagrams').type('form')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'Test Save Diagram',
+        diagram_xml: diagramSample,
+        workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8',
+        user_id: '1'
+      })
+
+    expect(postResponse.status).toBe(201);
+    expect(validate(postResponse.body.id)).toBeTruthy();
+    expect(postResponse.body.name).toEqual('Test Save Diagram');
+    expect(postResponse.body.workflow_id).toEqual('7be513f4-98dc-43e2-8f3a-66e68a61aca8');
+    expect(postResponse.body.aligned).toBeTruthy();
   });
 
   test('should return 400 if doesnt have name', async () => {
@@ -335,6 +368,10 @@ describe('PATCH /diagrams/:id', () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
+    nock(process.env.FLOWBUILD_URL)
+      .get('/workflows/44f43700-5128-11ec-baa3-5db1e80779a8')
+      .reply(200, blueprintSample);
+      
     const postResponse = await request.post('/diagrams').type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -344,17 +381,22 @@ describe('PATCH /diagrams/:id', () => {
         user_id: '8'
       });
     const { id } = postResponse.body;
+    
+    nock(process.env.FLOWBUILD_URL)
+      .get('/workflows/44f43700-5128-11ec-baa3-5db1e80779a8')
+      .reply(200, blueprintSample);
 
-    const patchResponse = await request.patch(`/diagrams/${id}`)
+    const patchResponse = await request.patch(`/diagrams/${id}`).type('form')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'Test Update Change Name',
-        diagram_xml: diagramSample
+        diagram_xml: diagramMisaligned
       });
 
     expect(patchResponse.status).toBe(200);
     expect(patchResponse.body.name).toEqual('Test Update Change Name');
     expect(patchResponse.body.workflow_id).toEqual('44f43700-5128-11ec-baa3-5db1e80779a8');
+    expect(patchResponse.body.aligned).toBeFalsy();
   });
 
   test('should return 400 invalid id', async () => {
