@@ -8,7 +8,9 @@ const diagramsController = require('../controllers/diagrams');
 module.exports = (opts = {}) => {
   const router = new Router();
 
-  router.use(bodyParser());
+  router.use(bodyParser({
+    formLimit: '1mb'
+  }));
 
   for (let middleware of opts.middlewares) {
     router.use(middleware);

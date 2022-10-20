@@ -21,3 +21,12 @@ describe('GET /', () => {
     expect(response.body.message).toBe('Diagrams Server running');
   });
 });
+
+describe('GET /swagger', () => {
+  test('should return 200', async () => {
+    const response = await request.get('/swagger');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+});
