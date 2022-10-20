@@ -10,8 +10,9 @@ const freeRouter = require('./routers/freeRouter');
 const diagramsRouter = require('./routers/diagramsRouter');
 const serve = require('koa-static');
 const errorHandler = require('./middlewares/errorHandler');
-const { getDiagramCore, setDiagramCore } = require('./diagramCore');
-const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
+const { getDiagramCore, setDiagramCore, getBlueprintCore, setBlueprintCore,  getWorkflowCore,
+ setWorkflowCore, getDiagramToWorkflowCore, setDiagramToWorkflowCore } = require('./diagramCore');
+const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
 
 const startServer = (port) => {
   
@@ -19,6 +20,24 @@ const startServer = (port) => {
   if (!diagramCore) {
     diagramCore = new DiagramCore(db);
     setDiagramCore(diagramCore);
+  }
+
+  let blueprintCore = getBlueprintCore();
+  if (!blueprintCore) {
+    blueprintCore = new BlueprintCore(db);
+    setBlueprintCore(blueprintCore);
+  }
+
+  let workflowCore = getWorkflowCore();
+  if (!workflowCore) {
+    workflowCore = new WorkflowCore(db);
+    setWorkflowCore(workflowCore);
+  }
+
+  let diagramToWorkflowCore = getDiagramToWorkflowCore();
+  if (!diagramToWorkflowCore) {
+    diagramToWorkflowCore = new DiagramToWorkflowCore(db);
+    setDiagramToWorkflowCore(diagramToWorkflowCore);
   }
 
   const app = new Koa();
