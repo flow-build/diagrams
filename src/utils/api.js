@@ -10,7 +10,7 @@ const getToken = async () => {
     process.env.TOKEN = await axios.post(`${process.env.FLOWBUILD_URL}/token`)
       .then((response) => response.data.jwtToken)
       .catch((error) => {
-        logger.error(error.message);
+        logger.debug(error.message);
         return;
       });
     return process.env.TOKEN;
@@ -19,11 +19,7 @@ const getToken = async () => {
   }
 }
 
-const flowbuildApi = axios.create({
-  baseURL: process.env.FLOWBUILD_URL
-});
 
 module.exports = {
-  flowbuildApi,
   getToken
 }

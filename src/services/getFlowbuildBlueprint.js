@@ -1,17 +1,19 @@
-const { flowbuildApi, getToken } = require('../utils/api');
+require('dotenv').config();
+const { getToken } = require('../utils/api');
 const { logger } = require ('../utils/logger');
+const axios = require('axios');
 
 const getWorkflowFromFlowbuild = async (workflow_id) => {
   logger.debug('getWorkflowFromFlowbuild service called');
   const token = await getToken();
   let error = null;
 
-  const blueprint = await flowbuildApi.get(`/workflows/${workflow_id}`, {
+  const blueprint = await axios.get(`${process.env.FLOWBUILD_URL}/workflows/${workflow_id}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     .then((response) => response.data)
     .catch((err) => {
-      logger.error(err.message);
+      logger.debug(err.message);
       error = err.message;
       return;
     });
