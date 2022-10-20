@@ -13,6 +13,7 @@ Add a .env file with the following variables:
 - POSTGRES_HOST (default = localhost)
 - POSTGRES_PORT (default = 5432)
 - LOG_LEVEL (default = info)
+- FLOWBUILD_URL
 
 ## Run the project on docker
 

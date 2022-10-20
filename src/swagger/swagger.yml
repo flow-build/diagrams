@@ -76,8 +76,6 @@ paths:
                     type: string
                   user_id:
                     type: string
-                  workflow_id:
-                    type: string
                   created_at:
                     type: string
                   updated_at:
@@ -87,9 +85,41 @@ paths:
                   "id": "9d99e4a3-1820-4893-b5d9-2f7115c490b1",
                   "name": "Example Number 1",
                   "user_id": "0",
-                  "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca9",
                   "created_at": "2022-08-23T19:36:37.804Z",
                   "updated_at": "2022-08-23T19:36:37.804Z"
+                }
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  diagram:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      user_id:
+                        type: string
+                      workflow_id:
+                        type: string
+                      created_at:
+                        type: string
+              example:
+                {
+                  "message": "Diagram Created. Alignment Queued",
+                  "diagram": {
+                    "id": "cafd4abd-02aa-42cf-9040-fd1137829d6c",
+                    "name": "Example Queued",
+                    "user_id": "5",
+                    "workflow_id": "8fc66458-1137-4c1a-9aef-5dcdca9a19f6",
+                    "created_at": "2022-10-20T19:47:39.435Z"
+                  }
                 }
         '400':
           description: Bad Request
@@ -138,6 +168,8 @@ paths:
                       type: string
                     workflow_id:
                       type: string
+                    aligned:
+                      type: boolean
                     created_at:
                       type: string
                     updated_at:
@@ -149,6 +181,7 @@ paths:
                     "name": "First Example",
                     "user_id": "1",
                     "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "aligned": true,
                     "created_at": "2022-08-23T19:28:19.024Z",
                     "updated_at": "2022-08-23T19:28:32.693Z"
                   },
@@ -157,6 +190,7 @@ paths:
                     "name": "Second Example",
                     "user_id": "2",
                     "workflow_id": null,
+                    "aligned": null,
                     "created_at": "2022-08-23T15:13:26.869Z",
                     "updated_at": "2022-08-23T16:03:49.115Z"
                   },
@@ -257,8 +291,8 @@ paths:
                     type: string
                   user_id:
                     type: string
-                  workflow_id:
-                    type: string
+                  aligned:
+                    type: boolean
                   created_at:
                     type: string
                   updated_at:
@@ -268,7 +302,7 @@ paths:
                   "id": "9d99e4a3-1820-4893-b5d9-2f7115c490b1",
                   "name": "Example 1 Updated",
                   "user_id": "0",
-                  "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca9",
+                  "aligned": null,
                   "created_at": "2022-08-23T19:36:37.804Z",
                   "updated_at": "2022-08-23T19:36:37.804Z"
                 }
@@ -399,6 +433,8 @@ paths:
                       type: string
                     workflow_id:
                       type: string
+                    aligned:
+                      type: boolean
                     created_at:
                       type: string
                     updated_at:
@@ -410,6 +446,7 @@ paths:
                     "name": "Just An Example",
                     "user_id": "1",
                     "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "aligned": null,
                     "created_at": "2022-08-23T19:28:19.024Z",
                     "updated_at": "2022-08-23T19:28:32.693Z"
                   },
@@ -418,12 +455,26 @@ paths:
                     "name": "Any Example",
                     "user_id": "1",
                     "workflow_id": null,
+                    "aligned": null,
                     "created_at": "2022-08-23T15:13:26.869Z",
                     "updated_at": "2022-08-23T16:03:49.115Z"
                   },
                 ]
         '401':
           description: Unauthorized
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "No diagram with user_id: 5"
+                }
         '500':
           description: Internal Server Error
   /diagrams/workflow/{id}:
@@ -459,6 +510,8 @@ paths:
                       type: string
                     workflow_id:
                       type: string
+                    aligned:
+                      type: boolean
                     created_at:
                       type: string
                     updated_at:
@@ -470,6 +523,7 @@ paths:
                     "name": "Some Example",
                     "user_id": "1",
                     "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "aligned": false,
                     "created_at": "2022-08-23T19:28:19.024Z",
                     "updated_at": "2022-08-23T19:28:32.693Z"
                   },
@@ -478,6 +532,7 @@ paths:
                     "name": "Another Example",
                     "user_id": "2",
                     "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "aligned": null,
                     "created_at": "2022-08-23T15:13:26.869Z",
                     "updated_at": "2022-08-23T16:03:49.115Z"
                   },
@@ -497,6 +552,19 @@ paths:
                 }
         '401':
           description: Unauthorized
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "No diagram with workflow_id: 7be513f4-98dc-43e2-8f3a-66e68a61aca8"
+                }
         '500':
           description: Internal Server Error
   /diagrams/workflow/{id}/latest:
@@ -530,6 +598,8 @@ paths:
                     type: string
                   workflow_id:
                     type: string
+                  aligned:
+                    type: boolean
                   created_at:
                     type: string
                   updated_at:
@@ -540,6 +610,7 @@ paths:
                   "name": "Latest Example",
                   "user_id": "1",
                   "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                  "aligned": null,
                   "created_at": "2022-08-23T19:28:19.024Z",
                   "updated_at": "2022-08-23T19:28:32.693Z"
                 }
@@ -560,6 +631,19 @@ paths:
                 }
         '401':
           description: Unauthorized
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "No diagram with workflow_id: 7be513f4-98dc-43e2-8f3a-66e68a61aca8"
+                }
         '500':
           description: Internal Server Error
   /diagrams/user/{user_id}/workflow/{workflow_id}:
@@ -601,6 +685,8 @@ paths:
                       type: string
                     workflow_id:
                       type: string
+                    aligned:
+                      type: boolean
                     created_at:
                       type: string
                     updated_at:
@@ -612,6 +698,7 @@ paths:
                     "name": "Somewhat of Example",
                     "user_id": "3",
                     "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "aligned": null,
                     "created_at": "2022-08-23T19:28:19.024Z",
                     "updated_at": "2022-08-23T19:28:32.693Z"
                   },
@@ -620,6 +707,7 @@ paths:
                     "name": "Another One",
                     "user_id": "3",
                     "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
+                    "aligned": false,
                     "created_at": "2022-08-23T15:13:26.869Z",
                     "updated_at": "2022-08-23T16:03:49.115Z"
                   },
@@ -639,5 +727,18 @@ paths:
                 }
         '401':
           description: Unauthorized
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "No diagram with workflow_id: 7be513f4-98dc-43e2-8f3a-66e68a61aca8 and user_id: 9"
+                }
         '500':
           description: Internal Server Error
