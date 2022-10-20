@@ -6,7 +6,6 @@ const checkAlignment = async (bp, diagram) => {
     return { id: node.id, next: node.next, type: node.type.toLowerCase() }
   });
   const bpOrdered = bpClean.sort((a, b) =>  a.id > b.id ? -1 : 0);
-  console.log(bpClean)
 
   const bpDiagram = await buildBlueprintFromBpmn(diagram);
 
@@ -36,8 +35,7 @@ const checkAlignment = async (bp, diagram) => {
     return { id, next, type: node.type.toLowerCase() }
   });
   const bpDiagramOrdered = bpDiagramClean.sort((a, b) =>  a.id > b.id ? -1 : 0);
-  console.log(bpDiagramOrdered)
-  console.log(_.isEqual(bpOrdered, bpDiagramOrdered))
+  
   return _.isEqual(bpOrdered, bpDiagramOrdered);
 }
 
