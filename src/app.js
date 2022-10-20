@@ -4,7 +4,8 @@ const cors = require('koa2-cors');
 const jwt = require('koa-jwt');
 const { jwtSecret } = require('./utils/jwtSecret');
 const { logger } = require('./utils/logger');
-const { DiagramCore } = require('@flowbuild/diagrams-core');
+const { DiagramCore, BlueprintCore, 
+  WorkflowCore, DiagramToWorkflowCore } = require('@flowbuild/diagrams-core');
 const { db } = require('./utils/db');
 const freeRouter = require('./routers/freeRouter');
 const diagramsRouter = require('./routers/diagramsRouter');
@@ -13,6 +14,9 @@ const errorHandler = require('./middlewares/errorHandler');
 const { getDiagramCore, setDiagramCore, getBlueprintCore, setBlueprintCore,  getWorkflowCore,
  setWorkflowCore, getDiagramToWorkflowCore, setDiagramToWorkflowCore } = require('./diagramCore');
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
+const rTracer = require('cls-rtracer');
+const emitter = require('../src/utils/eventEmitter');
+const { startEventListener } = require('./services/eventListener');
 
 const startServer = (port) => {
   
@@ -48,6 +52,12 @@ const startServer = (port) => {
     allowedHeaders: ['Content-Type', 'Authorization']
   }
 
+  app.use(rTracer.koaMiddleware({
+    echoHeader: true,
+    useHeader: true,
+    headerName: 'x-event-id'
+  }));
+
   app.use(cors(corsOptions));
   app.use(koaLogger(logger));
 
@@ -65,6 +75,8 @@ const startServer = (port) => {
       middlewares: [jwt({ secret: jwtSecret, debug: true })],
     }).routes()
   );
+  
+  startEventListener(emitter);
 
   return app.listen(port, () => {
     logger.info(`Server running on port: ${port}`)
