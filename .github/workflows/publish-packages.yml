@@ -11,6 +11,7 @@ env:
   POSTGRES_DB: diagrams
   POSTGRES_HOST: localhost
   POSTGRES_POST: 5432
+  FLOWBUILD_URL: http://localhost:3000
 
 jobs:
   test:
