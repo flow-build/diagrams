@@ -69,30 +69,6 @@ describe('POST /diagrams', () => {
     expect(postResponse.body.diagram.workflow_id).toEqual('7be513f4-98dc-43e2-8f3a-66e68a61aca8');
   });
 
-  test('should return 202 with eventListener - flowbuild server down', async () => {
-    const tokenResponse = await request.get('/token');
-    const { jwtToken } = tokenResponse.body;
-
-    nock(process.env.FLOWBUILD_URL)
-      .get('/workflows/8fc66458-1137-4c1a-9aef-5dcdca9a19f6')
-      .replyWithError(`connect ECONNREFUSED ${process.env.FLOWBUILD_URL}`);
-
-    const postResponse = await request.post('/diagrams').type('form')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .send({
-        name: 'Save Diagram With Workflow_id',
-        diagram_xml: diagramSample,
-        workflow_id: '8fc66458-1137-4c1a-9aef-5dcdca9a19f6',
-        user_id: '1'
-      });
-
-    expect(postResponse.status).toBe(202);
-    expect(validate(postResponse.body.diagram.id)).toBeTruthy();
-    expect(postResponse.body.message).toEqual('Diagram Created. Alignment Queued');
-    expect(postResponse.body.diagram.name).toEqual('Save Diagram With Workflow_id');
-    expect(postResponse.body.diagram.workflow_id).toEqual('8fc66458-1137-4c1a-9aef-5dcdca9a19f6');
-  });
-
   test('should return 400 if doesnt have name', async () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
@@ -140,27 +116,6 @@ describe('POST /diagrams', () => {
     expect(postResponse.body.message).toEqual('Invalid Request Body');
     expect(postResponse.body.errors[0].message).toEqual("must have required property 'user_id'");
   });
-
-  test('should return 202 with eventListener - existing workflow_id', async () => {
-    const tokenResponse = await request.get('/token');
-    const { jwtToken } = tokenResponse.body;
-
-    const postResponse = await request.post('/diagrams').type('form')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .send({
-        name: 'Save Diagram With Workflow_id',
-        diagram_xml: diagramSample,
-        workflow_id: '7be513f4-98dc-43e2-8f3a-66e68a61aca8',
-        user_id: '1'
-      });
-
-    expect(postResponse.status).toBe(202);
-    expect(validate(postResponse.body.diagram.id)).toBeTruthy();
-    expect(postResponse.body.message).toEqual('Diagram Created. Alignment Queued');
-    expect(postResponse.body.diagram.name).toEqual('Save Diagram With Workflow_id');
-    expect(postResponse.body.diagram.workflow_id).toEqual('7be513f4-98dc-43e2-8f3a-66e68a61aca8');
-  });
-
 });
 
 describe('GET /diagrams/:id', () => {
@@ -274,15 +229,15 @@ describe('GET /diagrams/workflow/:id/latest', () => {
     expect(getResponse.body.aligned).toBeTruthy();
   });
 
-  test('should return 404 for no diagram with workflow_id', async () => {
+  test('should return 404', async () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
-    const getResponse = await request.get('/diagrams/workflow/ae8e95f6-343a-4c0b-8e1a-5cc122e7d04f/latest')
+    const getResponse = await request.get('/diagrams/workflow/e5c39e03-b5ef-4aae-8339-1323675934cc/latest')
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(getResponse.status).toBe(404);
-    expect(getResponse.body.message).toEqual('No diagram with workflow_id: ae8e95f6-343a-4c0b-8e1a-5cc122e7d04f');
+    expect(getResponse.body.message).toEqual('No diagram with workflow_id: e5c39e03-b5ef-4aae-8339-1323675934cc');
   });
 
   test('should return 400 for invalid id', async () => {
@@ -338,12 +293,12 @@ describe('GET /diagrams/user/:user_id/workflow/:workflow_id', () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
-    const getResponse = await request.get('/diagrams/user/12/workflow/ae8e95f6-343a-4c0b-8e1a-5cc122e7d04f')
+    const getResponse = await request.get('/diagrams/user/12/workflow/f3362fcb-0469-45e7-a32f-8cc91edf7635')
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(getResponse.status).toBe(404);
     expect(getResponse.body.message)
-      .toEqual('No diagram with workflow_id: ae8e95f6-343a-4c0b-8e1a-5cc122e7d04f and user_id: 12');
+      .toEqual('No diagram with workflow_id: f3362fcb-0469-45e7-a32f-8cc91edf7635 and user_id: 12');
   });
 
   test('should return 400 for invalid workflow_id', async () => {
@@ -431,7 +386,7 @@ describe('PATCH /diagrams/:id', () => {
 });
 
 describe('DELETE /diagrams/:id', () => {
-  test('should return 204 deleting diagram without workflow_id', async () => {
+  test('should return 204 deleting diagram', async () => {
     const tokenResponse = await request.get('/token');
     const { jwtToken } = tokenResponse.body;
 
@@ -445,19 +400,6 @@ describe('DELETE /diagrams/:id', () => {
     const { id } = postResponse.body;
 
     const deleteResponse = await request.del(`/diagrams/${id}`)
-      .set('Authorization', `Bearer ${jwtToken}`);
-
-    expect(deleteResponse.status).toBe(204);
-  });
-
-  test('should return 204 deleting diagram with workflow_id', async () => {
-    const tokenResponse = await request.get('/token');
-    const { jwtToken } = tokenResponse.body;
-
-    const getResponse = await request.get('/diagrams/workflow/7be513f4-98dc-43e2-8f3a-66e68a61aca8/latest')
-      .set('Authorization', `Bearer ${jwtToken}`);
-
-    const deleteResponse = await request.del(`/diagrams/${getResponse.body.id}`)
       .set('Authorization', `Bearer ${jwtToken}`);
 
     expect(deleteResponse.status).toBe(204);

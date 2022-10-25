@@ -11,7 +11,6 @@ const getToken = async () => {
       .then((response) => response.data.jwtToken)
       .catch((error) => {
         logger.debug(error.message);
-        return;
       });
     return process.env.TOKEN;
   } else {

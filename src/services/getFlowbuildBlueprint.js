@@ -15,7 +15,6 @@ const getWorkflowFromFlowbuild = async (workflow_id) => {
     .catch((err) => {
       logger.debug(err.message);
       error = err.message;
-      return;
     });
   
   return {
