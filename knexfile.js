@@ -28,7 +28,7 @@ module.exports = {
     connection: {
       host: 'diagrams_db',
       user: 'postgres',
-      password: 'postgres',
+      password: process.env.POSTGRES_PASSWORD || 'postgres',
       database: 'diagrams'
     },
     pool: {
