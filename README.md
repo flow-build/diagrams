@@ -1,4 +1,9 @@
-# Diagrams Manager
+# diagrams
+
+diagrams is a service to manage BPMN diagrams.
+
+![language](https://img.shields.io/github/languages/top/flow-build/diagrams)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=flow-build_diagrams&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=flow-build_diagrams) [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 ## Environment variables
 
