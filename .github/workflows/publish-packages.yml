@@ -33,6 +33,8 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -43,6 +45,11 @@ jobs:
         run: npm run seeds:local
       - name: tests
         run: npm run test
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   
   version: 
     needs: test
@@ -53,7 +60,7 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
-      - name: Get version from github tag before release step
+      - name: Get version from package.json before release step
         id: initversion
         run: echo "version=$(npm run get-version --silent)" >> $GITHUB_OUTPUT
       - name: Release to GitHub
@@ -66,7 +73,7 @@ jobs:
           GIT_COMMITTER_EMAIL: bot.flowbuild@gmail.com
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run: npm run release
-      - name: Get version from github tag after release step
+      - name: Get version from package.json after release step
         id: extractver
         run: echo "version=$(npm run get-version --silent)" >> $GITHUB_OUTPUT
       - name: Create Pull Request with updated package files
