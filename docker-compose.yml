@@ -8,10 +8,10 @@ services:
     env_file:
       - ./.env.docker
     ports:
-      - 5433:5432
+      - 5432:5432
   
   app:
-    image: node:16.15
+    image: node:18.14
     env_file:
       - ./.env.docker
     container_name: diagrams_app

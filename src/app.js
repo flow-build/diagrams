@@ -8,7 +8,7 @@ const { DiagramCore, BlueprintCore,
   WorkflowCore, DiagramToWorkflowCore } = require('@flowbuild/diagrams-core');
 const { db } = require('./utils/db');
 const freeRouter = require('./routers/freeRouter');
-const diagramsRouter = require('./routers/diagramsRouter');
+const mainRouter = require('./routers/mainRouter');
 const serve = require('koa-static');
 const errorHandler = require('./middlewares/errorHandler');
 const { getDiagramCore, setDiagramCore, getBlueprintCore, setBlueprintCore,  getWorkflowCore,
@@ -70,7 +70,7 @@ const startServer = (port) => {
   app.use(freeRouter({ corsOptions }).routes());
 
   app.use(
-    diagramsRouter({
+    mainRouter({
       corsOptions,
       middlewares: [jwt({ secret: jwtSecret, debug: true })],
     }).routes()
