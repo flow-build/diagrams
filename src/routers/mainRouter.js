@@ -47,6 +47,7 @@ module.exports = (opts = {}) => {
   workflow.prefix('/workflow');
   workflow.post('/', workflowValidator.validateBuildDiagram, workflowController.buildDiagram);
   workflow.post('/nobags', workflowValidator.validateBuildDiagram, workflowController.buildDiagramNoBags);
+  workflow.post('/usertask', workflowValidator.validateBuildDiagram, workflowController.buildDiagramUserTask);
 
   router.use(diagrams.routes());
   router.use(workflow.routes());
