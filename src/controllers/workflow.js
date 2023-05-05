@@ -7,9 +7,12 @@ const buildDiagram = async (ctx, next) => {
   logger.debug('buildDiagram controller called');
 
   try {
-    const blueprint = ctx.request.body;
-    blueprint.name = 'Diagram';
-    blueprint.description = 'Building Diagram';
+    const { blueprint_spec, name, description } = ctx.request.body;
+    const blueprint = {
+      blueprint_spec,
+      name: name || 'Diagram',
+      description: description || 'Building Diagram',
+    }
 
     const diagram = await buildXmlDiagram(blueprint);
 
@@ -26,13 +29,13 @@ const buildDiagramNoBags = async (ctx, next) => {
   logger.debug('buildDiagramNoBags controller called');
 
   try {
-    let { blueprint_spec } = ctx.request.body;
+    let { blueprint_spec, name, description } = ctx.request.body;
     blueprint_spec = await removeNodesByCategory(blueprint_spec, 'settobag');
     
     const blueprint = {
       blueprint_spec,
-      name: 'Diagram No Bags',
-      description: 'Building Diagram With No Bags',
+      name: name || 'Diagram No Bags',
+      description: description || 'Building Diagram With No Bags',
     }
 
     const diagram = await buildXmlDiagram(blueprint);
