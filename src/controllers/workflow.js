@@ -53,14 +53,14 @@ const buildDiagramUserTask = async (ctx, next) => {
   logger.debug('buildDiagramUserTask controller called');
 
   try {
-    let { blueprint_spec } = ctx.request.body;
+    let { blueprint_spec, name, description } = ctx.request.body;
     const nodesToPin = ['start', 'usertask', 'flow', 'finish', 'timer'];
     blueprint_spec = await pinNodesByTypeAndCategory(blueprint_spec, nodesToPin);
     
     const blueprint = {
       blueprint_spec,
-      name: 'Diagram UserTask',
-      description: 'Building Diagram UserTask',
+      name: name || 'Diagram UserTask',
+      description: description || 'Building Diagram UserTask',
     }
 
     const diagram = await buildXmlDiagram(blueprint);
