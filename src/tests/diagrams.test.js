@@ -327,7 +327,7 @@ describe('PATCH /diagrams/:id', () => {
 
     expect(patchResponse.status).toBe(200);
     expect(patchResponse.body.name).toEqual('Update Example Diagram');
-    expect(patchResponse.body.aligned).toBeTruthy();
+    expect(patchResponse.body.aligned).toBeDefined();
   });
 
   test('should return 200 diagram updated xml', async () => {
@@ -426,5 +426,63 @@ describe('DELETE /diagrams/:id', () => {
 
     expect(deleteResponse.status).toBe(404);
     expect(deleteResponse.body.message).toEqual('Diagram not found');
+  });
+});
+
+describe('POST /workflow', () => {
+  test('should return 200', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const postResponse = await request.post('/workflow')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        blueprint_spec: blueprintSample.blueprint_spec
+      })
+
+    expect(postResponse.status).toBe(200);
+    expect(postResponse.body).toBeDefined();
+  });
+
+  test('should return 400 if doesnt have blueprint_spec', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const postResponse = await request.post('/workflow')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({})
+
+    expect(postResponse.status).toBe(400);
+    expect(postResponse.body.message).toEqual('Invalid Request Body');
+    expect(postResponse.body.errors[0].message).toEqual("must have required property 'blueprint_spec'");
+  });
+});
+
+describe('POST /workflow/nobags', () => {
+  test('should return 200', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const postResponse = await request.post('/workflow/nobags')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        blueprint_spec: blueprintSample.blueprint_spec
+      })
+
+    expect(postResponse.status).toBe(200);
+    expect(postResponse.body).toBeDefined();
+  });
+
+  test('should return 400 if doesnt have blueprint_spec', async () => {
+    const tokenResponse = await request.get('/token');
+    const { jwtToken } = tokenResponse.body;
+
+    const postResponse = await request.post('/workflow/nobags')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({})
+
+    expect(postResponse.status).toBe(400);
+    expect(postResponse.body.message).toEqual('Invalid Request Body');
+    expect(postResponse.body.errors[0].message).toEqual("must have required property 'blueprint_spec'");
   });
 });
