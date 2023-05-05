@@ -15,9 +15,11 @@ async function removeNodesByCategory(blueprint_spec, category) {
   const filteredNodes = nodes.filter((node) => node?.category?.toLowerCase() !== category);
 
   blueprint.nodes = filteredNodes.map((node) => {
+    // early return finish nodes
     if (!node.next) {
       return node;
     }
+    // check unique nexts of flow nodes and get new next
     if (typeof node.next === 'object') {
       _.uniq(Object.entries(node.next)).map(([nextKey, nextValue]) => {
         node.next[nextKey] = getNextExcludingCategory(nodes, nextValue, category);
