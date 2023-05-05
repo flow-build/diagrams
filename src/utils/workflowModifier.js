@@ -22,7 +22,7 @@ async function removeNodesByCategory(blueprint_spec, category) {
       }
     }
   }
-  blueprint_spec.nodes = blueprint_spec.nodes.filter((node) => node?.category?.toLowerCase() !== 'settobag');
+  blueprint_spec.nodes = blueprint_spec.nodes.filter((node) => node?.category?.toLowerCase() !== category);
   return blueprint_spec;
 }
 
