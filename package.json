@@ -14,7 +14,7 @@
     "migrations:local": "knex --env test --knexfile knexfile.js migrate:latest",
     "seeds:local": "knex --env test --knexfile knexfile.js seed:run",
     "get-version": "echo $npm_package_version",
-    "release": "semantic-release"
+    "release": "semantic-release && echo '::set-output name=tag::$(git describe --abbrev=0 --tags)'"
   },
   "repository": {
     "type": "git",
