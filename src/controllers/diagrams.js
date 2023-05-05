@@ -29,7 +29,7 @@ const saveDiagram = async (ctx, next) => {
 
     const diagram = await diagramCore.saveDiagram({ diagram_xml, name, user_id });
 
-    if (!!workflow_id) {
+    if (workflow_id) {
       logger.info(`Check Alignment event called - Diagram_id: ${diagram.id}`);
       emitter.emit('Check Alignment', { ...ctx.request.body, diagram_id: diagram.id });
   
@@ -214,7 +214,7 @@ const updateDiagram = async (ctx, next) => {
 
     if (diagram.blueprint_id && diagram_xml) {
       const { blueprint_spec } = await blueprintCore.getBlueprintById(diagram.blueprint_id);
-      if (!!blueprint_spec?.nodes) {
+      if (blueprint_spec?.nodes) {
         const blueprint = {
           name: 'Check_Alignment',
           description: 'Check alignmen',

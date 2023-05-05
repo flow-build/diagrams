@@ -18,12 +18,12 @@ function startEventListener(event) {
 
     const workflowFetched = await workflowCore.getWorkflowById(workflow_id);
     
-    if (!!workflowFetched) {        
+    if (workflowFetched) {        
       await diagramToWorkflowCore.saveDiagramToWorkflow({ diagram_id, workflow_id });
 
       const { blueprint_spec } = await blueprintCore.getBlueprintById(workflowFetched.blueprint_id);
       
-      if (!!blueprint_spec?.nodes) {
+      if (blueprint_spec?.nodes) {
         const blueprint = {
           name: 'Check_Alignment',
           description: 'Check Alignment',
@@ -45,7 +45,7 @@ function startEventListener(event) {
             server: `unavailable: ${process.env.FLOWBUILD_URL}`
           });
           return;
-        } else if (!!blueprint) {
+        } else if (blueprint) {
           await blueprintCore.updateBlueprint(workflowFetched.blueprint_id, blueprint.blueprint_spec);
           await workflowCore.updateWorkflow(workflow_id, { 
             server: process.env.FLOWBUILD_URL
@@ -82,7 +82,7 @@ function startEventListener(event) {
           server: `unavailable: ${process.env.FLOWBUILD_URL}`
         });
         return;
-      } else if (!!blueprint) {
+      } else if (blueprint) {
         await blueprintCore.updateBlueprint(blueprintSaved.id, blueprint.blueprint_spec);
 
         const aligned = await checkAlignment(blueprint, diagram_xml);

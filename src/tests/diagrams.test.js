@@ -15,6 +15,7 @@ nock(process.env.FLOWBUILD_URL)
   });
 
 let server;
+let request;
 
 beforeAll(async () => {
   server = startServer(5001);
