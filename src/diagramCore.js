@@ -1,7 +1,7 @@
 let diagramCore;
 let blueprintCore;
 let workflowCore;
-let diagramToWorkflowCore;
+let serverCore;
 
 function getDiagramCore() {
   return diagramCore;
@@ -27,12 +27,12 @@ function setWorkflowCore(workflowCore_) {
   workflowCore = workflowCore_;
 }
 
-function getDiagramToWorkflowCore() {
-  return diagramToWorkflowCore;
+function getServerCore() {
+  return serverCore;
 }
 
-function setDiagramToWorkflowCore(diagramToWorkflowCore_) {
-  diagramToWorkflowCore = diagramToWorkflowCore_;
+function setServerCore(serverCore_) {
+  serverCore = serverCore_;
 }
 
 module.exports = {
@@ -42,6 +42,6 @@ module.exports = {
   setBlueprintCore,
   getWorkflowCore,
   setWorkflowCore,
-  getDiagramToWorkflowCore,
-  setDiagramToWorkflowCore
+  getServerCore,
+  setServerCore,
 };
