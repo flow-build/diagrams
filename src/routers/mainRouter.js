@@ -41,6 +41,11 @@ module.exports = (opts = {}) => {
     diagramsValidator.validateUpdateDiagram,
     diagramsController.updateDiagram
   );
+  diagrams.patch(
+    '/:id/default',
+    baseValidator.validateUUID,
+    diagramsController.setDefaultDiagram
+  );
   diagrams.del('/:id', baseValidator.validateUUID, diagramsController.deleteDiagram);
 
   const workflow = new Router();
@@ -51,6 +56,6 @@ module.exports = (opts = {}) => {
 
   router.use(diagrams.routes());
   router.use(workflow.routes());
-  
-  return router; 
+
+  return router;
 }

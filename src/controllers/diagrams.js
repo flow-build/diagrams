@@ -13,6 +13,7 @@ const serializeDiagramNoXml = (diagram) => {
     id: diagram.id,
     name: diagram.name,
     user_id: diagram.user_id,
+    user_default: diagram.user_default,
     workflow_id: diagram.workflow_id,
     aligned: diagram.aligned,
     created_at: diagram.created_at,
@@ -32,7 +33,7 @@ const saveDiagram = async (ctx, next) => {
     if (workflow_id) {
       logger.info(`Check Alignment event called - Diagram_id: ${diagram.id}`);
       emitter.emit('Check Alignment', { ...ctx.request.body, diagram_id: diagram.id });
-  
+
       ctx.status = 202;
       ctx.body = {
         message: 'Diagram Created. Alignment Queued',
@@ -45,7 +46,7 @@ const saveDiagram = async (ctx, next) => {
 
     ctx.status = 201;
     ctx.body = serializeDiagramNoXml(diagram);
-  } catch(err) {
+  } catch (err) {
     throw new Error(err);
   }
 
@@ -59,8 +60,8 @@ const getAllDiagrams = async (ctx, next) => {
   try {
     const diagrams = await diagramCore.getAllDiagrams();
     ctx.status = 200;
-    ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));  
-  } catch(err) {
+    ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
+  } catch (err) {
     throw new Error(err);
   }
 
@@ -78,7 +79,7 @@ const getDiagramsByUserId = async (ctx, next) => {
 
     if (diagrams.length > 0) {
       ctx.status = 200;
-      ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram)); 
+      ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
     } else {
       ctx.status = 404;
       ctx.body = {
@@ -103,8 +104,8 @@ const getDiagramsByUserAndWF = async (ctx, next) => {
 
     if (diagrams.length > 0) {
       ctx.status = 200;
-      ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram)); 
-      } else {
+      ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
+    } else {
       ctx.status = 404;
       ctx.body = {
         message: `No diagram with workflow_id: ${workflow_id} and user_id: ${user_id}`
@@ -125,7 +126,7 @@ const getDiagramById = async (ctx, next) => {
 
   try {
     const diagram = await diagramCore.getDiagramById(id);
-  
+
     if (diagram) {
       ctx.status = 200;
       ctx.body = serializeDiagramXml(diagram);
@@ -135,14 +136,14 @@ const getDiagramById = async (ctx, next) => {
         message: 'Diagram not found'
       }
     }
-  } catch(err) {
+  } catch (err) {
     throw new Error(err);
   }
 
   return next();
 }
 
-const getDiagramsByWorkflowId = async(ctx, next) => {
+const getDiagramsByWorkflowId = async (ctx, next) => {
   logger.debug('getDiagramsByWorkflowId controller called');
   const diagramCore = getDiagramCore();
 
@@ -160,7 +161,7 @@ const getDiagramsByWorkflowId = async(ctx, next) => {
         message: `No diagram with workflow_id: ${id}`
       }
     }
-  } catch(err) {
+  } catch (err) {
     throw new Error(err);
   }
 
@@ -199,7 +200,7 @@ const updateDiagram = async (ctx, next) => {
 
   const { id } = ctx.params;
   const { diagram_xml } = ctx.request.body;
-  
+
   try {
     const diagram = await diagramCore.getDiagramById(id);
 
@@ -222,11 +223,34 @@ const updateDiagram = async (ctx, next) => {
         }
         aligned = await checkAlignment(blueprint, diagram_xml);
       }
-    } 
-    const diagramUpdated = await diagramCore.updateDiagram(id, {...ctx.request.body, aligned});
+    }
+    const diagramUpdated = await diagramCore.updateDiagram(id, { ...ctx.request.body, aligned });
     ctx.status = 200;
     ctx.body = serializeDiagramNoXml(diagramUpdated)
-  } catch(err) {
+  } catch (err) {
+    throw new Error(err);
+  }
+
+  return next();
+}
+
+const setDefaultDiagram = async (ctx, next) => {
+  logger.debug('setDefaultDiagram controller called');
+  const diagramCore = getDiagramCore();
+
+  const { id } = ctx.params;
+  try {
+    const diagram = await diagramCore.setAsDefault(id);
+    if (!diagram) {
+      ctx.status = 404;
+      ctx.body = {
+        message: 'Diagram not found'
+      }
+      return;
+    }
+    ctx.status = 200;
+    ctx.body = serializeDiagramNoXml(diagram)
+  } catch (err) {
     throw new Error(err);
   }
 
@@ -253,14 +277,14 @@ const deleteDiagram = async (ctx, next) => {
     }
 
     const workflowsByDiagramId = await diagramToWorkflowCore.getWorkflowIdsByDiagramId(id);
-    
+
     if (workflowsByDiagramId.length > 0) {
       await diagramToWorkflowCore.deleteByDiagramId(id);
     }
     await diagramCore.deleteDiagram(id);
 
     ctx.status = 204;
-  } catch(err) {
+  } catch (err) {
     throw new Error(err);
   }
 
@@ -276,5 +300,6 @@ module.exports = {
   getDiagramsByWorkflowId,
   getLatestDiagramByWorkflowId,
   updateDiagram,
-  deleteDiagram
+  deleteDiagram,
+  setDefaultDiagram,
 }
