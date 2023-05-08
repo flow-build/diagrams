@@ -13,6 +13,7 @@ module.exports = (opts = {}) => {
 
   router.get('/token', tokenController.getToken);
   router.get('/', healthController.healtchCheck);
+  router.get('/healthcheck', healthController.healtchCheck);
   router.get('/swagger', (ctx) => {
     ctx.type = 'text/html; charset=utf-8'
     ctx.body = fs.createReadStream('public/swagger-ui/index.html')

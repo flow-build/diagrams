@@ -13,7 +13,7 @@ describe('Test removeNodesByCategory setToBag', () => {
 
 describe('Test pinNodesByTypeAndCategory', () => {
   test('should return blueprint_spec with nodes start, userTask, timer, flow and finish', async () => {
-    const nodesToPin = ['start', 'usertask', 'flow', 'finish', 'timer'];
+    const nodesToPin = ['start', 'usertask', 'flow', 'finish', 'timer', 'event'];
     const blueprint_spec = await pinNodesByTypeAndCategory(blueprintSample.blueprint_spec, nodesToPin);
     expect(blueprint_spec).toBeDefined();
     expect(blueprint_spec.nodes).toHaveLength(9);
