@@ -18,7 +18,7 @@ module.exports = (opts = {}) => {
 
   router.use(cors(opts.corsOptions));
 
-  const diagrams = Router();
+  const diagrams = new Router();
   diagrams.prefix('/diagrams');
   diagrams.get(
     '/user/:user_id/workflow/:workflow_id',
@@ -43,10 +43,11 @@ module.exports = (opts = {}) => {
   );
   diagrams.del('/:id', baseValidator.validateUUID, diagramsController.deleteDiagram);
 
-  const workflow = Router();
+  const workflow = new Router();
   workflow.prefix('/workflow');
   workflow.post('/', workflowValidator.validateBuildDiagram, workflowController.buildDiagram);
   workflow.post('/nobags', workflowValidator.validateBuildDiagram, workflowController.buildDiagramNoBags);
+  workflow.post('/usertask', workflowValidator.validateBuildDiagram, workflowController.buildDiagramUserTask);
 
   router.use(diagrams.routes());
   router.use(workflow.routes());
