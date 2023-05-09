@@ -2,8 +2,8 @@ const Router = require('@koa/router');
 const bodyParser = require('koa-bodyparser');
 const cors = require('koa2-cors');
 const baseValidator = require('../validators/base');
-const diagramsValidator = require('../validators/diagrams');
-const diagramsController = require('../controllers/diagrams');
+const { diagramsValidator, workflowValidator } = require('../validators/index');
+const { diagramsController, workflowController } = require('../controllers/index');
 
 module.exports = (opts = {}) => {
   const router = new Router();
@@ -18,7 +18,7 @@ module.exports = (opts = {}) => {
 
   router.use(cors(opts.corsOptions));
 
-  const diagrams = Router();
+  const diagrams = new Router();
   diagrams.prefix('/diagrams');
   diagrams.get(
     '/user/:user_id/workflow/:workflow_id',
@@ -43,7 +43,14 @@ module.exports = (opts = {}) => {
   );
   diagrams.del('/:id', baseValidator.validateUUID, diagramsController.deleteDiagram);
 
+  const workflow = new Router();
+  workflow.prefix('/workflow');
+  workflow.post('/', workflowValidator.validateBuildDiagram, workflowController.buildDiagram);
+  workflow.post('/nobags', workflowValidator.validateBuildDiagram, workflowController.buildDiagramNoBags);
+  workflow.post('/usertask', workflowValidator.validateBuildDiagram, workflowController.buildDiagramUserTask);
+
   router.use(diagrams.routes());
+  router.use(workflow.routes());
   
   return router; 
 }

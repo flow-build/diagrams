@@ -9,7 +9,7 @@ const validateBody = (schema) => {
   return async (ctx, next) => {
     logger.debug('validateBody called');
 
-    const ajv = new Ajv({ allErrors: true });
+    const ajv = new Ajv({ allErrors: true, allowUnionTypes: true });
     addFormats(ajv);
     addKeywords(ajv);
 
