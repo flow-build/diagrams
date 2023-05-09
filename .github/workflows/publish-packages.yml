@@ -78,7 +78,7 @@ jobs:
           GIT_COMMITTER_NAME: bot-flowbuilld
           GIT_COMMITTER_EMAIL: bot.flowbuild@gmail.com
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        run: npm run release && echo "::set-output name=tag::$(git describe --abbrev=0 --tags)" >> $GITHUB_ENV
+        run: npm run release && echo "tag=$(git describe --abbrev=0 --tags)" >> $GITHUB_OUTPUT
       - name: Get version from package.json after release step
         id: extractver
         run: echo "version=$(npm run get-version --silent)" >> $GITHUB_OUTPUT
@@ -94,7 +94,7 @@ jobs:
           body: 'Version bump in package.json and package-lock.json for release [${{ steps.extractver.outputs.version }}](https://github.com/${{github.repository}}/releases/tag/v${{ steps.extractver.outputs.version }})'
           branch: version-bump/${{ steps.extractver.outputs.version }}
     outputs:
-      version: ${{ env.tag }}
+      version: ${{ steps.release.outputs.tag }}
 
   build:
     name: 'Build image on DockerHub'
