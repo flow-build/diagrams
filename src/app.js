@@ -5,14 +5,14 @@ const jwt = require('koa-jwt');
 const { jwtSecret } = require('./utils/jwtSecret');
 const { logger } = require('./utils/logger');
 const { DiagramCore, BlueprintCore, 
-  WorkflowCore, DiagramToWorkflowCore } = require('@flowbuild/diagrams-core');
+  WorkflowCore, ServerCore } = require('@flowbuild/diagrams-core');
 const { db } = require('./utils/db');
 const freeRouter = require('./routers/freeRouter');
 const mainRouter = require('./routers/mainRouter');
 const serve = require('koa-static');
 const errorHandler = require('./middlewares/errorHandler');
 const { getDiagramCore, setDiagramCore, getBlueprintCore, setBlueprintCore,  getWorkflowCore,
- setWorkflowCore, getDiagramToWorkflowCore, setDiagramToWorkflowCore } = require('./diagramCore');
+  setWorkflowCore, getServerCore, setServerCore } = require('./diagramCore');
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
 const rTracer = require('cls-rtracer');
 const emitter = require('../src/utils/eventEmitter');
@@ -38,10 +38,10 @@ const startServer = (port) => {
     setWorkflowCore(workflowCore);
   }
 
-  let diagramToWorkflowCore = getDiagramToWorkflowCore();
-  if (!diagramToWorkflowCore) {
-    diagramToWorkflowCore = new DiagramToWorkflowCore(db);
-    setDiagramToWorkflowCore(diagramToWorkflowCore);
+  let serverCore = getServerCore();
+  if (!serverCore) {
+    serverCore = new ServerCore(db);
+    setServerCore(serverCore);
   }
 
   const app = new Koa();
