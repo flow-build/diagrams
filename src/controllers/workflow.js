@@ -54,7 +54,7 @@ const buildDiagramUserTask = async (ctx, next) => {
 
   try {
     let { blueprint_spec, name, description } = ctx.request.body;
-    const nodesToPin = ['start', 'usertask', 'flow', 'finish', 'timer'];
+    const nodesToPin = ['start', 'usertask', 'flow', 'finish', 'timer', 'event'];
     blueprint_spec = await pinNodesByTypeAndCategory(blueprint_spec, nodesToPin);
     
     const blueprint = {

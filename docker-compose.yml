@@ -11,7 +11,9 @@ services:
       - 5432:5432
   
   app:
-    image: node:18.14
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     env_file:
       - ./.env.docker
     container_name: diagrams_app
@@ -24,4 +26,10 @@ services:
       - .:/usr/app
       - /usr/app/node_modules
     working_dir: /usr/app
-    command: bash -c "npm install && npm run migrations && npm run seeds && npm start"
+    command: bash -c "npm run migrations && npm run seeds && npm start"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:5000/healthcheck"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
