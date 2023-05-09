@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { v1: uuid, validate } = require('uuid');
+const { validate } = require('uuid');
 const supertest = require('supertest');
 const { startServer } = require('../app');
 const { db } = require('../utils/db');

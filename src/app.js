@@ -12,7 +12,7 @@ const mainRouter = require('./routers/mainRouter');
 const serve = require('koa-static');
 const errorHandler = require('./middlewares/errorHandler');
 const { getDiagramCore, setDiagramCore, getBlueprintCore, setBlueprintCore,  getWorkflowCore,
- setWorkflowCore, getServerCore, setServerCore } = require('./diagramCore');
+  setWorkflowCore, getServerCore, setServerCore } = require('./diagramCore');
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
 const rTracer = require('cls-rtracer');
 const emitter = require('../src/utils/eventEmitter');

@@ -9,8 +9,8 @@ const getWorkflowFromFlowbuild = async (workflow_id) => {
   let error = null;
 
   const blueprint = await axios.get(`${process.env.FLOWBUILD_URL}/workflows/${workflow_id}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
     .then((response) => response.data)
     .catch((err) => {
       logger.debug(err.message);

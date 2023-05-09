@@ -104,7 +104,7 @@ const getDiagramsByUserAndWF = async (ctx, next) => {
     if (diagrams.length > 0) {
       ctx.status = 200;
       ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram)); 
-      } else {
+    } else {
       ctx.status = 404;
       ctx.body = {
         message: `No diagram with workflow_id: ${workflow_id} and user_id: ${user_id}`
