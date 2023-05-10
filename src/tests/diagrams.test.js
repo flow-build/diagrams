@@ -75,6 +75,30 @@ describe('POST /workflow', () => {
   });
 });
 
+describe('POST /default', () => {
+  test('should return 200', async () => {
+    const id = 'da55b972-74d4-4156-bf4f-75ca31b5b52f';
+    const { rows } = await db.raw(`
+    insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
+    values (
+      '${id}',
+      'test',
+      '<book>Test</book>',
+      '7ec419de-e9b2-4f19-b6d6-5f17f6061ab8',
+      false,
+      false,
+      false
+    ) returning *`)
+
+    expect(rows[0].user_default).toBe(false);
+    const postResponse = await request.patch(`/diagrams/${id}/default`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(postResponse.status).toBe(200);
+    expect(postResponse.body.user_default).toBe(true);
+  });
+});
+
 describe('POST /workflow/nobags', () => {
   test('should return 200', async () => {
     const postResponse = await request.post('/workflow/nobags')
