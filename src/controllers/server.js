@@ -7,14 +7,7 @@ const saveServer = async (ctx, next) => {
   const serverCore = getServerCore();
 
   try {
-    const { url, namespace, brokerUrl } = ctx.request.body;
-    const serverData = {
-      url,
-      config: {
-        namespace,
-        brokerUrl
-      }
-    }
+    const serverData = ctx.request.body;
 
     const server = await serverCore.saveServer(serverData);
 
@@ -27,6 +20,23 @@ const saveServer = async (ctx, next) => {
   return next();
 }
 
+const getAllServers = async (ctx, next) => {
+  logger.debug('getAllServers controller called');
+  const serverCore = getServerCore();
+
+  try {
+    const servers = await serverCore.getAllServers();
+
+    ctx.status = 200; 
+    ctx.body = servers;
+  } catch (err) {
+    throw new Error(err);
+  }
+
+  return next();
+}
+
 module.exports = {
   saveServer,
+  getAllServers,
 }
