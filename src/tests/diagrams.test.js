@@ -12,7 +12,7 @@ let token;
 beforeAll(async () => {
   server = startServer(5001);
   request = supertest(server);
-  const tokenResponse = await request.get('/token');
+  const tokenResponse = await request.post('/token').send({ user_id: 'e8089f89-2af7-433f-86de-993e4374c581' });
   token = tokenResponse.body.jwtToken;
   return await db.raw('START TRANSACTION');
 });
