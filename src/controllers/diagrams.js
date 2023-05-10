@@ -26,9 +26,9 @@ const saveDiagram = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   try {
-    const { diagram_xml, name, user_id, workflow_id } = ctx.request.body;
+    const { diagram_xml, name, user_id, user_default, workflow_id } = ctx.request.body;
 
-    const diagram = await diagramCore.saveDiagram({ diagram_xml, name, user_id });
+    const diagram = await diagramCore.saveDiagram({ diagram_xml, name, user_id, user_default });
 
     if (workflow_id) {
       logger.info(`Check Alignment event called - Diagram_id: ${diagram.id}`);

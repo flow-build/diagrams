@@ -6,8 +6,9 @@ const validateSaveDiagram = validateBody({
   properties: {
     name: { type: 'string' },
     user_id: { type: 'string' },
+    user_default: { type: 'boolean' },
     workflow_id: { type: 'string', format: 'uuid' },
-    diagram_xml: { 
+    diagram_xml: {
       type: 'string',
       allOf: [
         {
@@ -28,7 +29,7 @@ const validateUpdateDiagram = validateBody({
   type: 'object',
   properties: {
     name: { type: 'string' },
-    diagram_xml: { 
+    diagram_xml: {
       type: 'string',
       allOf: [
         {
