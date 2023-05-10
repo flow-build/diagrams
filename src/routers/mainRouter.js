@@ -2,8 +2,8 @@ const Router = require('@koa/router');
 const bodyParser = require('koa-bodyparser');
 const cors = require('koa2-cors');
 const baseValidator = require('../validators/base');
-const { diagramsValidator, workflowValidator } = require('../validators/index');
-const { diagramsController, workflowController } = require('../controllers/index');
+const { diagramsValidator, workflowValidator, serverValidator } = require('../validators/index');
+const { diagramsController, workflowController, serverController } = require('../controllers/index');
 
 module.exports = (opts = {}) => {
   const router = new Router();
@@ -49,8 +49,13 @@ module.exports = (opts = {}) => {
   workflow.post('/nobags', workflowValidator.validateBuildDiagram, workflowController.buildDiagramNoBags);
   workflow.post('/usertask', workflowValidator.validateBuildDiagram, workflowController.buildDiagramUserTask);
 
+  const server = new Router();
+  server.prefix('/server');
+  server.post('/', serverValidator.validateServer, serverController.saveServer);
+
   router.use(diagrams.routes());
   router.use(workflow.routes());
+  router.use(server.routes());
   
   return router; 
 }

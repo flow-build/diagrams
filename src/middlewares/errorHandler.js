@@ -15,8 +15,8 @@ module.exports = async (ctx, next) => {
     } else {
       ctx.status = err.status || err.statusCode || 500;
       ctx.body = { 
-      message: err.message || 'Internal Server Error'
-    }
+        message: err.message || 'Internal Server Error'
+      }
     
     }
     ctx.app.emit('error', err, ctx);
