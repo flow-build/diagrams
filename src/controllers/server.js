@@ -7,14 +7,7 @@ const saveServer = async (ctx, next) => {
   const serverCore = getServerCore();
 
   try {
-    const { url, namespace, brokerUrl } = ctx.request.body;
-    const serverData = {
-      url,
-      config: {
-        namespace,
-        brokerUrl
-      }
-    }
+    const serverData = ctx.request.body;
 
     const server = await serverCore.saveServer(serverData);
 
