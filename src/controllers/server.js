@@ -27,6 +27,23 @@ const saveServer = async (ctx, next) => {
   return next();
 }
 
+const getAllServers = async (ctx, next) => {
+  logger.debug('getAllServers controller called');
+  const serverCore = getServerCore();
+
+  try {
+    const servers = await serverCore.getAllServers();
+
+    ctx.status = 200; 
+    ctx.body = servers;
+  } catch (err) {
+    throw new Error(err);
+  }
+
+  return next();
+}
+
 module.exports = {
   saveServer,
+  getAllServers,
 }
