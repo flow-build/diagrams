@@ -1,12 +1,7 @@
 require('dotenv').config();
 const emitter = require('../utils/eventEmitter');
 const { logger } = require('../utils/logger');
-const {
-  getDiagramCore,
-  getBlueprintCore,
-  getDiagramToWorkflowCore,
-} = require('../diagramCore');
-const { checkAlignment } = require('../utils/alignment');
+const { getDiagramCore } = require('../diagramCore');
 
 const serializeDiagramXml = (diagram) => {
   return diagram.diagram_xml;
@@ -121,59 +116,6 @@ const getAllDiagrams = async (ctx, next) => {
   return next();
 };
 
-const getDiagramsByUserId = async (ctx, next) => {
-  logger.debug('getDiagramsByUserId controller called');
-  const diagramCore = getDiagramCore();
-
-  const user_id = ctx.params.id;
-
-  try {
-    const diagrams = await diagramCore.getDiagramsByUserId(user_id);
-
-    if (diagrams.length > 0) {
-      ctx.status = 200;
-      ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
-    } else {
-      ctx.status = 404;
-      ctx.body = {
-        message: `No diagram with user_id: ${user_id}`,
-      };
-    }
-  } catch (err) {
-    throw new Error(err);
-  }
-
-  return next();
-};
-
-const getDiagramsByUserAndWF = async (ctx, next) => {
-  logger.debug('getDiagramsByUserAndWF controller called');
-  const diagramCore = getDiagramCore();
-
-  const { user_id, workflow_id } = ctx.params;
-
-  try {
-    const diagrams = await diagramCore.getDiagramsByUserAndWF(
-      user_id,
-      workflow_id
-    );
-
-    if (diagrams.length > 0) {
-      ctx.status = 200;
-      ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
-    } else {
-      ctx.status = 404;
-      ctx.body = {
-        message: `No diagram with workflow_id: ${workflow_id} and user_id: ${user_id}`,
-      };
-    }
-  } catch (err) {
-    throw new Error(err);
-  }
-
-  return next();
-};
-
 const getDiagramById = async (ctx, next) => {
   logger.debug('getDiagramById controller called');
   const diagramCore = getDiagramCore();
@@ -183,46 +125,18 @@ const getDiagramById = async (ctx, next) => {
 
   try {
     const diagram = await diagramCore.getDiagramById(id);
-    const is_forbidden = forbidDiagramForUser(user_id, diagram, 'read');
-    if (is_forbidden) {
-      return forbiddenResponse(ctx, next);
-    }
 
     if (diagram) {
+      const is_forbidden = forbidDiagramForUser(user_id, diagram, 'read');
+      if (is_forbidden) {
+        return forbiddenResponse(ctx, next);
+      }
       ctx.status = 200;
       ctx.body = serializeDiagramXml(diagram);
     } else {
       ctx.status = 404;
       ctx.body = {
         message: 'Diagram not found',
-      };
-    }
-  } catch (err) {
-    throw new Error(err);
-  }
-
-  return next();
-};
-
-const getDiagramsByWorkflowId = async (ctx, next) => {
-  logger.debug('getDiagramsByWorkflowId controller called');
-  const diagramCore = getDiagramCore();
-
-  const { id } = ctx.params;
-  const user_id = ctx.request.user_data?.userId;
-
-  try {
-    const diagrams = await diagramCore.getDiagramsByWorkflowId(id);
-    const filteredDiagrams = filterDiagrams(user_id, diagrams);
-    if (filteredDiagrams.length > 0) {
-      ctx.status = 200;
-      ctx.body = filteredDiagrams.map((diagram) =>
-        serializeDiagramNoXml(diagram)
-      );
-    } else {
-      ctx.status = 404;
-      ctx.body = {
-        message: `No diagram with workflow_id: ${id}`,
       };
     }
   } catch (err) {
@@ -265,18 +179,13 @@ const getLatestDiagramByWorkflowId = async (ctx, next) => {
 const updateDiagram = async (ctx, next) => {
   logger.debug('updateDiagram controller called');
   const diagramCore = getDiagramCore();
-  const blueprintCore = getBlueprintCore();
 
   const { id } = ctx.params;
-  const { xml: diagram_xml } = ctx.request.body;
+  const { xml: diagram_xml, name, isPublic: is_public } = ctx.request.body;
   const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagram = await diagramCore.getDiagramById(id);
-    const is_forbidden = forbidDiagramForUser(user_id, diagram);
-    if (is_forbidden) {
-      return forbiddenResponse(ctx, next);
-    }
 
     if (!diagram) {
       ctx.status = 404;
@@ -285,24 +194,34 @@ const updateDiagram = async (ctx, next) => {
       };
       return;
     }
-    let aligned;
 
-    if (diagram.blueprint_id && diagram_xml) {
-      const { blueprint_spec } = await blueprintCore.getBlueprintById(
-        diagram.blueprint_id
-      );
-      if (blueprint_spec?.nodes) {
-        const blueprint = {
-          name: 'Check_Alignment',
-          description: 'Check alignmen',
-          blueprint_spec,
-        };
-        aligned = await checkAlignment(blueprint, diagram_xml);
-      }
+    const is_forbidden = forbidDiagramForUser(user_id, diagram);
+    if (is_forbidden) {
+      return forbiddenResponse(ctx, next);
     }
+
+    // temporarilly disabled
+    // let aligned;
+
+    // if (diagram.blueprint_id && diagram_xml) {
+    //   const { blueprint_spec } = await blueprintCore.getBlueprintById(
+    //     diagram.blueprint_id
+    //   );
+    //   if (blueprint_spec?.nodes) {
+    //     const blueprint = {
+    //       name: 'Check_Alignment',
+    //       description: 'Check alignmen',
+    //       blueprint_spec,
+    //     };
+    //     aligned = await checkAlignment(blueprint, diagram_xml);
+    //   }
+    // }
+
     const diagramUpdated = await diagramCore.updateDiagram(id, {
-      ...ctx.request.body,
-      aligned,
+      diagram_xml,
+      name,
+      is_public,
+      // aligned,
     });
     ctx.status = 200;
     ctx.body = serializeDiagramNoXml(diagramUpdated);
@@ -346,17 +265,12 @@ const setDefaultDiagram = async (ctx, next) => {
 const deleteDiagram = async (ctx, next) => {
   logger.debug('deleteDiagram controller called');
   const diagramCore = getDiagramCore();
-  const diagramToWorkflowCore = getDiagramToWorkflowCore();
 
   const { id } = ctx.params;
   const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagram = await diagramCore.getDiagramById(id);
-    const is_forbidden = forbidDiagramForUser(user_id, diagram);
-    if (is_forbidden) {
-      return forbiddenResponse(ctx, next);
-    }
 
     if (!diagram) {
       ctx.status = 404;
@@ -366,12 +280,11 @@ const deleteDiagram = async (ctx, next) => {
       return next();
     }
 
-    const workflowsByDiagramId =
-      await diagramToWorkflowCore.getWorkflowIdsByDiagramId(id);
-
-    if (workflowsByDiagramId.length > 0) {
-      await diagramToWorkflowCore.deleteByDiagramId(id);
+    const is_forbidden = forbidDiagramForUser(user_id, diagram);
+    if (is_forbidden) {
+      return forbiddenResponse(ctx, next);
     }
+
     await diagramCore.deleteDiagram(id);
 
     ctx.status = 204;
@@ -385,10 +298,7 @@ const deleteDiagram = async (ctx, next) => {
 module.exports = {
   saveDiagram,
   getAllDiagrams,
-  getDiagramsByUserId,
-  getDiagramsByUserAndWF,
   getDiagramById,
-  getDiagramsByWorkflowId,
   getLatestDiagramByWorkflowId,
   updateDiagram,
   deleteDiagram,

@@ -3,12 +3,12 @@ const bodyParser = require('koa-bodyparser');
 const cors = require('koa2-cors');
 const baseValidator = require('../validators/base');
 const {
-  diagramsValidator,
+  diagramValidator,
   workflowValidator,
   serverValidator,
 } = require('../validators/index');
 const {
-  diagramsController,
+  diagramController,
   workflowController,
   serverController,
 } = require('../controllers/index');
@@ -28,50 +28,39 @@ module.exports = (opts = {}) => {
 
   router.use(cors(opts.corsOptions));
 
-  const diagrams = new Router();
-  diagrams.prefix('/diagram');
-  diagrams.get(
-    '/user/:user_id/workflow/:workflow_id',
-    baseValidator.validateUUID,
-    diagramsController.getDiagramsByUserAndWF
-  );
-  diagrams.get('/user/:id', diagramsController.getDiagramsByUserId);
-  diagrams.get(
+  const diagram = new Router();
+  diagram.prefix('/diagram');
+  diagram.get(
     '/workflow/:id/latest',
     baseValidator.validateUUID,
-    diagramsController.getLatestDiagramByWorkflowId
+    diagramController.getLatestDiagramByWorkflowId
   );
-  diagrams.get(
-    '/workflow/:id',
-    baseValidator.validateUUID,
-    diagramsController.getDiagramsByWorkflowId
-  );
-  diagrams.get(
+  diagram.get(
     '/:id',
     baseValidator.validateUUID,
-    diagramsController.getDiagramById
+    diagramController.getDiagramById
   );
-  diagrams.get('/', diagramsController.getAllDiagrams);
-  diagrams.post(
+  diagram.get('/', diagramController.getAllDiagrams);
+  diagram.post(
     '/',
-    diagramsValidator.validateSaveDiagram,
-    diagramsController.saveDiagram
+    diagramValidator.validateSaveDiagram,
+    diagramController.saveDiagram
   );
-  diagrams.patch(
+  diagram.patch(
     '/:id',
     baseValidator.validateUUID,
-    diagramsValidator.validateUpdateDiagram,
-    diagramsController.updateDiagram
+    diagramValidator.validateUpdateDiagram,
+    diagramController.updateDiagram
   );
-  diagrams.patch(
+  diagram.patch(
     '/:id/default',
     baseValidator.validateUUID,
-    diagramsController.setDefaultDiagram
+    diagramController.setDefaultDiagram
   );
-  diagrams.del(
+  diagram.del(
     '/:id',
     baseValidator.validateUUID,
-    diagramsController.deleteDiagram
+    diagramController.deleteDiagram
   );
 
   const workflow = new Router();
@@ -107,7 +96,7 @@ module.exports = (opts = {}) => {
   );
   server.post('/', serverValidator.validateServer, serverController.saveServer);
 
-  router.use(diagrams.routes());
+  router.use(diagram.routes());
   router.use(workflow.routes());
   router.use(server.routes());
 
