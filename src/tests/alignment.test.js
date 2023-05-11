@@ -1,5 +1,11 @@
-const diagramSample = require('fs').readFileSync('./src/samples/diagram.xml', 'utf8');
-const diagramMisaligned = require('fs').readFileSync('./src/samples/diagramMisaligned.xml', 'utf8');
+const diagramSample = require('fs').readFileSync(
+  './src/samples/diagram.xml',
+  'utf8'
+);
+const diagramMisaligned = require('fs').readFileSync(
+  './src/samples/diagramMisaligned.xml',
+  'utf8'
+);
 const blueprintSample = require('../samples/blueprint');
 const { checkAlignment } = require('../utils/alignment');
 

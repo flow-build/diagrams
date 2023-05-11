@@ -7,9 +7,9 @@ const validateServer = validateBody({
     url: { type: 'string' },
     namespace: { type: 'string' },
     config: { type: 'object' },
-  }
+  },
 });
 
 module.exports = {
   validateServer,
-}
+};

@@ -12,7 +12,9 @@ let token;
 beforeAll(async () => {
   server = startServer(5001);
   request = supertest(server);
-  const tokenResponse = await request.post('/token').send({ user_id: 'e8089f89-2af7-433f-86de-993e4374c581' });
+  const tokenResponse = await request
+    .post('/token')
+    .send({ user_id: 'e8089f89-2af7-433f-86de-993e4374c581' });
   token = tokenResponse.body.jwtToken;
   return await db.raw('START TRANSACTION');
 });
@@ -24,13 +26,14 @@ afterAll(async () => {
 
 describe('POST /server', () => {
   test('should return 201 for server saved', async () => {
-    const response = await request.post('/server')
+    const response = await request
+      .post('/server')
       .set('Authorization', `Bearer ${token}`)
       .send({
         url: 'https://flowbuild-dev.com',
         namespace: 'develop',
       });
-    console.log(response.body)
+    console.log(response.body);
     expect(response.status).toBe(201);
     expect(validate(response.body.id)).toBeTruthy();
     expect(response.body.url).toEqual('https://flowbuild-dev.com');
@@ -38,7 +41,8 @@ describe('POST /server', () => {
   });
 
   test('should return 400 if doesnt have url', async () => {
-    const response = await request.post('/server')
+    const response = await request
+      .post('/server')
       .set('Authorization', `Bearer ${token}`)
       .send({
         namespace: 'localhost',
@@ -46,13 +50,16 @@ describe('POST /server', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toEqual('Invalid Request Body');
-    expect(response.body.errors[0].message).toEqual("must have required property 'url'");
+    expect(response.body.errors[0].message).toEqual(
+      "must have required property 'url'"
+    );
   });
 });
 
 describe('GET /server', () => {
   test('should return 200 with all servers', async () => {
-    const response = await request.get('/server')
+    const response = await request
+      .get('/server')
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -65,24 +72,28 @@ describe('GET /server', () => {
 
 describe('POST /workflow', () => {
   test('should return 200', async () => {
-    const postResponse = await request.post('/workflow')
+    const postResponse = await request
+      .post('/workflow')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        blueprint_spec: blueprintSample.blueprint_spec
-      })
+        blueprint_spec: blueprintSample.blueprint_spec,
+      });
 
     expect(postResponse.status).toBe(200);
     expect(postResponse.body).toBeDefined();
   });
 
   test('should return 400 if doesnt have blueprint_spec', async () => {
-    const postResponse = await request.post('/workflow')
+    const postResponse = await request
+      .post('/workflow')
       .set('Authorization', `Bearer ${token}`)
-      .send({})
+      .send({});
 
     expect(postResponse.status).toBe(400);
     expect(postResponse.body.message).toEqual('Invalid Request Body');
-    expect(postResponse.body.errors[0].message).toEqual("must have required property 'blueprint_spec'");
+    expect(postResponse.body.errors[0].message).toEqual(
+      "must have required property 'blueprint_spec'"
+    );
   });
 });
 
@@ -99,10 +110,11 @@ describe('POST /default', () => {
       false,
       false,
       false
-    ) returning *`)
+    ) returning *`);
 
     expect(rows[0].user_default).toBe(false);
-    const postResponse = await request.patch(`/diagrams/${id}/default`)
+    const postResponse = await request
+      .patch(`/diagrams/${id}/default`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(postResponse.status).toBe(200);
@@ -112,46 +124,54 @@ describe('POST /default', () => {
 
 describe('POST /workflow/nobags', () => {
   test('should return 200', async () => {
-    const postResponse = await request.post('/workflow/nobags')
+    const postResponse = await request
+      .post('/workflow/nobags')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        blueprint_spec: blueprintSample.blueprint_spec
-      })
+        blueprint_spec: blueprintSample.blueprint_spec,
+      });
 
     expect(postResponse.status).toBe(200);
     expect(postResponse.body).toBeDefined();
   });
 
   test('should return 400 if doesnt have blueprint_spec', async () => {
-    const postResponse = await request.post('/workflow/nobags')
+    const postResponse = await request
+      .post('/workflow/nobags')
       .set('Authorization', `Bearer ${token}`)
-      .send({})
+      .send({});
 
     expect(postResponse.status).toBe(400);
     expect(postResponse.body.message).toEqual('Invalid Request Body');
-    expect(postResponse.body.errors[0].message).toEqual("must have required property 'blueprint_spec'");
+    expect(postResponse.body.errors[0].message).toEqual(
+      "must have required property 'blueprint_spec'"
+    );
   });
 });
 
 describe('POST /workflow/usertask', () => {
   test('should return 200', async () => {
-    const postResponse = await request.post('/workflow/usertask')
+    const postResponse = await request
+      .post('/workflow/usertask')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        blueprint_spec: blueprintSample.blueprint_spec
-      })
+        blueprint_spec: blueprintSample.blueprint_spec,
+      });
 
     expect(postResponse.status).toBe(200);
     expect(postResponse.body).toBeDefined();
   });
 
   test('should return 400 if doesnt have blueprint_spec', async () => {
-    const postResponse = await request.post('/workflow/usertask')
+    const postResponse = await request
+      .post('/workflow/usertask')
       .set('Authorization', `Bearer ${token}`)
-      .send({})
+      .send({});
 
     expect(postResponse.status).toBe(400);
     expect(postResponse.body.message).toEqual('Invalid Request Body');
-    expect(postResponse.body.errors[0].message).toEqual("must have required property 'blueprint_spec'");
+    expect(postResponse.body.errors[0].message).toEqual(
+      "must have required property 'blueprint_spec'"
+    );
   });
 });

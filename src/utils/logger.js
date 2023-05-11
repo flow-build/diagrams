@@ -6,18 +6,21 @@ const logger = createLogger({
   format: format.combine(
     format.colorize(),
     format.timestamp(),
-    format.label({ label: 'Diagrams'}),
-    format.printf((info) => `${info.timestamp} ${info.level}: [${info.label}] ${info.message}`)
+    format.label({ label: 'Diagrams' }),
+    format.printf(
+      (info) =>
+        `${info.timestamp} ${info.level}: [${info.label}] ${info.message}`
+    )
   ),
-  transports: [ new transports.Console() ],
+  transports: [new transports.Console()],
   exceptionHandlers: [
     new transports.Console({
-      format: format.errors()
+      format: format.errors(),
     }),
   ],
-  rejectionHandlers: [new transports.Console()]
-})
+  rejectionHandlers: [new transports.Console()],
+});
 
 module.exports = {
-  logger
-}
+  logger,
+};

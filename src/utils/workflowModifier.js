@@ -11,7 +11,7 @@ function getNextExcludingCategory(nodes, next, category) {
 
 function getNextOfPinnedNodes(nodes, next, pinnedNodes) {
   nodes.map((myNode) => {
-    if ((next === myNode.id) && !shouldPinNode(myNode, pinnedNodes)) {
+    if (next === myNode.id && !shouldPinNode(myNode, pinnedNodes)) {
       next = myNode.next;
     }
   });
@@ -19,13 +19,18 @@ function getNextOfPinnedNodes(nodes, next, pinnedNodes) {
 }
 
 function shouldPinNode(node, nodesToPin) {
-  return nodesToPin.includes(node?.type?.toLowerCase()) || nodesToPin.includes(node?.category?.toLowerCase());
+  return (
+    nodesToPin.includes(node?.type?.toLowerCase()) ||
+    nodesToPin.includes(node?.category?.toLowerCase())
+  );
 }
 
 async function removeNodesByCategory(blueprint_spec, category) {
   let blueprint = _.cloneDeep(blueprint_spec);
   const nodes = _.cloneDeep(blueprint_spec.nodes);
-  const filteredNodes = nodes.filter((node) => node?.category?.toLowerCase() !== category);
+  const filteredNodes = nodes.filter(
+    (node) => node?.category?.toLowerCase() !== category
+  );
 
   blueprint.nodes = filteredNodes.map((node) => {
     // early return finish nodes
@@ -35,7 +40,11 @@ async function removeNodesByCategory(blueprint_spec, category) {
     // check unique nexts of flow nodes and get new next
     if (typeof node.next === 'object') {
       _.uniq(Object.entries(node.next)).map(([nextKey, nextValue]) => {
-        node.next[nextKey] = getNextExcludingCategory(nodes, nextValue, category);
+        node.next[nextKey] = getNextExcludingCategory(
+          nodes,
+          nextValue,
+          category
+        );
         if (node.id === node.next[nextKey]) {
           delete node.next[nextKey];
         }
@@ -77,4 +86,4 @@ async function pinNodesByTypeAndCategory(blueprint_spec, nodesToPin) {
 module.exports = {
   removeNodesByCategory,
   pinNodesByTypeAndCategory,
-}
+};

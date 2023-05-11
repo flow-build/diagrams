@@ -8,12 +8,12 @@ module.exports = {
   extends: 'eslint:recommended',
   parserOptions: {
     ecmaVersion: 2022,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   rules: {
     'max-len': 'off',
     camelcase: 'off',
     indent: ['error', 2],
-    'no-undef': 'off'
-  }
-}
+    'no-undef': 'off',
+  },
+};

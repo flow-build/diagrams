@@ -12,17 +12,15 @@ const validateSaveDiagram = validateBody({
       type: 'string',
       allOf: [
         {
-          'transform': [
-            'trim'
-          ]
+          transform: ['trim'],
         },
         {
-          'minLength': 21
-        }
-      ]
-    }
+          minLength: 21,
+        },
+      ],
+    },
   },
-  additionalProperties: false
+  additionalProperties: false,
 });
 
 const validateUpdateDiagram = validateBody({
@@ -33,21 +31,19 @@ const validateUpdateDiagram = validateBody({
       type: 'string',
       allOf: [
         {
-          'transform': [
-            'trim'
-          ]
+          transform: ['trim'],
         },
         {
-          'minLength': 21
-        }
-      ]
-    }
+          minLength: 21,
+        },
+      ],
+    },
   },
   anyRequired: ['name', 'diagram_xml'],
-  additionalProperties: false
+  additionalProperties: false,
 });
 
 module.exports = {
   validateSaveDiagram,
-  validateUpdateDiagram
-}
+  validateUpdateDiagram,
+};

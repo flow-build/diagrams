@@ -4,15 +4,27 @@ const cors = require('koa2-cors');
 const jwt = require('koa-jwt');
 const { jwtSecret } = require('./utils/jwtSecret');
 const { logger } = require('./utils/logger');
-const { DiagramCore, BlueprintCore,
-  WorkflowCore, ServerCore } = require('@flowbuild/diagrams-core');
+const {
+  DiagramCore,
+  BlueprintCore,
+  WorkflowCore,
+  ServerCore,
+} = require('@flowbuild/diagrams-core');
 const { db } = require('./utils/db');
 const freeRouter = require('./routers/freeRouter');
 const mainRouter = require('./routers/mainRouter');
 const serve = require('koa-static');
 const errorHandler = require('./middlewares/errorHandler');
-const { getDiagramCore, setDiagramCore, getBlueprintCore, setBlueprintCore, getWorkflowCore,
-  setWorkflowCore, getServerCore, setServerCore } = require('./diagramCore');
+const {
+  getDiagramCore,
+  setDiagramCore,
+  getBlueprintCore,
+  setBlueprintCore,
+  getWorkflowCore,
+  setWorkflowCore,
+  getServerCore,
+  setServerCore,
+} = require('./diagramCore');
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
 const rTracer = require('cls-rtracer');
 const emitter = require('../src/utils/eventEmitter');
@@ -20,7 +32,6 @@ const { startEventListener } = require('./services/eventListener');
 const setUser = require('./middlewares/setUser');
 
 const startServer = (port) => {
-
   let diagramCore = getDiagramCore();
   if (!diagramCore) {
     diagramCore = new DiagramCore(db);
@@ -50,21 +61,23 @@ const startServer = (port) => {
   const corsOptions = {
     origin: '*',
     allowedMethods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  };
 
-  app.use(rTracer.koaMiddleware({
-    echoHeader: true,
-    useHeader: true,
-    headerName: 'x-event-id'
-  }));
+  app.use(
+    rTracer.koaMiddleware({
+      echoHeader: true,
+      useHeader: true,
+      headerName: 'x-event-id',
+    })
+  );
 
   app.use(cors(corsOptions));
   app.use(koaLogger(logger));
 
-  app.use(serve(pathToSwaggerUi, { index: false }))
-  app.use(serve('public/swagger-ui', { index: false }))
-  app.use(serve('src/swagger', { index: false }))
+  app.use(serve(pathToSwaggerUi, { index: false }));
+  app.use(serve('public/swagger-ui', { index: false }));
+  app.use(serve('src/swagger', { index: false }));
 
   app.use(errorHandler);
 
@@ -80,10 +93,10 @@ const startServer = (port) => {
   startEventListener(emitter);
 
   return app.listen(port, () => {
-    logger.info(`Server running on port: ${port}`)
+    logger.info(`Server running on port: ${port}`);
   });
-}
+};
 
 module.exports = {
-  startServer
-}
+  startServer,
+};
