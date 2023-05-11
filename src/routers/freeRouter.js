@@ -11,7 +11,7 @@ module.exports = (opts = {}) => {
   router.use(bodyParser());
   router.use(cors(opts.corsOptions));
 
-  router.get('/token', tokenController.getToken);
+  router.post('/token', tokenController.getToken);
   router.get('/', healthController.healtchCheck);
   router.get('/healthcheck', healthController.healtchCheck);
   router.get('/swagger', (ctx) => {
@@ -20,5 +20,5 @@ module.exports = (opts = {}) => {
     return ctx;
   });
 
-  return router; 
+  return router;
 }

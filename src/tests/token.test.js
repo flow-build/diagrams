@@ -16,8 +16,7 @@ afterAll(async () => {
 
 describe('GET /token', () => {
   test('should return 200 without payload', async () => {
-    const response = await request.get('/token');
-
+    const response = await request.post('/token').send({ user_id: 'e8089f89-2af7-433f-86de-993e4374c581' });
     expect(response.status).toBe(200);
     expect(response.body.jwtToken).toBeDefined();
   });

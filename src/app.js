@@ -4,22 +4,23 @@ const cors = require('koa2-cors');
 const jwt = require('koa-jwt');
 const { jwtSecret } = require('./utils/jwtSecret');
 const { logger } = require('./utils/logger');
-const { DiagramCore, BlueprintCore, 
+const { DiagramCore, BlueprintCore,
   WorkflowCore, ServerCore } = require('@flowbuild/diagrams-core');
 const { db } = require('./utils/db');
 const freeRouter = require('./routers/freeRouter');
 const mainRouter = require('./routers/mainRouter');
 const serve = require('koa-static');
 const errorHandler = require('./middlewares/errorHandler');
-const { getDiagramCore, setDiagramCore, getBlueprintCore, setBlueprintCore,  getWorkflowCore,
+const { getDiagramCore, setDiagramCore, getBlueprintCore, setBlueprintCore, getWorkflowCore,
   setWorkflowCore, getServerCore, setServerCore } = require('./diagramCore');
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
 const rTracer = require('cls-rtracer');
 const emitter = require('../src/utils/eventEmitter');
 const { startEventListener } = require('./services/eventListener');
+const setUser = require('./middlewares/setUser');
 
 const startServer = (port) => {
-  
+
   let diagramCore = getDiagramCore();
   if (!diagramCore) {
     diagramCore = new DiagramCore(db);
@@ -66,16 +67,16 @@ const startServer = (port) => {
   app.use(serve('src/swagger', { index: false }))
 
   app.use(errorHandler);
-  
+
   app.use(freeRouter({ corsOptions }).routes());
 
   app.use(
     mainRouter({
       corsOptions,
-      middlewares: [jwt({ secret: jwtSecret, debug: true })],
+      middlewares: [jwt({ secret: jwtSecret, debug: true }), setUser],
     }).routes()
   );
-  
+
   startEventListener(emitter);
 
   return app.listen(port, () => {

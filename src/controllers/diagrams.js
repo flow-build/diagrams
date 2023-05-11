@@ -12,6 +12,7 @@ const serializeDiagramNoXml = (diagram) => {
   return {
     id: diagram.id,
     name: diagram.name,
+    type: diagram.type,
     user_id: diagram.user_id,
     user_default: diagram.user_default,
     workflow_id: diagram.workflow_id,
@@ -24,9 +25,10 @@ const serializeDiagramNoXml = (diagram) => {
 const saveDiagram = async (ctx, next) => {
   logger.debug('saveDiagram controller called');
   const diagramCore = getDiagramCore();
+  const user_id = ctx.request.user_data?.user_id;
 
   try {
-    const { diagram_xml, name, user_id, user_default, workflow_id } = ctx.request.body;
+    const { diagram_xml, name, user_default, workflow_id } = ctx.request.body;
 
     const diagram = await diagramCore.saveDiagram({ diagram_xml, name, user_id, user_default });
 
