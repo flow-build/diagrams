@@ -23,10 +23,6 @@ beforeAll(async () => {
   return await db.raw('START TRANSACTION');
 });
 
-afterEach(async () => {
-  await db.raw('DELETE from diagram');
-});
-
 afterAll(async () => {
   await db.raw('ROLLBACK');
   await server.close();
@@ -167,7 +163,7 @@ describe('POST /workflow', () => {
 
 describe('PATCH /diagram/:id/default', () => {
   test('should return 200', async () => {
-    const id = 'da55b972-74d4-4156-bf4f-75ca31b5b52f';
+    const id = '5bc839ca-f3ce-4d76-9b68-cfcfb0b39be0';
     const { rows } = await db.raw(`
     insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
     values (
@@ -190,7 +186,7 @@ describe('PATCH /diagram/:id/default', () => {
   });
 
   test('should return 403', async () => {
-    const id = 'da55b972-74d4-4156-bf4f-75ca31b5b52f';
+    const id = '30760c29-db5f-4a08-b037-8d7d3b5d1ec5';
     await db.raw(`
     insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
     values (
