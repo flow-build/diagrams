@@ -29,7 +29,7 @@ module.exports = (opts = {}) => {
   router.use(cors(opts.corsOptions));
 
   const diagrams = new Router();
-  diagrams.prefix('/diagrams');
+  diagrams.prefix('/diagram');
   diagrams.get(
     '/user/:user_id/workflow/:workflow_id',
     baseValidator.validateUUID,

@@ -2,13 +2,12 @@ const { validateBody } = require('./base');
 
 const validateSaveDiagram = validateBody({
   type: 'object',
-  required: ['name', 'user_id', 'diagram_xml'],
+  required: ['name', 'xml'],
   properties: {
     name: { type: 'string' },
-    user_id: { type: 'string' },
-    user_default: { type: 'boolean' },
-    workflow_id: { type: 'string', format: 'uuid' },
-    diagram_xml: {
+    isDefault: { type: 'boolean' },
+    workflowId: { type: 'string', format: 'uuid' },
+    xml: {
       type: 'string',
       allOf: [
         {
@@ -27,7 +26,7 @@ const validateUpdateDiagram = validateBody({
   type: 'object',
   properties: {
     name: { type: 'string' },
-    diagram_xml: {
+    xml: {
       type: 'string',
       allOf: [
         {
@@ -39,7 +38,7 @@ const validateUpdateDiagram = validateBody({
       ],
     },
   },
-  anyRequired: ['name', 'diagram_xml'],
+  anyRequired: ['name', 'xml'],
   additionalProperties: false,
 });
 

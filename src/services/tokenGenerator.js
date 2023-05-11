@@ -1,7 +1,7 @@
 const rs = require('jsrsasign');
 const { logger } = require('../utils/logger');
 
-const createJWTToken = (secret, duration, user_id) => {
+const createJWTToken = (secret, duration, userId) => {
   logger.debug('createJWTToken service called');
 
   const jwtHeader = { alg: 'HS256', typ: 'JWT' };
@@ -11,7 +11,7 @@ const createJWTToken = (secret, duration, user_id) => {
   const payload = {
     iat: tNow,
     exp: tEnd,
-    user_id,
+    user_id: userId,
   };
 
   return rs.KJUR.jws.JWS.sign('HS256', jwtHeader, payload, { utf8: secret });
