@@ -5,6 +5,7 @@ const {
   removeNodesByCategory,
   pinNodesByTypeAndCategory,
 } = require('../utils/workflowModifier');
+const { getDiagramCore } = require('../diagramCore');
 
 const buildDiagram = async (ctx, next) => {
   logger.debug('buildDiagram controller called');
@@ -87,8 +88,36 @@ const buildDiagramUserTask = async (ctx, next) => {
   return next();
 };
 
+const getDefaultDiagram = async (ctx, next) => {
+  logger.debug('getDefaultDiagram controller called');
+  const diagramCore = getDiagramCore();
+
+  const { id: workflowId } = ctx.params;
+  const user_id = ctx.request.user_data?.userId;
+
+  try {
+    const diagram = await diagramCore.getDefaultDiagram(user_id, {
+      workflow_id: workflowId,
+    });
+    if (diagram) {
+      ctx.status = 200;
+      ctx.body = diagram.diagram_xml;
+    } else {
+      ctx.status = 404;
+      ctx.body = {
+        message: `No diagram to be returned`,
+      };
+    }
+  } catch (err) {
+    throw new Error(err);
+  }
+
+  return next();
+};
+
 module.exports = {
   buildDiagram,
   buildDiagramNoBags,
   buildDiagramUserTask,
+  getDefaultDiagram,
 };
