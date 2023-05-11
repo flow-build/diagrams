@@ -8,15 +8,18 @@ const blueprintSample = require('../samples/blueprint');
 let server;
 let request;
 let token;
+const userId = 'e8089f89-2af7-433f-86de-993e4374c581';
 
 beforeAll(async () => {
   server = startServer(5001);
   request = supertest(server);
-  const tokenResponse = await request
-    .post('/token')
-    .send({ user_id: 'e8089f89-2af7-433f-86de-993e4374c581' });
+  const tokenResponse = await request.post('/token').send({ userId });
   token = tokenResponse.body.jwtToken;
   return await db.raw('START TRANSACTION');
+});
+
+afterEach(async () => {
+  await db.raw('DELETE from diagram');
 });
 
 afterAll(async () => {
@@ -106,7 +109,7 @@ describe('POST /default', () => {
       '${id}',
       'test',
       '<book>Test</book>',
-      '7ec419de-e9b2-4f19-b6d6-5f17f6061ab8',
+      '${userId}',
       false,
       false,
       false
@@ -114,11 +117,33 @@ describe('POST /default', () => {
 
     expect(rows[0].user_default).toBe(false);
     const postResponse = await request
-      .patch(`/diagrams/${id}/default`)
+      .patch(`/diagram/${id}/default`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(postResponse.status).toBe(200);
-    expect(postResponse.body.user_default).toBe(true);
+    expect(postResponse.body.isDefault).toBe(true);
+  });
+
+  test('should return 403', async () => {
+    const id = 'da55b972-74d4-4156-bf4f-75ca31b5b52f';
+    await db.raw(`
+    insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
+    values (
+      '${id}',
+      'test',
+      '<book>Test</book>',
+      '7ec419de-e9b2-4f19-b6d6-5f17f6061ab8',
+      false,
+      false,
+      false
+    ) returning *`);
+
+    const postResponse = await request
+      .patch(`/diagram/${id}/default`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(postResponse.status).toBe(403);
+    expect(postResponse.body.message).toBe('FORBIDDEN');
   });
 });
 

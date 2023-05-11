@@ -18,7 +18,7 @@ module.exports = async (ctx, next) => {
   }
 
   ctx.request['user_data'] = {
-    user_id: userId,
+    userId,
   };
   await next();
 };
