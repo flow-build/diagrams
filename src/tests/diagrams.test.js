@@ -265,3 +265,26 @@ describe('POST /workflow/usertask', () => {
     );
   });
 });
+
+describe('GET /workflow/:id/default', () => {
+  test('should return 200 (getting public diagram)', async () => {
+    await db.raw(`
+    insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
+    values (
+      'f38ceaa7-051b-4093-9844-11de850df7ee',
+      'test',
+      '<book>Test</book>',
+      '5a27bca2-ba42-4e45-bb7d-e9df06c9caad',
+      true,
+      false,
+      false
+    ) returning *`);
+
+    const postResponse = await request
+      .get('/workflow/2412a3e2-d076-4722-b7e1-17d72a6388d6/default')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(postResponse.status).toBe(200);
+    expect(postResponse.body).toBeDefined();
+  });
+});
