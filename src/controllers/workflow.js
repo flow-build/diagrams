@@ -4,6 +4,7 @@ const { buildXmlDiagram } = require('@flowbuild/nodejs-diagram-builder');
 const {
   removeNodesByCategory,
   pinNodesByTypeAndCategory,
+  orderBlueprintNodes,
 } = require('../utils/workflowModifier');
 
 const buildDiagram = async (ctx, next) => {
@@ -16,6 +17,7 @@ const buildDiagram = async (ctx, next) => {
       name: name || 'Diagram',
       description: description || 'Building Diagram',
     };
+    blueprint.blueprint_spec.nodes = orderBlueprintNodes(blueprint_spec.nodes);
 
     const diagram = await buildXmlDiagram(blueprint);
 

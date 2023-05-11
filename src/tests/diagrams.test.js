@@ -4,6 +4,11 @@ const supertest = require('supertest');
 const { startServer } = require('../app');
 const { db } = require('../utils/db');
 const blueprintSample = require('../samples/blueprint');
+const diagramSample = require('fs').readFileSync(
+  './src/samples/diagram.xml',
+  'utf8'
+);
+const nock = require('nock');
 
 let server;
 let request;
@@ -27,49 +32,109 @@ afterAll(async () => {
   await server.close();
 });
 
-describe('POST /server', () => {
-  test('should return 201 for server saved', async () => {
-    const response = await request
-      .post('/server')
+describe('POST /diagram', () => {
+  test('should return 201', async () => {
+    const postResponse = await request
+      .post('/diagram')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        url: 'https://flowbuild-dev.com',
-        namespace: 'develop',
+        xml: diagramSample,
+        name: 'Diagram Test',
       });
-    console.log(response.body);
-    expect(response.status).toBe(201);
-    expect(validate(response.body.id)).toBeTruthy();
-    expect(response.body.url).toEqual('https://flowbuild-dev.com');
-    expect(response.body.namespace).toEqual('develop');
+
+    expect(postResponse.status).toBe(201);
+    expect(postResponse.body).toBeDefined();
   });
 
-  test('should return 400 if doesnt have url', async () => {
-    const response = await request
-      .post('/server')
+  test('should return 400 if doesnt have blueprint_spec', async () => {
+    const postResponse = await request
+      .post('/workflow')
       .set('Authorization', `Bearer ${token}`)
-      .send({
-        namespace: 'localhost',
-      });
+      .send({});
 
-    expect(response.status).toBe(400);
-    expect(response.body.message).toEqual('Invalid Request Body');
-    expect(response.body.errors[0].message).toEqual(
-      "must have required property 'url'"
+    expect(postResponse.status).toBe(400);
+    expect(postResponse.body.message).toEqual('Invalid Request Body');
+    expect(postResponse.body.errors[0].message).toEqual(
+      "must have required property 'blueprint_spec'"
     );
   });
 });
 
-describe('GET /server', () => {
-  test('should return 200 with all servers', async () => {
-    const response = await request
-      .get('/server')
-      .set('Authorization', `Bearer ${token}`);
+describe('/server tests', () => {
+  let server;
+  describe('POST /server', () => {
+    test('should return 201 for server saved', async () => {
+      const response = await request
+        .post('/server')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          url: 'https://flowbuild-dev.com',
+          namespace: 'develop',
+        });
 
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(2);
-    expect(validate(response.body[0].id)).toBeTruthy();
-    expect(response.body[0].url).toEqual('https://flowbuild-dev.com');
-    expect(response.body[0].namespace).toEqual('develop');
+      server = response.body;
+      expect(response.status).toBe(201);
+      expect(validate(server.id)).toBeTruthy();
+      expect(server.url).toEqual('https://flowbuild-dev.com');
+      expect(server.namespace).toEqual('develop');
+    });
+
+    test('should return 400 if doesnt have url', async () => {
+      const response = await request
+        .post('/server')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          namespace: 'localhost',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual('Invalid Request Body');
+      expect(response.body.errors[0].message).toEqual(
+        "must have required property 'url'"
+      );
+    });
+  });
+
+  describe('GET /server', () => {
+    test('should return 200 with all servers', async () => {
+      const response = await request
+        .get('/server')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(2);
+      expect(validate(response.body[0].id)).toBeTruthy();
+      expect(response.body[0].url).toEqual('https://flowbuild-dev.com');
+      expect(response.body[0].namespace).toEqual('develop');
+    });
+  });
+
+  describe('POST /server/:id/sync', () => {
+    test('should return 202 sync server queued', async () => {
+      nock(server.url).post('/token').reply(200, {
+        token: 'genericTestToken',
+      });
+
+      nock(server.url)
+        .get('/workflows')
+        .reply(200, [
+          {
+            workflow_id: 'c9e462d1-d937-11ed-8082-8dae5ebf27f6',
+            created_at: '2023-04-12T13:41:55.197Z',
+            name: 'testWorkflow',
+            description: 'Workflow for test',
+            version: 1,
+          },
+        ]);
+
+      const response = await request
+        .post(`/server/${server.id}/sync`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(202);
+      expect(response.body.message).toEqual('Sync server queued');
+      expect(response.body.server.last_sync).toBeDefined();
+    });
   });
 });
 
@@ -100,7 +165,7 @@ describe('POST /workflow', () => {
   });
 });
 
-describe('POST /default', () => {
+describe('PATCH /diagram/:id/default', () => {
   test('should return 200', async () => {
     const id = 'da55b972-74d4-4156-bf4f-75ca31b5b52f';
     const { rows } = await db.raw(`

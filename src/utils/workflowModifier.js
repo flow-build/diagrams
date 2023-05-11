@@ -1,21 +1,41 @@
 const _ = require('lodash');
 
 function getNextExcludingCategory(nodes, next, category) {
+  let node = { next };
   nodes.map((myNode) => {
-    if (next === myNode.id && myNode?.category?.toLowerCase() === category) {
-      next = myNode.next;
+    if (
+      node.next === myNode.id &&
+      myNode?.category?.toLowerCase() === category
+    ) {
+      node = myNode;
     }
   });
-  return next;
+  if (node?.category?.toLowerCase() === category) {
+    return getNextExcludingCategory(nodes, node.next, category);
+  }
+  return node.next;
 }
 
 function getNextOfPinnedNodes(nodes, next, pinnedNodes) {
+  let node = { next };
+  let nextNode;
   nodes.map((myNode) => {
-    if (next === myNode.id && !shouldPinNode(myNode, pinnedNodes)) {
-      next = myNode.next;
+    if (node.next === myNode.id) {
+      if (!shouldPinNode(myNode, pinnedNodes)) {
+        node = myNode;
+      } else {
+        nextNode = myNode;
+      }
     }
   });
-  return next;
+  if (
+    shouldPinNode(node, pinnedNodes) ||
+    shouldPinNode(nextNode, pinnedNodes)
+  ) {
+    return node.next;
+  } else {
+    return getNextOfPinnedNodes(nodes, node.next, pinnedNodes);
+  }
 }
 
 function shouldPinNode(node, nodesToPin) {
@@ -23,6 +43,18 @@ function shouldPinNode(node, nodesToPin) {
     nodesToPin.includes(node?.type?.toLowerCase()) ||
     nodesToPin.includes(node?.category?.toLowerCase())
   );
+}
+
+function orderBlueprintNodes(nodes) {
+  return nodes.sort((a, b) => {
+    if (a?.type?.toLowerCase() === 'start') {
+      return -1;
+    }
+    if (b?.type?.toLowerCase() === 'start') {
+      return 1;
+    }
+    return 0;
+  });
 }
 
 async function removeNodesByCategory(blueprint_spec, category) {
@@ -54,6 +86,7 @@ async function removeNodesByCategory(blueprint_spec, category) {
     node.next = getNextExcludingCategory(nodes, node.next, category);
     return node;
   });
+  blueprint.nodes = orderBlueprintNodes(blueprint.nodes);
   return blueprint;
 }
 
@@ -80,10 +113,12 @@ async function pinNodesByTypeAndCategory(blueprint_spec, nodesToPin) {
     node.next = getNextOfPinnedNodes(nodes, node.next, nodesToPin);
     return node;
   });
+  blueprint.nodes = orderBlueprintNodes(blueprint.nodes);
   return blueprint;
 }
 
 module.exports = {
   removeNodesByCategory,
   pinNodesByTypeAndCategory,
+  orderBlueprintNodes,
 };
