@@ -15,5 +15,13 @@ module.exports = {
     camelcase: 'off',
     indent: ['error', 2],
     'no-undef': 'off',
+    'no-unused-vars': [
+      'warn', // or "error"
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
   },
 };
