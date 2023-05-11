@@ -27,28 +27,39 @@ describe('POST /server', () => {
     const response = await request.post('/server')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        url: 'http://localhost:8080',
-        config: {
-          namespace: 'localhost',
-        },
+        url: 'https://flowbuild-dev.com',
+        namespace: 'develop',
       });
-
+    console.log(response.body)
     expect(response.status).toBe(201);
     expect(validate(response.body.id)).toBeTruthy();
+    expect(response.body.url).toEqual('https://flowbuild-dev.com');
+    expect(response.body.namespace).toEqual('develop');
   });
 
   test('should return 400 if doesnt have url', async () => {
     const response = await request.post('/server')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        config: {
-          namespace: 'localhost',
-        },
+        namespace: 'localhost',
       });
 
     expect(response.status).toBe(400);
     expect(response.body.message).toEqual('Invalid Request Body');
     expect(response.body.errors[0].message).toEqual("must have required property 'url'");
+  });
+});
+
+describe('GET /server', () => {
+  test('should return 200 with all servers', async () => {
+    const response = await request.get('/server')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(2);
+    expect(validate(response.body[0].id)).toBeTruthy();
+    expect(response.body[0].url).toEqual('https://flowbuild-dev.com');
+    expect(response.body[0].namespace).toEqual('develop');
   });
 });
 

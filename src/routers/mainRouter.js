@@ -57,6 +57,7 @@ module.exports = (opts = {}) => {
   const server = new Router();
   server.prefix('/server');
   server.post('/', serverValidator.validateServer, serverController.saveServer);
+  server.get('/', serverController.getAllServers);
 
   router.use(diagrams.routes());
   router.use(workflow.routes());

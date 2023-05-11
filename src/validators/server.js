@@ -6,7 +6,7 @@ const validateServer = validateBody({
   properties: {
     url: { type: 'string' },
     namespace: { type: 'string' },
-    brokerUrl: { type: 'string' },
+    config: { type: 'object' },
   }
 });
 
