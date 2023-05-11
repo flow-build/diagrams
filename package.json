@@ -15,7 +15,7 @@
     "migrations:local": "knex --env test --knexfile knexfile.js migrate:latest",
     "seeds:local": "knex --env test --knexfile knexfile.js seed:run",
     "get-version": "echo $npm_package_version",
-    "release": "semantic-release && echo '::set-output name=tag::$(git describe --abbrev=0 --tags)'",
+    "release": "semantic-release",
     "prepare": "husky install"
   },
   "repository": {
@@ -48,7 +48,7 @@
     "supertest": "6.2.4"
   },
   "dependencies": {
-    "@flowbuild/diagrams-core": "1.6.0-rc.3",
+    "@flowbuild/diagrams-core": "1.6.0-rc.4",
     "@flowbuild/nodejs-diagram-builder": "1.1.0",
     "@koa/router": "12.0.0",
     "ajv": "8.11.0",
