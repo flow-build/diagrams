@@ -17,28 +17,62 @@ const serializeDiagramNoXml = (diagram) => {
     id: diagram.id,
     name: diagram.name,
     type: diagram.type,
-    user_id: diagram.user_id,
-    user_default: diagram.user_default,
-    workflow_id: diagram.workflow_id,
+    userId: diagram.user_id,
+    isDefault: diagram.user_default,
+    workflowId: diagram.workflow_id,
     aligned: diagram.aligned,
-    created_at: diagram.created_at,
-    updated_at: diagram.updated_at,
+    createdAt: diagram.created_at,
+    updatedAt: diagram.updated_at,
   };
+};
+
+const forbidDiagramForUser = (user_id, diagram, operation = 'update') => {
+  if (operation === 'read') {
+    if (diagram.is_public) {
+      return false;
+    }
+  }
+  if (diagram.user_id !== user_id) {
+    return true;
+  }
+  return false;
+};
+
+const forbiddenResponse = (ctx, _next) => {
+  ctx.status = 403;
+  ctx.body = {
+    message: 'FORBIDDEN',
+  };
+  return;
+};
+
+const filterDiagrams = (user_id, diagrams) => {
+  return diagrams.filter((diagram) => {
+    const isForbid = forbidDiagramForUser(user_id, diagram);
+    return !isForbid;
+  });
 };
 
 const saveDiagram = async (ctx, next) => {
   logger.debug('saveDiagram controller called');
   const diagramCore = getDiagramCore();
-  const user_id = ctx.request.user_data?.user_id;
+  const user_id = ctx.request.user_data?.userId;
 
   try {
-    const { diagram_xml, name, user_default, workflow_id } = ctx.request.body;
+    const {
+      xml: diagram_xml,
+      name,
+      isDefault: user_default,
+      workflowId: workflow_id,
+      type,
+    } = ctx.request.body;
 
     const diagram = await diagramCore.saveDiagram({
       diagram_xml,
       name,
       user_id,
       user_default,
+      type,
     });
 
     if (workflow_id) {
@@ -70,11 +104,15 @@ const saveDiagram = async (ctx, next) => {
 const getAllDiagrams = async (ctx, next) => {
   logger.debug('getAllDiagrams controller called');
   const diagramCore = getDiagramCore();
+  const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagrams = await diagramCore.getAllDiagrams();
+    const filteredDiagrams = filterDiagrams(user_id, diagrams);
     ctx.status = 200;
-    ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
+    ctx.body = filteredDiagrams.map((diagram) =>
+      serializeDiagramNoXml(diagram)
+    );
   } catch (err) {
     throw new Error(err);
   }
@@ -140,9 +178,14 @@ const getDiagramById = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
+  const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagram = await diagramCore.getDiagramById(id);
+    const is_forbidden = forbidDiagramForUser(user_id, diagram, 'read');
+    if (is_forbidden) {
+      return forbiddenResponse(ctx, next);
+    }
 
     if (diagram) {
       ctx.status = 200;
@@ -165,13 +208,16 @@ const getDiagramsByWorkflowId = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
+  const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagrams = await diagramCore.getDiagramsByWorkflowId(id);
-
-    if (diagrams.length > 0) {
+    const filteredDiagrams = filterDiagrams(user_id, diagrams);
+    if (filteredDiagrams.length > 0) {
       ctx.status = 200;
-      ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
+      ctx.body = filteredDiagrams.map((diagram) =>
+        serializeDiagramNoXml(diagram)
+      );
     } else {
       ctx.status = 404;
       ctx.body = {
@@ -190,9 +236,14 @@ const getLatestDiagramByWorkflowId = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
+  const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagram = await diagramCore.getLatestDiagramByWorkflowId(id);
+    const is_forbidden = forbidDiagramForUser(user_id, diagram, 'read');
+    if (is_forbidden) {
+      return forbiddenResponse(ctx, next);
+    }
 
     if (diagram) {
       ctx.status = 200;
@@ -216,10 +267,15 @@ const updateDiagram = async (ctx, next) => {
   const blueprintCore = getBlueprintCore();
 
   const { id } = ctx.params;
-  const { diagram_xml } = ctx.request.body;
+  const { xml: diagram_xml } = ctx.request.body;
+  const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagram = await diagramCore.getDiagramById(id);
+    const is_forbidden = forbidDiagramForUser(user_id, diagram);
+    if (is_forbidden) {
+      return forbiddenResponse(ctx, next);
+    }
 
     if (!diagram) {
       ctx.status = 404;
@@ -261,8 +317,15 @@ const setDefaultDiagram = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
+  const user_id = ctx.request.user_data?.userId;
+
   try {
     const diagram = await diagramCore.setAsDefault(id);
+    const is_forbidden = forbidDiagramForUser(user_id, diagram);
+    if (is_forbidden) {
+      return forbiddenResponse(ctx, next);
+    }
+
     if (!diagram) {
       ctx.status = 404;
       ctx.body = {
@@ -285,9 +348,14 @@ const deleteDiagram = async (ctx, next) => {
   const diagramToWorkflowCore = getDiagramToWorkflowCore();
 
   const { id } = ctx.params;
+  const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagram = await diagramCore.getDiagramById(id);
+    const is_forbidden = forbidDiagramForUser(user_id, diagram);
+    if (is_forbidden) {
+      return forbiddenResponse(ctx, next);
+    }
 
     if (!diagram) {
       ctx.status = 404;
