@@ -99,8 +99,13 @@ module.exports = (opts = {}) => {
 
   const server = new Router();
   server.prefix('/server');
-  server.post('/', serverValidator.validateServer, serverController.saveServer);
   server.get('/', serverController.getAllServers);
+  server.post(
+    '/:id/sync',
+    baseValidator.validateUUID,
+    serverController.syncServer
+  );
+  server.post('/', serverValidator.validateServer, serverController.saveServer);
 
   router.use(diagrams.routes());
   router.use(workflow.routes());

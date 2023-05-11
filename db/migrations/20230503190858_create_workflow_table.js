@@ -1,6 +1,6 @@
 exports.up = function (knex) {
   return knex.schema.createTable('workflow', (table) => {
-    table.uuid('id').notNullable();
+    table.uuid('id').primary();
     table.timestamps(true, true);
     table.string('name', 255).notNullable();
     table.integer('version').notNullable();
