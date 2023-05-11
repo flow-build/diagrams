@@ -1,5 +1,5 @@
 module.exports = async (ctx, next) => {
-  let userId
+  let userId;
   try {
     const auth = ctx.request.headers?.authorization || '';
 
@@ -18,7 +18,7 @@ module.exports = async (ctx, next) => {
   }
 
   ctx.request['user_data'] = {
-    user_id: userId
+    user_id: userId,
   };
   await next();
-}
+};

@@ -6,4 +6,4 @@ module.exports = {
   diagramsValidator,
   workflowValidator,
   serverValidator,
-}
+};

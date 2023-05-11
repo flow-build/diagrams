@@ -11,12 +11,12 @@ const createJWTToken = (secret, duration, user_id) => {
   const payload = {
     iat: tNow,
     exp: tEnd,
-    user_id
-  }
+    user_id,
+  };
 
   return rs.KJUR.jws.JWS.sign('HS256', jwtHeader, payload, { utf8: secret });
-}
+};
 
 module.exports = {
-  createJWTToken
+  createJWTToken,
 };

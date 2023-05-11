@@ -7,20 +7,20 @@ const getToken = (ctx, next) => {
 
   const user_id = ctx.request.body?.user_id || null;
   if (user_id) {
-    const secret = ctx.get("x-secret") || jwtSecret;
-    const duration = parseInt(ctx.get("x-duration")) || 3600;
+    const secret = ctx.get('x-secret') || jwtSecret;
+    const duration = parseInt(ctx.get('x-duration')) || 3600;
 
     const jwtToken = createJWTToken(secret, duration, user_id);
     ctx.status = 200;
     ctx.body = {
-      jwtToken
-    }
+      jwtToken,
+    };
 
     return next();
   }
-  throw Error('No user_id informed')
-}
+  throw Error('No user_id informed');
+};
 
 module.exports = {
-  getToken
-}
+  getToken,
+};
