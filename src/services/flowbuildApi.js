@@ -18,7 +18,7 @@ const getToken = async (flowbuildUrl) => {
 };
 
 const getFlowbuildWorkflow = async (flowbuildUrl, token, workflowId) => {
-  logger.debug('getWorkflowFromFlowbuild service called');
+  logger.debug('getFlowbuildWorkflow service called');
   let error = null;
 
   const workflow = await axios
