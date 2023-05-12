@@ -47,9 +47,9 @@ const forbiddenResponse = (ctx, _next) => {
   return;
 };
 
-const filterDiagrams = (user_id, diagrams) => {
+const filterDiagrams = (user_id, diagrams, operation) => {
   return diagrams.filter((diagram) => {
-    const isForbid = forbidDiagramForUser(user_id, diagram);
+    const isForbid = forbidDiagramForUser(user_id, diagram, operation);
     return !isForbid;
   });
 };
@@ -111,7 +111,7 @@ const getAllDiagrams = async (ctx, next) => {
 
   try {
     const diagrams = await diagramCore.getAllDiagrams();
-    const filteredDiagrams = filterDiagrams(user_id, diagrams);
+    const filteredDiagrams = filterDiagrams(user_id, diagrams, 'read');
     ctx.status = 200;
     ctx.body = filteredDiagrams.map((diagram) =>
       serializeDiagramNoXml(diagram)
