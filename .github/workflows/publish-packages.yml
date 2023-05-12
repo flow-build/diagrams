@@ -69,9 +69,13 @@ jobs:
       - name: Get tag version from GitHub before release
         id: initversion
         run: |
-          tag=$(git describe --abbrev=0 --tags)
-          tag="${tag#v}"
-          echo "tag=$tag" >> $GITHUB_OUTPUT
+          if [ -z "$(git tag -l)" ]; then
+            echo "tag=default" >> $GITHUB_ENV
+          else
+            tag=$(git describe --abbrev=0 --tags)
+            tag="${tag#v}"
+            echo "tag=$tag" >> $GITHUB_OUTPUT
+          fi
       - name: Release to GitHub
         id: release
         env:
@@ -81,13 +85,21 @@ jobs:
           GIT_COMMITTER_NAME: bot-flowbuilld
           GIT_COMMITTER_EMAIL: bot.flowbuild@gmail.com
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        run: npm run release
-      - name: Get tag version from GitHub after release
-        id: extractver
         run: |
+          npm run release
           tag=$(git describe --abbrev=0 --tags)
           tag="${tag#v}"
           echo "tag=$tag" >> $GITHUB_OUTPUT
+      - name: Get tag version from GitHub after release
+        id: extractver
+        run: |
+          if [ -z "$(git tag -l)" ]; then
+            echo "tag=default" >> $GITHUB_ENV
+          else
+            tag=$(git describe --abbrev=0 --tags)
+            tag="${tag#v}"
+            echo "tag=$tag" >> $GITHUB_OUTPUT
+          fi
       - name: Install jq
         run: sudo apt-get install jq -y
       - name: Update package.json
