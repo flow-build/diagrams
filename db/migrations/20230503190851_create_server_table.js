@@ -4,6 +4,7 @@ exports.up = function (knex) {
     table.timestamps(true, true);
     table.string('url', 255).notNullable().unique();
     table.string('namespace', 255).notNullable();
+    table.boolean('is_syncing').notNullable().defaultTo(false);
     table.jsonb('config').nullable();
     table.timestamp('last_sync').nullable();
   });

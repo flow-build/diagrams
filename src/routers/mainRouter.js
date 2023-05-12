@@ -100,6 +100,7 @@ module.exports = (opts = {}) => {
     serverController.syncServer
   );
   server.post('/', serverValidator.validateServer, serverController.saveServer);
+  server.del('/:id', baseValidator.validateUUID, serverController.deleteServer);
 
   router.use(diagram.routes());
   router.use(workflow.routes());
