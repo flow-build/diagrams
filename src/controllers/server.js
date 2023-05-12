@@ -27,6 +27,16 @@ const saveServer = async (ctx, next) => {
   try {
     const serverData = ctx.request.body;
 
+    const fetchedServer = await serverCore.getServerByUrl(serverData.url);
+
+    if (fetchedServer) {
+      ctx.status = 400;
+      ctx.body = {
+        message: `Server already saved with url '${serverData.url}'`,
+      };
+      return;
+    }
+
     const server = await serverCore.saveServer(serverData);
 
     ctx.status = 201;

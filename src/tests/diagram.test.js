@@ -61,6 +61,19 @@ describe('/server tests', () => {
         "must have required property 'url'"
       );
     });
+
+    test('should return 400 for existing url', async () => {
+      const response = await request
+        .post('/server')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          url: 'https://flowbuild-dev.com',
+          namespace: 'develop',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual(`Server already saved with url 'https://flowbuild-dev.com'`);
+    });
   });
 
   describe('GET /server', () => {
