@@ -7,7 +7,7 @@ const {
   orderBlueprintNodes,
 } = require('../utils/workflowModifier');
 const { getDiagramCore } = require('../diagramCore');
-const { serializeDiagramNoXml } = require('./diagrams');
+const { serializeDiagramNoXml } = require('./diagram');
 
 const buildDiagram = async (ctx, next) => {
   logger.debug('buildDiagram controller called');

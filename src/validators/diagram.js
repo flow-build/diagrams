@@ -5,8 +5,14 @@ const validateSaveDiagram = validateBody({
   required: ['name', 'xml'],
   properties: {
     name: { type: 'string' },
-    isDefault: { type: 'boolean' },
-    isPublic: { type: 'boolean' },
+    isDefault: {
+      type: ['boolean', 'string'],
+      enum: [true, false, 'true', 'false'],
+    },
+    isPublic: {
+      type: ['boolean', 'string'],
+      enum: [true, false, 'true', 'false'],
+    },
     workflowId: { type: 'string', format: 'uuid' },
     xml: {
       type: 'string',
@@ -20,13 +26,20 @@ const validateSaveDiagram = validateBody({
       ],
     },
   },
-  additionalProperties: false,
 });
 
 const validateUpdateDiagram = validateBody({
   type: 'object',
   properties: {
     name: { type: 'string' },
+    isPublic: {
+      type: ['boolean', 'string'],
+      enum: [true, false, 'true', 'false'],
+    },
+    isDefault: {
+      type: ['boolean', 'string'],
+      enum: [true, false, 'true', 'false'],
+    },
     xml: {
       type: 'string',
       allOf: [
@@ -40,7 +53,6 @@ const validateUpdateDiagram = validateBody({
     },
   },
   anyRequired: ['name', 'xml'],
-  additionalProperties: false,
 });
 
 module.exports = {

@@ -28,34 +28,6 @@ afterAll(async () => {
   await server.close();
 });
 
-describe('POST /diagram', () => {
-  test('should return 201', async () => {
-    const postResponse = await request
-      .post('/diagram')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        xml: diagramSample,
-        name: 'Diagram Test',
-      });
-
-    expect(postResponse.status).toBe(201);
-    expect(postResponse.body).toBeDefined();
-  });
-
-  test('should return 400 if doesnt have blueprint_spec', async () => {
-    const postResponse = await request
-      .post('/workflow')
-      .set('Authorization', `Bearer ${token}`)
-      .send({});
-
-    expect(postResponse.status).toBe(400);
-    expect(postResponse.body.message).toEqual('Invalid Request Body');
-    expect(postResponse.body.errors[0].message).toEqual(
-      "must have required property 'blueprint_spec'"
-    );
-  });
-});
-
 describe('/server tests', () => {
   let server;
   describe('POST /server', () => {
@@ -161,50 +133,155 @@ describe('POST /workflow', () => {
   });
 });
 
-describe('PATCH /diagram/:id/default', () => {
-  test('should return 200', async () => {
-    const id = '5bc839ca-f3ce-4d76-9b68-cfcfb0b39be0';
-    const { rows } = await db.raw(`
-    insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
-    values (
-      '${id}',
-      'test',
-      '<book>Test</book>',
-      '${userId}',
-      false,
-      false,
-      false
-    ) returning *`);
+describe('/diagram tests', () => {
+  let diagramId;
+  describe('POST /diagram', () => {
+    test('should return 201', async () => {
+      const postResponse = await request
+        .post('/diagram')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          xml: diagramSample,
+          name: 'Diagram Test',
+        });
 
-    expect(rows[0].user_default).toBe(false);
-    const postResponse = await request
-      .patch(`/diagram/${id}/default`)
-      .set('Authorization', `Bearer ${token}`);
+      diagramId = postResponse.body.id;
+      expect(postResponse.status).toBe(201);
+      expect(postResponse.body).toBeDefined();
+      expect(validate(diagramId)).toBeTruthy();
+      expect(postResponse.body.name).toEqual('Diagram Test');
+    });
 
-    expect(postResponse.status).toBe(200);
-    expect(postResponse.body.isDefault).toBe(true);
+    test('should return 400 if doesnt have blueprint_spec', async () => {
+      const postResponse = await request
+        .post('/workflow')
+        .set('Authorization', `Bearer ${token}`)
+        .send({});
+
+      expect(postResponse.status).toBe(400);
+      expect(postResponse.body.message).toEqual('Invalid Request Body');
+      expect(postResponse.body.errors[0].message).toEqual(
+        "must have required property 'blueprint_spec'"
+      );
+    });
   });
 
-  test('should return 403', async () => {
-    const id = '30760c29-db5f-4a08-b037-8d7d3b5d1ec5';
-    await db.raw(`
-    insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
-    values (
-      '${id}',
-      'test',
-      '<book>Test</book>',
-      '7ec419de-e9b2-4f19-b6d6-5f17f6061ab8',
-      false,
-      false,
-      false
-    ) returning *`);
+  describe('PATCH /diagram/:id/default', () => {
+    test('should return 200', async () => {
+      const id = '5bc839ca-f3ce-4d76-9b68-cfcfb0b39be0';
+      const { rows } = await db.raw(`
+      insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
+      values (
+        '${id}',
+        'test',
+        '<book>Test</book>',
+        '${userId}',
+        false,
+        false,
+        false
+      ) returning *`);
 
-    const postResponse = await request
-      .patch(`/diagram/${id}/default`)
-      .set('Authorization', `Bearer ${token}`);
+      expect(rows[0].user_default).toBe(false);
+      const postResponse = await request
+        .patch(`/diagram/${id}/default`)
+        .set('Authorization', `Bearer ${token}`);
 
-    expect(postResponse.status).toBe(403);
-    expect(postResponse.body.message).toBe('FORBIDDEN');
+      expect(postResponse.status).toBe(200);
+      expect(postResponse.body.isDefault).toBe(true);
+    });
+
+    test('should return 403', async () => {
+      const id = '30760c29-db5f-4a08-b037-8d7d3b5d1ec5';
+      await db.raw(`
+      insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
+      values (
+        '${id}',
+        'test',
+        '<book>Test</book>',
+        '7ec419de-e9b2-4f19-b6d6-5f17f6061ab8',
+        false,
+        false,
+        false
+      ) returning *`);
+
+      const postResponse = await request
+        .patch(`/diagram/${id}/default`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(postResponse.status).toBe(403);
+      expect(postResponse.body.message).toBe('FORBIDDEN');
+    });
+  });
+
+  describe('PATCH /diagram/:id', () => {
+    test('should return 201', async () => {
+      const postResponse = await request
+        .patch(`/diagram/${diagramId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          xml: diagramSample,
+          name: 'Upgraded Diagram',
+          isPublic: true,
+        });
+
+      expect(postResponse.status).toBe(200);
+      expect(postResponse.body).toBeDefined();
+      expect(postResponse.body.id).toEqual(diagramId);
+      expect(postResponse.body.name).toEqual('Upgraded Diagram');
+      expect(postResponse.body.isPublic).toBeTruthy();
+    });
+
+    test('should return 400 for invalid diagram id', async () => {
+      const postResponse = await request
+        .patch(`/diagram/123456`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Upgraded Diagram',
+        });
+
+      expect(postResponse.status).toBe(400);
+      expect(postResponse.body.message).toEqual('Invalid uuid');
+    });
+  });
+
+  describe('GET /diagram/:id', () => {
+    test('should return 200 with diagram xml', async () => {
+      const postResponse = await request
+        .get(`/diagram/${diagramId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(postResponse.status).toBe(200);
+      expect(postResponse.body).toBeDefined();
+    });
+
+    test('should return 404 for diagram not found', async () => {
+      const postResponse = await request
+        .get(`/diagram/be453c12-c2ad-46cf-b8fd-2e84fe7e6c26`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(postResponse.status).toBe(404);
+      expect(postResponse.body.message).toEqual('Diagram not found');
+    });
+  });
+
+  describe('DELETE /diagram/:id', () => {
+    test('should return 204 for diagram deleted', async () => {
+      const postResponse = await request
+        .delete(`/diagram/${diagramId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(postResponse.status).toBe(204);
+      expect(postResponse.body).toEqual({});
+    });
+
+    test('should return 404 for diagram not found', async () => {
+      const postResponse = await request
+        .get(`/diagram/be453c12-c2ad-46cf-b8fd-2e84fe7e6c26`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(postResponse.status).toBe(404);
+      expect(postResponse.body.message).toEqual('Diagram not found');
+    });
   });
 });
 
@@ -290,7 +367,7 @@ describe('GET /workflow/:id', () => {
     await db.raw(`
     insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned,blueprint_id)
     values (
-      'f38ceaa7-051b-4093-9844-11de850df7ee',
+      '4b6bef81-4d54-40f4-b239-b5036d5c4335',
       'test',
       '<book>Test</book>',
       '5a27bca2-ba42-4e45-bb7d-e9df06c9caad',
