@@ -7,6 +7,7 @@ const {
   orderBlueprintNodes,
 } = require('../utils/workflowModifier');
 const { getDiagramCore } = require('../diagramCore');
+const { serializeDiagramNoXml } = require('./diagrams');
 
 const buildDiagram = async (ctx, next) => {
   logger.debug('buildDiagram controller called');
@@ -117,9 +118,38 @@ const getDefaultDiagram = async (ctx, next) => {
   return next();
 };
 
+const getDiagramsByWorkflowId = async (ctx, next) => {
+  logger.debug('getDiagramsByWorkflowId controller called');
+  const diagramCore = getDiagramCore();
+
+  const { id: workflow_id } = ctx.params;
+  const user_id = ctx.request.user_data?.userId;
+
+  try {
+    const diagrams = await diagramCore.getDiagramsByUserAndWF(
+      user_id,
+      workflow_id
+    );
+    if (diagrams.length > 0) {
+      ctx.status = 200;
+      ctx.body = diagrams.map((diagram) => serializeDiagramNoXml(diagram));
+    } else {
+      ctx.status = 404;
+      ctx.body = {
+        message: `No diagram with workflow_id: ${workflow_id}`,
+      };
+    }
+  } catch (err) {
+    throw new Error(err);
+  }
+
+  return next();
+};
+
 module.exports = {
   buildDiagram,
   buildDiagramNoBags,
   buildDiagramUserTask,
   getDefaultDiagram,
+  getDiagramsByWorkflowId,
 };
