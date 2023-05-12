@@ -130,6 +130,8 @@ function startEventListener(event) {
         );
       }
 
+      server.is_syncing = false;
+      server.last_sync = new Date();
       await serverCore.updateServer(server.id, server);
     } catch (err) {
       logger.error(

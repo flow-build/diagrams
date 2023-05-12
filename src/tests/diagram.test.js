@@ -101,7 +101,125 @@ describe('/server tests', () => {
 
       expect(response.status).toBe(202);
       expect(response.body.message).toEqual('Sync server queued');
-      expect(response.body.server.last_sync).toBeDefined();
+      expect(response.body.server.lastSync).toBeDefined();
+    });
+
+    test('should return 400 for server syncing', async () => {
+      const response = await request
+        .post(`/server/${server.id}/sync`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual('Server already syncing');
+    });
+  });
+
+  describe('DELETE /server/:id', () => {
+    test('should return 204 for server deleted (without workflows)', async () => {
+      const postResponse = await request
+        .post('/server')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          url: 'https://flowbuild-homolog.com',
+          namespace: 'homolog',
+        });
+
+      const response = await request
+        .delete(`/server/${postResponse.body.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
+    });
+
+    test('should return 204 for server deleted and workflows/diagrams related', async () => {
+      const postResponse = await request
+        .post('/server')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          url: 'https://flowbuild-homolog.com',
+          namespace: 'homolog',
+        });
+
+      const blueprintId = 'acd582d1-e46f-11ed-99b5-9be1e7057c57';
+      await db.raw(`
+        insert into blueprint (id,blueprint_spec)
+        values (
+          '${blueprintId}',
+          '${JSON.stringify(blueprintSample.blueprint_spec)}'
+        ) returning *`);
+
+      const diagramId = '920db220-e46e-11ed-99b5-9be1e7057c57';
+      await db.raw(`
+        insert into diagram (id,name,diagram_xml,user_id,blueprint_id,is_public,user_default,is_aligned)
+        values (
+          '${diagramId}',
+          'diagram test',
+          '<book>DiagramTest</book>',
+          '7ec419de-e9b2-4f19-b6d6-5f17f6061ab8',
+          '${blueprintId}',
+          true,
+          false,
+          false
+        ) returning *`);
+
+      const workflowId = 'd23c52f0-dae8-11ed-9c3f-490ac62bb231';
+      await db.raw(`
+      insert into workflow (id,name,version,server_id,blueprint_id)
+      values (
+        '${workflowId}',
+        'workflow test',
+        1,
+        '${postResponse.body.id}',
+        '${blueprintId}'
+      ) returning *`);
+
+      const response = await request
+        .delete(`/server/${postResponse.body.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
+    });
+
+    test('should return 404 for server not found', async () => {
+      const response = await request
+        .delete(`/server/be453c12-c2ad-46cf-b8fd-2e84fe7e6c26`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toEqual('Server not found');
+    });
+
+    test('should return 400 for server syncing', async () => {
+      nock(server.url).post('/token').reply(200, {
+        token: 'genericTestToken',
+      });
+
+      nock(server.url)
+        .get('/workflows')
+        .reply(200, [
+          {
+            workflow_id: 'c9e462d1-d937-11ed-8082-8dae5ebf27f6',
+            created_at: '2023-04-12T13:41:55.197Z',
+            name: 'testWorkflow',
+            description: 'Workflow for test',
+            version: 1,
+          },
+        ]);
+
+      await request
+        .post(`/server/${server.id}/sync`)
+        .set('Authorization', `Bearer ${token}`);
+
+      const response = await request
+        .delete(`/server/${server.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual(
+        'Server syncing, cannot be deleted right now'
+      );
     });
   });
 });
@@ -182,12 +300,12 @@ describe('/diagram tests', () => {
       ) returning *`);
 
       expect(rows[0].user_default).toBe(false);
-      const postResponse = await request
+      const response = await request
         .patch(`/diagram/${id}/default`)
         .set('Authorization', `Bearer ${token}`);
 
-      expect(postResponse.status).toBe(200);
-      expect(postResponse.body.isDefault).toBe(true);
+      expect(response.status).toBe(200);
+      expect(response.body.isDefault).toBe(true);
     });
 
     test('should return 403', async () => {
@@ -204,18 +322,18 @@ describe('/diagram tests', () => {
         false
       ) returning *`);
 
-      const postResponse = await request
+      const response = await request
         .patch(`/diagram/${id}/default`)
         .set('Authorization', `Bearer ${token}`);
 
-      expect(postResponse.status).toBe(403);
-      expect(postResponse.body.message).toBe('FORBIDDEN');
+      expect(response.status).toBe(403);
+      expect(response.body.message).toBe('FORBIDDEN');
     });
   });
 
   describe('PATCH /diagram/:id', () => {
     test('should return 201', async () => {
-      const postResponse = await request
+      const response = await request
         .patch(`/diagram/${diagramId}`)
         .set('Authorization', `Bearer ${token}`)
         .send({
@@ -224,63 +342,63 @@ describe('/diagram tests', () => {
           isPublic: true,
         });
 
-      expect(postResponse.status).toBe(200);
-      expect(postResponse.body).toBeDefined();
-      expect(postResponse.body.id).toEqual(diagramId);
-      expect(postResponse.body.name).toEqual('Upgraded Diagram');
-      expect(postResponse.body.isPublic).toBeTruthy();
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.id).toEqual(diagramId);
+      expect(response.body.name).toEqual('Upgraded Diagram');
+      expect(response.body.isPublic).toBeTruthy();
     });
 
     test('should return 400 for invalid diagram id', async () => {
-      const postResponse = await request
+      const response = await request
         .patch(`/diagram/123456`)
         .set('Authorization', `Bearer ${token}`)
         .send({
           name: 'Upgraded Diagram',
         });
 
-      expect(postResponse.status).toBe(400);
-      expect(postResponse.body.message).toEqual('Invalid uuid');
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual('Invalid uuid');
     });
   });
 
   describe('GET /diagram/:id', () => {
     test('should return 200 with diagram xml', async () => {
-      const postResponse = await request
+      const response = await request
         .get(`/diagram/${diagramId}`)
         .set('Authorization', `Bearer ${token}`);
 
-      expect(postResponse.status).toBe(200);
-      expect(postResponse.body).toBeDefined();
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
     });
 
     test('should return 404 for diagram not found', async () => {
-      const postResponse = await request
+      const response = await request
         .get(`/diagram/be453c12-c2ad-46cf-b8fd-2e84fe7e6c26`)
         .set('Authorization', `Bearer ${token}`);
 
-      expect(postResponse.status).toBe(404);
-      expect(postResponse.body.message).toEqual('Diagram not found');
+      expect(response.status).toBe(404);
+      expect(response.body.message).toEqual('Diagram not found');
     });
   });
 
   describe('DELETE /diagram/:id', () => {
     test('should return 204 for diagram deleted', async () => {
-      const postResponse = await request
+      const response = await request
         .delete(`/diagram/${diagramId}`)
         .set('Authorization', `Bearer ${token}`);
 
-      expect(postResponse.status).toBe(204);
-      expect(postResponse.body).toEqual({});
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
     });
 
     test('should return 404 for diagram not found', async () => {
-      const postResponse = await request
+      const response = await request
         .get(`/diagram/be453c12-c2ad-46cf-b8fd-2e84fe7e6c26`)
         .set('Authorization', `Bearer ${token}`);
 
-      expect(postResponse.status).toBe(404);
-      expect(postResponse.body.message).toEqual('Diagram not found');
+      expect(response.status).toBe(404);
+      expect(response.body.message).toEqual('Diagram not found');
     });
   });
 });
@@ -353,12 +471,12 @@ describe('GET /workflow/:id/default', () => {
       false
     ) returning *`);
 
-    const postResponse = await request
+    const response = await request
       .get('/workflow/2412a3e2-d076-4722-b7e1-17d72a6388d6/default')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(postResponse.status).toBe(200);
-    expect(postResponse.body).toBeDefined();
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
   });
 });
 
@@ -386,13 +504,13 @@ describe('GET /workflow/:id', () => {
       '42a9a60e-e2e5-4d21-8e2f-67318b100e38'
     ) returning *`);
 
-    const postResponse = await request
+    const response = await request
       .get('/workflow/ae7e95f6-787a-4c0b-8e1a-4cc122e7d68f')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(postResponse.status).toBe(200);
-    expect(postResponse.body).toHaveLength(2);
-    expect(postResponse.body[0].isPublic).toBe(false);
-    expect(postResponse.body[1].isPublic).toBe(true);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(2);
+    expect(response.body[0].isPublic).toBe(false);
+    expect(response.body[1].isPublic).toBe(true);
   });
 });
