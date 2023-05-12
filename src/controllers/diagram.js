@@ -16,8 +16,6 @@ const serializeDiagramNoXml = (diagram) => {
     isDefault: diagram.user_default,
     isPublic: diagram.is_public,
     workflowId: diagram.workflow_id,
-    serverId: diagram.server_id,
-    serverUrl: diagram.server_url,
     aligned: diagram.aligned,
     createdAt: diagram.created_at,
     updatedAt: diagram.updated_at,

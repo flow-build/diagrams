@@ -95,7 +95,7 @@ const syncServer = async (ctx, next) => {
     ctx.status = 202;
     ctx.body = {
       message: 'Sync server queued',
-      server,
+      server: serializeServer(server),
     };
   } catch (err) {
     throw new Error(err);

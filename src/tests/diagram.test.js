@@ -101,7 +101,7 @@ describe('/server tests', () => {
 
       expect(response.status).toBe(202);
       expect(response.body.message).toEqual('Sync server queued');
-      expect(response.body.server.last_sync).toBeDefined();
+      expect(response.body.server.lastSync).toBeDefined();
     });
 
     test('should return 400 for server syncing', async () => {
