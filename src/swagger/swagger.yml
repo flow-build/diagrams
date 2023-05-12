@@ -1,6 +1,6 @@
 openapi: '3.0.0'
 info:
-  version: 1.2.1
+  version: 1.5.0
   title: Diagrams API
 components:
   securitySchemes:
@@ -11,30 +11,10 @@ components:
 security:
   - bearerAuth: []
 paths:
-  /token:
-    get:
-      tags:
-        - token
-      summary: Generate a new token
-      description: Generate a new token that grants access do Diagrams API methods
-
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  jwtToken:
-                    type: string
-              example: { 'jwtToken': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.Fzyj62HwBhH2bNZkd9x1fd2s8TIuzUO8JmDMLAcPALY' }
-        '500':
-          description: Internal Server Error
-  /diagrams:
+  /diagram:
     post:
       tags:
-      - diagrams
+      - diagram
       summary: Save new diagram
       description: >
         Create a new diagram
@@ -48,20 +28,22 @@ paths:
                 name:
                   type: string
                   description: Diagram name
-                workflow_id:
-                  type: string
-                  format: uuid
-                  description: Id of diagram workflow
-                user_id:
-                  type: string
-                  description: Id of user that made the diagram
-                diagram_xml:
+                xml:
                   type: xml
                   description: Diagram xml
+                workflowId:
+                  type: string
+                  format: uuid
+                  description: Id of diagram's workflow
+                isDefault:
+                  type: boolean
+                  description: Set if the diagram is default
+                isPublic:
+                  type: boolean
+                  description: Set if the diagram is public
               required:
                 - name
-                - diagram_xml
-                - user_id
+                - xml
       responses:
         '201':
           description: Created
@@ -74,52 +56,25 @@ paths:
                     type: string
                   name:
                     type: string
-                  user_id:
+                  type:
                     type: string
-                  created_at:
+                  userId:
                     type: string
-                  updated_at:
+                  isDefault:
+                    type: boolean
+                  isPublic:
+                    type: boolean
+                  createdAt:
                     type: string
               example:
                 {
-                  "id": "9d99e4a3-1820-4893-b5d9-2f7115c490b1",
-                  "name": "Example Number 1",
-                  "user_id": "0",
-                  "created_at": "2022-08-23T19:36:37.804Z",
-                  "updated_at": "2022-08-23T19:36:37.804Z"
-                }
-        '202':
-          description: Accepted
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  diagram:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      user_id:
-                        type: string
-                      workflow_id:
-                        type: string
-                      created_at:
-                        type: string
-              example:
-                {
-                  "message": "Diagram Created. Alignment Queued",
-                  "diagram": {
-                    "id": "cafd4abd-02aa-42cf-9040-fd1137829d6c",
-                    "name": "Example Queued",
-                    "user_id": "5",
-                    "workflow_id": "8fc66458-1137-4c1a-9aef-5dcdca9a19f6",
-                    "created_at": "2022-10-20T19:47:39.435Z"
-                  }
+                  "id": "fedd708b-23fd-49e2-9e84-cdf6c60a68fc",
+                  "name": "test",
+                  "type": "standard",
+                  "userId": "6b218d89-5cba-4443-a218-005ab926cb3e",
+                  "isDefault": false,
+                  "isPublic": null,
+                  "createdAt": "2023-05-12T20:11:18.413Z"
                 }
         '400':
           description: Bad Request
@@ -146,7 +101,7 @@ paths:
           description: Internal Server Error
     get:
       tags:
-      - diagrams
+      - diagram
       summary: Get all diagrams
       description: >
         Get all diagrams from server
@@ -162,47 +117,57 @@ paths:
                   properties:
                     id:
                       type: string
+                      format: uuid
                     name:
                       type: string
-                    user_id:
+                    type:
                       type: string
-                    workflow_id:
+                    userId:
                       type: string
-                    aligned:
+                    workflowId:
+                      type: string
+                      format: uuid
+                    isDefault:
                       type: boolean
-                    created_at:
+                    isPublic:
+                      type: boolean
+                    createdAt:
                       type: string
-                    updated_at:
+                    updatedAt:
                       type: string
               example:
                 [
                   {
-                    "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
-                    "name": "First Example",
-                    "user_id": "1",
-                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                    "aligned": true,
-                    "created_at": "2022-08-23T19:28:19.024Z",
-                    "updated_at": "2022-08-23T19:28:32.693Z"
+                    "id": "8f19a9a0-10b8-4a06-b2db-34311d28987d",
+                    "name": "diagramOne",
+                    "type": "usertask",
+                    "userId": null,
+                    "isDefault": false,
+                    "isPublic": true,
+                    "workflowId": "b0e175e1-f0eb-11ed-a912-956757768b67",
+                    "createdAt": "2023-05-12T19:12:49.282Z",
+                    "updatedAt": "2023-05-12T19:12:49.287Z"
                   },
                   {
-                    "id": "0930048b-2cf7-4de9-ac4d-65f6c2afa016",
-                    "name": "Second Example",
-                    "user_id": "2",
-                    "workflow_id": null,
-                    "aligned": null,
-                    "created_at": "2022-08-23T15:13:26.869Z",
-                    "updated_at": "2022-08-23T16:03:49.115Z"
+                    "id": "b51f3e77-d95f-4f9f-9e8b-38ce8de4ed92",
+                    "name": "diagramTwo",
+                    "type": "nobags",
+                    "userId": null,
+                    "isDefault": false,
+                    "isPublic": true,
+                    "workflowId": "b0e175e1-f0eb-11ed-a912-956757768b67",
+                    "createdAt": "2023-05-12T19:12:49.253Z",
+                    "updatedAt": "2023-05-12T19:12:49.258Z"
                   },
                 ]
         '401':
           description: Unauthorized
         '500':
-          description: Internal Server Error 
-  /diagrams/{id}:
+          description: Internal Server Error
+  /diagram/{id}:
     get:
       tags:
-      - diagrams
+      - diagram
       summary: Get diagram by id
       description: >
         Get a specific diagram xml by the diagram id
@@ -252,7 +217,7 @@ paths:
           description: Internal Server Error
     patch:
       tags:
-      - diagrams
+      - diagram
       summary: Update a diagram by id
       description: >
         Update a specific diagram by the diagram id
@@ -274,9 +239,22 @@ paths:
                 name:
                   type: string
                   description: Diagram name
-                diagram_xml:
+                xml:
                   type: xml
                   description: Diagram xml
+                workflowId:
+                  type: string
+                  format: uuid
+                  description: Id of diagram's workflow
+                isDefault:
+                  type: boolean
+                  description: Set if the diagram is default
+                isPublic:
+                  type: boolean
+                  description: Set if the diagram is public
+              required:
+                - name
+                - xml
       responses:
         '200':
           description: OK
@@ -289,22 +267,28 @@ paths:
                     type: string
                   name:
                     type: string
-                  user_id:
+                  type:
                     type: string
-                  aligned:
+                  userId:
+                    type: string
+                  isDefault:
                     type: boolean
-                  created_at:
+                  isPublic:
+                    type: boolean
+                  createdAt:
                     type: string
-                  updated_at:
+                  updatedAt:
                     type: string
               example:
                 {
-                  "id": "9d99e4a3-1820-4893-b5d9-2f7115c490b1",
-                  "name": "Example 1 Updated",
-                  "user_id": "0",
-                  "aligned": null,
-                  "created_at": "2022-08-23T19:36:37.804Z",
-                  "updated_at": "2022-08-23T19:36:37.804Z"
+                  "id": "fedd708b-23fd-49e2-9e84-cdf6c60a68fc",
+                  "name": "Updated",
+                  "type": "standard",
+                  "userId": "6b218d89-5cba-4443-a218-005ab926cb3e",
+                  "isDefault": false,
+                  "isPublic": null,
+                  "createdAt": "2023-05-12T20:11:18.461Z",
+                  "updatedAt": "2023-05-12T20:17:33.863Z"
                 }
         '400':
           description: Bad Request
@@ -325,7 +309,7 @@ paths:
                     },
                     {
                       "field": "",
-                      "message": "must have required property 'diagram_xml'"
+                      "message": "must have required property 'xml'"
                     },
                     {
                       "field": "",
@@ -356,7 +340,7 @@ paths:
           description: Internal Server Error
     delete:
       tags:
-      - diagrams
+      - diagram
       summary: Delete diagram by id
       description: >
         Delete a specific diagram by the diagram id
@@ -401,89 +385,148 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
-  /diagrams/user/{id}:
-    get:
+  /workflow:
+    post:
       tags:
-      - diagrams/user
-      summary: Get diagrams by user id
-      description: >
-        Get all diagrams of user by user id
-      parameters:
-        - in: path
-          name: id
-          description: User id
-          required: true
-          schema:
-            type: string
+        - workflow
+      summary: Build a diagram by the given blueprint_spec
+      description: Build a diagram by the given blueprint_spec
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Blueprint name
+                description:
+                  type: string
+                  description: Blueprint description
+                blueprint_spec:
+                  description: Blueprint spec
+                  type: object
+                  properties:
+                    lanes:
+                      type: array
+                      items:
+                        type: object
+                    nodes:
+                      type: array
+                      items:
+                        type: object
+                  required:
+                    - lanes
+                    - nodes
+              required:
+                - blueprint_spec
+
       responses:
         '200':
           description: OK
           content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    name:
-                      type: string
-                    user_id:
-                      type: string
-                    workflow_id:
-                      type: string
-                    aligned:
-                      type: boolean
-                    created_at:
-                      type: string
-                    updated_at:
-                      type: string
-              example:
-                [
-                  {
-                    "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
-                    "name": "Just An Example",
-                    "user_id": "1",
-                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                    "aligned": null,
-                    "created_at": "2022-08-23T19:28:19.024Z",
-                    "updated_at": "2022-08-23T19:28:32.693Z"
-                  },
-                  {
-                    "id": "0930048b-2cf7-4de9-ac4d-65f6c2afa016",
-                    "name": "Any Example",
-                    "user_id": "1",
-                    "workflow_id": null,
-                    "aligned": null,
-                    "created_at": "2022-08-23T15:13:26.869Z",
-                    "updated_at": "2022-08-23T16:03:49.115Z"
-                  },
-                ]
-        '401':
-          description: Unauthorized
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                {
-                  "message": "No diagram with user_id: 5"
-                }
+            text/html; charset=utf-8:
+              example: <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"><bpmn:process id="Global_Process" isExecutable="true"><bpmn:laneSet id="Global_LaneSet"><bpmn:lane id="Lane_anyone" name="anyone"><bpmn:flowNodeRef>Node_START</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_BAG</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_END</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet><bpmn:startEvent xmlns:custom="http://custom/ns" id="Node_START" name="Start Example" custom:parameters="{&#39;timeout&#39;:100,&#39;input_schema&#39;:{}}"><bpmn:outgoing>Flow_START_BAG</bpmn:outgoing></bpmn:startEvent><bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_BAG" name="Set to bag" custom:parameters="{&#39;input&#39;:{&#39;user_id&#39;:&#39;1&#39;}}" custom:category="settobag"><bpmn:incoming>Flow_START_BAG</bpmn:incoming><bpmn:outgoing>Flow_BAG_END</bpmn:outgoing></bpmn:serviceTask><bpmn:endEvent xmlns:custom="http://custom/ns" id="Node_END" name="END" custom:parameters="{}"><bpmn:incoming>Flow_BAG_END</bpmn:incoming></bpmn:endEvent><bpmn:sequenceFlow id="Flow_START_BAG" sourceRef="Node_START" targetRef="Node_BAG" /><bpmn:sequenceFlow id="Flow_BAG_END" sourceRef="Node_BAG" targetRef="Node_END" /></bpmn:process><bpmn:collaboration id="Global_Colab" workflowId="gUv_xxzmOJx5lMYzrxYZh"><bpmn:participant id="Global_Actor" name="DIAGRAM_EXAMPLE" processRef="Global_Process" /></bpmn:collaboration><bpmndi:BPMNDiagram id="Global_Diagram"><bpmndi:BPMNPlane id="Global_Plane" bpmnElement="Global_Colab"><bpmndi:BPMNShape id="Node_START_di" bpmnElement="Node_START"><dc:Bounds x="114" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_BAG_di" bpmnElement="Node_BAG" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#fb8c00"><dc:Bounds x="180" y="50" width="100" height="80" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_END_di" bpmnElement="Node_END"><dc:Bounds x="310" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNEdge id="Flow_START_BAG_di" bpmnElement="Flow_START_BAG"><di:waypoint x="150" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="180" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="Flow_BAG_END_di" bpmnElement="Flow_BAG_END"><di:waypoint x="280" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="310" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNShape id="Lane_anyone_di" bpmnElement="Lane_anyone"><dc:Bounds x="80" y="10" width="360" height="160" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Global_Actor_di" bpmnElement="Global_Actor"><dc:Bounds x="50" y="10" width="390" height="160" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>
         '500':
           description: Internal Server Error
-  /diagrams/workflow/{id}:
+  /workflow/nobags:
+    post:
+      tags:
+        - workflow
+      summary: Build a diagram without setToBag nodes by the given blueprint_spec
+      description: Build a diagram without setToBag nodes by the given blueprint_spec
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Blueprint name
+                description:
+                  type: string
+                  description: Blueprint description
+                blueprint_spec:
+                  description: Blueprint spec
+                  type: object
+                  properties:
+                    lanes:
+                      type: array
+                      items:
+                        type: object
+                    nodes:
+                      type: array
+                      items:
+                        type: object
+                  required:
+                    - lanes
+                    - nodes
+              required:
+                - blueprint_spec
+
+      responses:
+        '200':
+          description: OK
+          content:
+            text/html; charset=utf-8:
+              example: <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"><bpmn:process id="Global_Process" isExecutable="true"><bpmn:laneSet id="Global_LaneSet"><bpmn:lane id="Lane_anyone" name="anyone"><bpmn:flowNodeRef>Node_START</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_BAG</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_END</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet><bpmn:startEvent xmlns:custom="http://custom/ns" id="Node_START" name="Start Example" custom:parameters="{&#39;timeout&#39;:100,&#39;input_schema&#39;:{}}"><bpmn:outgoing>Flow_START_BAG</bpmn:outgoing></bpmn:startEvent><bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_BAG" name="Set to bag" custom:parameters="{&#39;input&#39;:{&#39;user_id&#39;:&#39;1&#39;}}" custom:category="settobag"><bpmn:incoming>Flow_START_BAG</bpmn:incoming><bpmn:outgoing>Flow_BAG_END</bpmn:outgoing></bpmn:serviceTask><bpmn:endEvent xmlns:custom="http://custom/ns" id="Node_END" name="END" custom:parameters="{}"><bpmn:incoming>Flow_BAG_END</bpmn:incoming></bpmn:endEvent><bpmn:sequenceFlow id="Flow_START_BAG" sourceRef="Node_START" targetRef="Node_BAG" /><bpmn:sequenceFlow id="Flow_BAG_END" sourceRef="Node_BAG" targetRef="Node_END" /></bpmn:process><bpmn:collaboration id="Global_Colab" workflowId="gUv_xxzmOJx5lMYzrxYZh"><bpmn:participant id="Global_Actor" name="DIAGRAM_EXAMPLE" processRef="Global_Process" /></bpmn:collaboration><bpmndi:BPMNDiagram id="Global_Diagram"><bpmndi:BPMNPlane id="Global_Plane" bpmnElement="Global_Colab"><bpmndi:BPMNShape id="Node_START_di" bpmnElement="Node_START"><dc:Bounds x="114" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_BAG_di" bpmnElement="Node_BAG" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#fb8c00"><dc:Bounds x="180" y="50" width="100" height="80" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_END_di" bpmnElement="Node_END"><dc:Bounds x="310" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNEdge id="Flow_START_BAG_di" bpmnElement="Flow_START_BAG"><di:waypoint x="150" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="180" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="Flow_BAG_END_di" bpmnElement="Flow_BAG_END"><di:waypoint x="280" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="310" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNShape id="Lane_anyone_di" bpmnElement="Lane_anyone"><dc:Bounds x="80" y="10" width="360" height="160" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Global_Actor_di" bpmnElement="Global_Actor"><dc:Bounds x="50" y="10" width="390" height="160" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>
+        '500':
+          description: Internal Server Error
+  /workflow/usertask:
+    post:
+      tags:
+        - workflow
+      summary: Build a diagram with only start, flow, finish, userTask, timer and event nodes
+      description: Build a diagram with only start, flow, finish, userTask, timer and event nodes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Blueprint name
+                description:
+                  type: string
+                  description: Blueprint description
+                blueprint_spec:
+                  description: Blueprint spec
+                  type: object
+                  properties:
+                    lanes:
+                      type: array
+                      items:
+                        type: object
+                    nodes:
+                      type: array
+                      items:
+                        type: object
+                  required:
+                    - lanes
+                    - nodes
+              required:
+                - blueprint_spec
+
+      responses:
+        '200':
+          description: OK
+          content:
+            text/html; charset=utf-8:
+              example: <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"><bpmn:process id="Global_Process" isExecutable="true"><bpmn:laneSet id="Global_LaneSet"><bpmn:lane id="Lane_anyone" name="anyone"><bpmn:flowNodeRef>Node_START</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_BAG</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_END</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet><bpmn:startEvent xmlns:custom="http://custom/ns" id="Node_START" name="Start Example" custom:parameters="{&#39;timeout&#39;:100,&#39;input_schema&#39;:{}}"><bpmn:outgoing>Flow_START_BAG</bpmn:outgoing></bpmn:startEvent><bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_BAG" name="Set to bag" custom:parameters="{&#39;input&#39;:{&#39;user_id&#39;:&#39;1&#39;}}" custom:category="settobag"><bpmn:incoming>Flow_START_BAG</bpmn:incoming><bpmn:outgoing>Flow_BAG_END</bpmn:outgoing></bpmn:serviceTask><bpmn:endEvent xmlns:custom="http://custom/ns" id="Node_END" name="END" custom:parameters="{}"><bpmn:incoming>Flow_BAG_END</bpmn:incoming></bpmn:endEvent><bpmn:sequenceFlow id="Flow_START_BAG" sourceRef="Node_START" targetRef="Node_BAG" /><bpmn:sequenceFlow id="Flow_BAG_END" sourceRef="Node_BAG" targetRef="Node_END" /></bpmn:process><bpmn:collaboration id="Global_Colab" workflowId="gUv_xxzmOJx5lMYzrxYZh"><bpmn:participant id="Global_Actor" name="DIAGRAM_EXAMPLE" processRef="Global_Process" /></bpmn:collaboration><bpmndi:BPMNDiagram id="Global_Diagram"><bpmndi:BPMNPlane id="Global_Plane" bpmnElement="Global_Colab"><bpmndi:BPMNShape id="Node_START_di" bpmnElement="Node_START"><dc:Bounds x="114" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_BAG_di" bpmnElement="Node_BAG" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#fb8c00"><dc:Bounds x="180" y="50" width="100" height="80" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_END_di" bpmnElement="Node_END"><dc:Bounds x="310" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNEdge id="Flow_START_BAG_di" bpmnElement="Flow_START_BAG"><di:waypoint x="150" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="180" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="Flow_BAG_END_di" bpmnElement="Flow_BAG_END"><di:waypoint x="280" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="310" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNShape id="Lane_anyone_di" bpmnElement="Lane_anyone"><dc:Bounds x="80" y="10" width="360" height="160" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Global_Actor_di" bpmnElement="Global_Actor"><dc:Bounds x="50" y="10" width="390" height="160" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>
+        '500':
+          description: Internal Server Error
+  /workflow/{id}:
     get:
       tags:
-      - diagrams/workflow
-      summary: Get diagrams by workflow id
+      - workflow
+      summary: Get all diagrams for workflow id
       description: >
-        Get all diagrams of workflow by workflow id
+        Get all diagrams for workflow id
       parameters:
         - in: path
           name: id
@@ -504,39 +547,87 @@ paths:
                   properties:
                     id:
                       type: string
+                      format: uuid
                     name:
                       type: string
-                    user_id:
+                    type:
                       type: string
-                    workflow_id:
+                    userId:
                       type: string
-                    aligned:
+                    workflowId:
+                      type: string
+                      format: uuid
+                    isDefault:
                       type: boolean
-                    created_at:
+                    isPublic:
+                      type: boolean
+                    createdAt:
                       type: string
-                    updated_at:
+                    updatedAt:
                       type: string
               example:
                 [
                   {
-                    "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
-                    "name": "Some Example",
-                    "user_id": "1",
-                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                    "aligned": false,
-                    "created_at": "2022-08-23T19:28:19.024Z",
-                    "updated_at": "2022-08-23T19:28:32.693Z"
+                    "id": "8f19a9a0-10b8-4a06-b2db-34311d28987d",
+                    "name": "diagramOne",
+                    "type": "usertask",
+                    "userId": null,
+                    "isDefault": false,
+                    "isPublic": true,
+                    "workflowId": "b0e175e1-f0eb-11ed-a912-956757768b67",
+                    "createdAt": "2023-05-12T19:12:49.282Z",
+                    "updatedAt": "2023-05-12T19:12:49.287Z"
                   },
                   {
-                    "id": "0930048b-2cf7-4de9-ac4d-65f6c2afa016",
-                    "name": "Another Example",
-                    "user_id": "2",
-                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                    "aligned": null,
-                    "created_at": "2022-08-23T15:13:26.869Z",
-                    "updated_at": "2022-08-23T16:03:49.115Z"
+                    "id": "b51f3e77-d95f-4f9f-9e8b-38ce8de4ed92",
+                    "name": "diagramTwo",
+                    "type": "nobags",
+                    "userId": null,
+                    "isDefault": false,
+                    "isPublic": true,
+                    "workflowId": "b0e175e1-f0eb-11ed-a912-956757768b67",
+                    "createdAt": "2023-05-12T19:12:49.253Z",
+                    "updatedAt": "2023-05-12T19:12:49.258Z"
                   },
                 ]
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "No diagram with workflow_id: ca78b391-d937-11ed-8082-8dae5ebf27f6"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /workflow/{id}/default:
+    get:
+      tags:
+      - workflow
+      summary: Get default diagram for workflow id
+      description: >
+        Get default diagram for workflow id
+      parameters:
+        - in: path
+          name: id
+          description: Workflow id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            text/html; charset=utf-8:
+              example: <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"><bpmn:process id="Global_Process" isExecutable="true"><bpmn:laneSet id="Global_LaneSet"><bpmn:lane id="Lane_anyone" name="anyone"><bpmn:flowNodeRef>Node_START</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_BAG</bpmn:flowNodeRef><bpmn:flowNodeRef>Node_END</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet><bpmn:startEvent xmlns:custom="http://custom/ns" id="Node_START" name="Start Example" custom:parameters="{&#39;timeout&#39;:100,&#39;input_schema&#39;:{}}"><bpmn:outgoing>Flow_START_BAG</bpmn:outgoing></bpmn:startEvent><bpmn:serviceTask xmlns:custom="http://custom/ns" id="Node_BAG" name="Set to bag" custom:parameters="{&#39;input&#39;:{&#39;user_id&#39;:&#39;1&#39;}}" custom:category="settobag"><bpmn:incoming>Flow_START_BAG</bpmn:incoming><bpmn:outgoing>Flow_BAG_END</bpmn:outgoing></bpmn:serviceTask><bpmn:endEvent xmlns:custom="http://custom/ns" id="Node_END" name="END" custom:parameters="{}"><bpmn:incoming>Flow_BAG_END</bpmn:incoming></bpmn:endEvent><bpmn:sequenceFlow id="Flow_START_BAG" sourceRef="Node_START" targetRef="Node_BAG" /><bpmn:sequenceFlow id="Flow_BAG_END" sourceRef="Node_BAG" targetRef="Node_END" /></bpmn:process><bpmn:collaboration id="Global_Colab" workflowId="gUv_xxzmOJx5lMYzrxYZh"><bpmn:participant id="Global_Actor" name="DIAGRAM_EXAMPLE" processRef="Global_Process" /></bpmn:collaboration><bpmndi:BPMNDiagram id="Global_Diagram"><bpmndi:BPMNPlane id="Global_Plane" bpmnElement="Global_Colab"><bpmndi:BPMNShape id="Node_START_di" bpmnElement="Node_START"><dc:Bounds x="114" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_BAG_di" bpmnElement="Node_BAG" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#fb8c00"><dc:Bounds x="180" y="50" width="100" height="80" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Node_END_di" bpmnElement="Node_END"><dc:Bounds x="310" y="72" width="36" height="36" /></bpmndi:BPMNShape><bpmndi:BPMNEdge id="Flow_START_BAG_di" bpmnElement="Flow_START_BAG"><di:waypoint x="150" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="160" y="90" /><di:waypoint x="180" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="Flow_BAG_END_di" bpmnElement="Flow_BAG_END"><di:waypoint x="280" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="290" y="90" /><di:waypoint x="310" y="90" /></bpmndi:BPMNEdge><bpmndi:BPMNShape id="Lane_anyone_di" bpmnElement="Lane_anyone"><dc:Bounds x="80" y="10" width="360" height="160" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="Global_Actor_di" bpmnElement="Global_Actor"><dc:Bounds x="50" y="10" width="390" height="160" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>
         '400':
           description: Bad Request
           content:
@@ -550,8 +641,6 @@ paths:
                 {
                   "message": "Invalid uuid"
                 }
-        '401':
-          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -563,28 +652,43 @@ paths:
                     type: string
               example:
                 {
-                  "message": "No diagram with workflow_id: 7be513f4-98dc-43e2-8f3a-66e68a61aca8"
+                  "message": "No diagram with workflow_id: ca78b391-d937-11ed-8082-8dae5ebf27f6"
                 }
+        '401':
+          description: Unauthorized
         '500':
           description: Internal Server Error
-  /diagrams/workflow/{id}/latest:
-    get:
+  /server:
+    post:
       tags:
-      - diagrams/workflow
-      summary: Get last diagram by workflow id
+      - server
+      summary: Save new server
       description: >
-        Get last created or updated diagram of workflow by workflow id
-      parameters:
-        - in: path
-          name: id
-          description: Workflow id
-          required: true
-          schema:
-            type: string
-            format: uuid
+        Create a new server
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Server name
+                url:
+                  type: string
+                  description: Server xml
+                namespace:
+                  type: string
+                  description: Server namespace
+                config:
+                  type: object
+                  description: Server configuration
+              required:
+                - url
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           content:
             application/json:
               schema:
@@ -592,28 +696,213 @@ paths:
                 properties:
                   id:
                     type: string
-                  name:
+                    format: uuid
+                  url:
                     type: string
-                  user_id:
+                  namespace:
                     type: string
-                  workflow_id:
-                    type: string
-                  aligned:
+                  syncing:
                     type: boolean
-                  created_at:
-                    type: string
-                  updated_at:
+                  config:
+                    type: 
+                      - object
+                      - null
+              example:
+                {
+                  "id": "c01f5c21-f6a6-4a03-8679-d776feb80378",
+                  "url": "https://flowbuild-dev.com",
+                  "namespace": "dev",
+                  "syncing": false,
+                  "config": null
+                }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
                     type: string
               example:
                 {
-                  "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
-                  "name": "Latest Example",
-                  "user_id": "1",
-                  "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                  "aligned": null,
-                  "created_at": "2022-08-23T19:28:19.024Z",
-                  "updated_at": "2022-08-23T19:28:32.693Z"
+                  "message": "Server already saved with url 'https://flowbuild-dev.com'"
                 }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - server
+      summary: Get all servers
+      description: >
+        Get all servers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    url:
+                      type: string
+                    namespace:
+                      type: string
+                    syncing:
+                      type: boolean
+                    lastSync:
+                      type:
+                        - string
+                        - null
+                    config:
+                      type: 
+                        - object
+                        - null
+              example:
+                [
+                  {
+                    "id": "c01f5c21-f6a6-4a03-8679-d776feb80378",
+                    "url": "https://flowbuild-fscustomer.bunnyenv.com",
+                    "namespace": "fscustomer",
+                    "syncing": false,
+                    "config": null,
+                    "lastSync": null
+                  },
+                  {
+                    "id": "1c8f314b-5421-40cb-9a5b-73fca821c88f",
+                    "url": "http://localhost:8082",
+                    "namespace": "localhost",
+                    "syncing": false,
+                    "config": null,
+                    "lastSync": null
+                  }
+                ]
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /server/{id}/sync:
+    post:
+      tags:
+      - server
+      summary: Sync server
+      description: Sync server
+      parameters:
+        - in: path
+          name: id
+          description: Server id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  server:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      url:
+                        type: string
+                      namespace:
+                        type: string
+                      config:
+                        type:
+                          - object
+                          - null
+                      lastSync:
+                        type:
+                          - string
+                          - null
+                      syncing:
+                        type: boolean
+              example:
+                {
+                  "message": "Sync server queued",
+                  "server": {
+                    "id": "c01f5c21-f6a6-4a03-8679-d776feb80378",
+                    "url": "https://flowbuild-fscustomer.bunnyenv.com",
+                    "namespace": "fscustomer",
+                    "syncing": true,
+                    "config": null,
+                    "lastSync": null
+                  }
+                }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Invalid uuid"
+                }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Server not found"
+                }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                {
+                  "message": "Error trying to connect to server http://localhost:8082"
+                }
+  /server/{id}:
+    delete:
+      tags:
+      - server
+      summary: Delete server and diagrams/workflows related
+      description: >
+        Delete server and diagrams/workflows related
+      parameters:
+        - in: path
+          name: id
+          description: Server id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
         '204':
           description: No Content
         '400':
@@ -629,8 +918,6 @@ paths:
                 {
                   "message": "Invalid uuid"
                 }
-        '401':
-          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -642,103 +929,9 @@ paths:
                     type: string
               example:
                 {
-                  "message": "No diagram with workflow_id: 7be513f4-98dc-43e2-8f3a-66e68a61aca8"
-                }
-        '500':
-          description: Internal Server Error
-  /diagrams/user/{user_id}/workflow/{workflow_id}:
-    get:
-      tags:
-      - diagrams/user/workflow
-      summary: Get diagrams by user id and workflow id
-      description: >
-        Get all diagrams of user and workflow by user id and workflow id
-      parameters:
-        - in: path
-          name: user_id
-          description: User id
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: workflow_id
-          description: Workflow id
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    name:
-                      type: string
-                    user_id:
-                      type: string
-                    workflow_id:
-                      type: string
-                    aligned:
-                      type: boolean
-                    created_at:
-                      type: string
-                    updated_at:
-                      type: string
-              example:
-                [
-                  {
-                    "id": "0f1a4516-c43f-4d03-8ffe-3c020be982cc",
-                    "name": "Somewhat of Example",
-                    "user_id": "3",
-                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                    "aligned": null,
-                    "created_at": "2022-08-23T19:28:19.024Z",
-                    "updated_at": "2022-08-23T19:28:32.693Z"
-                  },
-                  {
-                    "id": "0930048b-2cf7-4de9-ac4d-65f6c2afa016",
-                    "name": "Another One",
-                    "user_id": "3",
-                    "workflow_id": "7be513f4-98dc-43e2-8f3a-66e68a61aca8",
-                    "aligned": false,
-                    "created_at": "2022-08-23T15:13:26.869Z",
-                    "updated_at": "2022-08-23T16:03:49.115Z"
-                  },
-                ]
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                {
-                  "message": "Invalid uuid"
+                  "message": "Server not found"
                 }
         '401':
           description: Unauthorized
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                {
-                  "message": "No diagram with workflow_id: 7be513f4-98dc-43e2-8f3a-66e68a61aca8 and user_id: 9"
-                }
         '500':
           description: Internal Server Error
