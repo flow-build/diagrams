@@ -367,7 +367,7 @@ describe('GET /workflow/:id', () => {
     await db.raw(`
     insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned,blueprint_id)
     values (
-      'f38ceaa7-051b-4093-9844-11de850df7ee',
+      '4b6bef81-4d54-40f4-b239-b5036d5c4335',
       'test',
       '<book>Test</book>',
       '5a27bca2-ba42-4e45-bb7d-e9df06c9caad',
