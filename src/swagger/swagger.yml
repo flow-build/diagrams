@@ -11,6 +11,35 @@ components:
 security:
   - bearerAuth: []
 paths:
+  /token:
+    post:
+      tags:
+        - token
+      summary: Generate a new token for the user id
+      description: Generate a new token that grants access do Diagrams API methods
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                  description: User id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwtToken:
+                    type: string
+        '500':
+          description: Internal Server Error
   /diagram:
     post:
       tags:
