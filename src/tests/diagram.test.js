@@ -72,7 +72,9 @@ describe('/server tests', () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body.message).toEqual(`Server already saved with url 'https://flowbuild-dev.com'`);
+      expect(response.body.message).toEqual(
+        `Server already saved with url 'https://flowbuild-dev.com'`
+      );
     });
   });
 
