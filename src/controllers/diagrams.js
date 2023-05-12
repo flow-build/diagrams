@@ -64,6 +64,7 @@ const saveDiagram = async (ctx, next) => {
       xml: diagram_xml,
       name,
       isDefault: user_default,
+      isPublic,
       workflowId: workflow_id,
       type,
     } = ctx.request.body;
@@ -74,6 +75,7 @@ const saveDiagram = async (ctx, next) => {
       user_id,
       user_default,
       type,
+      isPublic,
     });
 
     if (workflow_id) {
@@ -237,14 +239,9 @@ const getLatestDiagramByWorkflowId = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
-  const user_id = ctx.request.user_data?.userId;
 
   try {
     const diagram = await diagramCore.getLatestDiagramByWorkflowId(id);
-    const is_forbidden = forbidDiagramForUser(user_id, diagram, 'read');
-    if (is_forbidden) {
-      return forbiddenResponse(ctx, next);
-    }
 
     if (diagram) {
       ctx.status = 200;
@@ -393,4 +390,5 @@ module.exports = {
   updateDiagram,
   deleteDiagram,
   setDefaultDiagram,
+  serializeDiagramNoXml,
 };

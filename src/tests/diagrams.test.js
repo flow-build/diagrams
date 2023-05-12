@@ -284,3 +284,38 @@ describe('GET /workflow/:id/default', () => {
     expect(postResponse.body).toBeDefined();
   });
 });
+
+describe('GET /workflow/:id', () => {
+  test('should return 200 (getting public diagram)', async () => {
+    await db.raw(`
+    insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned,blueprint_id)
+    values (
+      'f38ceaa7-051b-4093-9844-11de850df7ee',
+      'test',
+      '<book>Test</book>',
+      '5a27bca2-ba42-4e45-bb7d-e9df06c9caad',
+      true,
+      false,
+      false,
+      '42a9a60e-e2e5-4d21-8e2f-67318b100e38'
+    ), (
+      'fadb2395-7352-4155-b253-0b9fadeb7640',
+      'test',
+      '<book>Test</book>',
+      '${userId}',
+      false,
+      false,
+      false,
+      '42a9a60e-e2e5-4d21-8e2f-67318b100e38'
+    ) returning *`);
+
+    const postResponse = await request
+      .get('/workflow/ae7e95f6-787a-4c0b-8e1a-4cc122e7d68f')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(postResponse.status).toBe(200);
+    expect(postResponse.body).toHaveLength(2);
+    expect(postResponse.body[0].isPublic).toBe(false);
+    expect(postResponse.body[1].isPublic).toBe(true);
+  });
+});

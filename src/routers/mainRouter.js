@@ -96,6 +96,11 @@ module.exports = (opts = {}) => {
     baseValidator.validateUUID,
     workflowController.getDefaultDiagram
   );
+  workflow.get(
+    '/:id',
+    baseValidator.validateUUID,
+    workflowController.getDiagramsByWorkflowId
+  );
 
   const server = new Router();
   server.prefix('/server');

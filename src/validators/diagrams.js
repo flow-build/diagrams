@@ -6,6 +6,7 @@ const validateSaveDiagram = validateBody({
   properties: {
     name: { type: 'string' },
     isDefault: { type: 'boolean' },
+    isPublic: { type: 'boolean' },
     workflowId: { type: 'string', format: 'uuid' },
     xml: {
       type: 'string',
