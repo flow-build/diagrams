@@ -61,6 +61,21 @@ describe('/server tests', () => {
         "must have required property 'url'"
       );
     });
+
+    test('should return 400 for existing url', async () => {
+      const response = await request
+        .post('/server')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          url: 'https://flowbuild-dev.com',
+          namespace: 'develop',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual(
+        `Server already saved with url 'https://flowbuild-dev.com'`
+      );
+    });
   });
 
   describe('GET /server', () => {
@@ -457,31 +472,8 @@ describe('POST /workflow/usertask', () => {
   });
 });
 
-describe('GET /workflow/:id/default', () => {
-  test('should return 200 (getting public diagram)', async () => {
-    await db.raw(`
-    insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
-    values (
-      'f38ceaa7-051b-4093-9844-11de850df7ee',
-      'test',
-      '<book>Test</book>',
-      '5a27bca2-ba42-4e45-bb7d-e9df06c9caad',
-      true,
-      false,
-      false
-    ) returning *`);
-
-    const response = await request
-      .get('/workflow/2412a3e2-d076-4722-b7e1-17d72a6388d6/default')
-      .set('Authorization', `Bearer ${token}`);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toBeDefined();
-  });
-});
-
-describe('GET /workflow/:id', () => {
-  test('should return 200 (getting public diagram)', async () => {
+describe('GET /workflow', () => {
+  beforeAll(async () => {
     await db.raw(`
     insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned,blueprint_id)
     values (
@@ -503,7 +495,18 @@ describe('GET /workflow/:id', () => {
       false,
       '42a9a60e-e2e5-4d21-8e2f-67318b100e38'
     ) returning *`);
+  });
 
+  test('GET /workflow/:id/default should return 200 (getting public diagram)', async () => {
+    const response = await request
+      .get('/workflow/ae7e95f6-787a-4c0b-8e1a-4cc122e7d68f/default')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+
+  test('GET /workflow/:id should return 200 (getting public diagram)', async () => {
     const response = await request
       .get('/workflow/ae7e95f6-787a-4c0b-8e1a-4cc122e7d68f')
       .set('Authorization', `Bearer ${token}`);
