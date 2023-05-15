@@ -178,7 +178,12 @@ const updateDiagram = async (ctx, next) => {
   const diagramCore = getDiagramCore();
 
   const { id } = ctx.params;
-  const { xml: diagram_xml, name, isPublic: is_public } = ctx.request.body;
+  const {
+    xml: diagram_xml,
+    name,
+    isPublic: is_public,
+    isDefault: user_default,
+  } = ctx.request.body;
   const user_id = ctx.request.user_data?.userId;
 
   try {
@@ -218,6 +223,7 @@ const updateDiagram = async (ctx, next) => {
       diagram_xml,
       name,
       is_public,
+      user_default,
       // aligned,
     });
     ctx.status = 200;
