@@ -1,3 +1,15 @@
+## [1.5.0-rc.9](https://github.com/flow-build/diagrams/compare/v1.5.0-rc.8...v1.5.0-rc.9) (2023-05-15)
+
+
+### Features
+
+* add user friendly response while saving existing url server ([553e0ae](https://github.com/flow-build/diagrams/commit/553e0ae04b430f619582c6b6922b9a00b3767073))
+
+
+### Bug Fixes
+
+* adjust route PATCH /diagram/:id ([fac2eb0](https://github.com/flow-build/diagrams/commit/fac2eb06dd828d1478cabef0550416200230fcce))
+
 ## [1.5.0-rc.8](https://github.com/flow-build/diagrams/compare/v1.5.0-rc.7...v1.5.0-rc.8) (2023-05-12)
 
 
