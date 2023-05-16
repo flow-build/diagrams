@@ -1,18 +1,18 @@
 require('dotenv').config();
-const { validate } = require('uuid');
-const supertest = require('supertest');
 const { startServer } = require('../app');
+const supertest = require('supertest');
 const { db } = require('../utils/db');
-const blueprintSample = require('../samples/blueprint');
+const { validate } = require('uuid');
 const diagramSample = require('fs').readFileSync(
   './src/samples/diagram.xml',
   'utf8'
-);
+  );
 const nock = require('nock');
+const blueprintSample = require('../samples/blueprint');
 
-let server;
-let request;
 let token;
+let request;
+let server;
 const userId = 'e8089f89-2af7-433f-86de-993e4374c581';
 
 beforeAll(async () => {

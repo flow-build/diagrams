@@ -28,10 +28,7 @@ const forbidDiagramForUser = (user_id, diagram, operation = 'update') => {
       return false;
     }
   }
-  if (diagram?.user_id !== user_id) {
-    return true;
-  }
-  return false;
+  return diagram?.user_id !== user_id;
 };
 
 const forbiddenResponse = (ctx, _next) => {
@@ -39,7 +36,7 @@ const forbiddenResponse = (ctx, _next) => {
   ctx.body = {
     message: 'FORBIDDEN',
   };
-  return;
+  return ctx;
 };
 
 const filterDiagrams = (user_id, diagrams, operation) => {
@@ -216,23 +213,6 @@ const updateDiagram = async (ctx, next) => {
       return;
     }
 
-    // temporarilly disabled
-    // let aligned;
-
-    // if (diagram.blueprint_id && diagram_xml) {
-    //   const { blueprint_spec } = await blueprintCore.getBlueprintById(
-    //     diagram.blueprint_id
-    //   );
-    //   if (blueprint_spec?.nodes) {
-    //     const blueprint = {
-    //       name: 'Check_Alignment',
-    //       description: 'Check alignmen',
-    //       blueprint_spec,
-    //     };
-    //     aligned = await checkAlignment(blueprint, diagram_xml);
-    //   }
-    // }
-
     if (isDefault && diagram.user_id && diagram.blueprint_id) {
       await diagramCore.setAsDefault(id);
     }
@@ -241,7 +221,6 @@ const updateDiagram = async (ctx, next) => {
       diagram_xml,
       name,
       is_public,
-      // aligned,
     });
     ctx.status = 200;
     ctx.body = serializeDiagramNoXml(diagramUpdated);
