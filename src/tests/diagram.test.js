@@ -6,7 +6,7 @@ const { validate } = require('uuid');
 const diagramSample = require('fs').readFileSync(
   './src/samples/diagram.xml',
   'utf8'
-  );
+);
 const nock = require('nock');
 const blueprintSample = require('../samples/blueprint');
 
