@@ -303,7 +303,7 @@ describe('/diagram tests', () => {
     test('should return 200', async () => {
       const id = '5bc839ca-f3ce-4d76-9b68-cfcfb0b39be0';
       const { rows } = await db.raw(`
-      insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned)
+      insert into diagram (id,name,diagram_xml,user_id,is_public,user_default,is_aligned,blueprint_id)
       values (
         '${id}',
         'test',
@@ -311,7 +311,8 @@ describe('/diagram tests', () => {
         '${userId}',
         false,
         false,
-        false
+        false,
+        '42a9a60e-e2e5-4d21-8e2f-67318b100e38'
       ) returning *`);
 
       expect(rows[0].user_default).toBe(false);
@@ -512,8 +513,9 @@ describe('GET /workflow', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(2);
-    expect(response.body[0].isPublic).toBe(false);
-    expect(response.body[1].isPublic).toBe(true);
+    expect(response.body).toHaveLength(3);
+    expect(response.body[0].isPublic).toBe(true);
+    expect(response.body[1].isPublic).toBe(false);
+    expect(response.body[2].isPublic).toBe(false);
   });
 });
