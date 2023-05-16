@@ -1,3 +1,10 @@
+## [1.5.0-rc.10](https://github.com/flow-build/diagrams/compare/v1.5.0-rc.9...v1.5.0-rc.10) (2023-05-16)
+
+
+### Bug Fixes
+
+* adjust setDefault ([d9075d5](https://github.com/flow-build/diagrams/commit/d9075d56c408e5d5946957037d100a3631f159f8))
+
 ## [1.5.0-rc.9](https://github.com/flow-build/diagrams/compare/v1.5.0-rc.8...v1.5.0-rc.9) (2023-05-15)
 
 
