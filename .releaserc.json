@@ -19,6 +19,13 @@
         }
     ],
     "plugins": [
+        "@semantic-release/npm",
+        [
+            "@semantic-release/release-notes-generator",
+            {
+                "preset": "conventionalcommits"
+            }
+        ],
         [
             "@semantic-release/commit-analyzer",
             {

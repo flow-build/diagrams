@@ -20,8 +20,8 @@ const validateBuildDiagram = validateBody({
               lane_id: { type: 'string' },
               next: { type: ['string', 'object', 'null'] },
               parameters: { type: 'object' },
-            }
-          }
+            },
+          },
         },
         lanes: {
           type: 'array',
@@ -32,14 +32,14 @@ const validateBuildDiagram = validateBody({
               id: { type: 'string' },
               name: { type: 'string' },
               rule: { type: ['object', 'array'] },
-            }
-          }
-        }
-      }
-    }
-  }
+            },
+          },
+        },
+      },
+    },
+  },
 });
 
 module.exports = {
   validateBuildDiagram,
-}
+};

@@ -17,16 +17,16 @@ const validateBody = (schema) => {
 
     if (!is_valid) {
       logger.debug(`Invalid request body: ${ajv.errors.length} error(s)`);
-      
+
       ctx.throw(400, {
         message: 'Invalid Request Body',
         errors: ajv.errors.map((err) => {
           const response = {
-            field: err.instancePath, 
-            message: err.message
-          }
+            field: err.instancePath,
+            message: err.message,
+          };
           return response;
-        })
+        }),
       });
 
       return next();
@@ -43,7 +43,7 @@ const validateBody = (schema) => {
     }
 
     return await next();
-  }
+  };
 };
 
 const validateUUID = async (ctx, next) => {
@@ -67,5 +67,5 @@ const validateUUID = async (ctx, next) => {
 
 module.exports = {
   validateBody,
-  validateUUID
-}
+  validateUUID,
+};

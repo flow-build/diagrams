@@ -1,31 +1,68 @@
 const _ = require('lodash');
 
 function getNextExcludingCategory(nodes, next, category) {
+  let node = { next };
   nodes.map((myNode) => {
-    if (next === myNode.id && myNode?.category?.toLowerCase() === category) {
-      next = myNode.next;
+    if (
+      node.next === myNode.id &&
+      myNode?.category?.toLowerCase() === category
+    ) {
+      node = myNode;
     }
   });
-  return next;
+  if (node?.category?.toLowerCase() === category) {
+    return getNextExcludingCategory(nodes, node.next, category);
+  }
+  return node.next;
 }
 
 function getNextOfPinnedNodes(nodes, next, pinnedNodes) {
+  let node = { next };
+  let nextNode;
   nodes.map((myNode) => {
-    if ((next === myNode.id) && !shouldPinNode(myNode, pinnedNodes)) {
-      next = myNode.next;
+    if (node.next === myNode.id) {
+      if (!shouldPinNode(myNode, pinnedNodes)) {
+        node = myNode;
+      } else {
+        nextNode = myNode;
+      }
     }
   });
-  return next;
+  if (
+    shouldPinNode(node, pinnedNodes) ||
+    shouldPinNode(nextNode, pinnedNodes)
+  ) {
+    return node.next;
+  } else {
+    return getNextOfPinnedNodes(nodes, node.next, pinnedNodes);
+  }
 }
 
 function shouldPinNode(node, nodesToPin) {
-  return nodesToPin.includes(node?.type?.toLowerCase()) || nodesToPin.includes(node?.category?.toLowerCase());
+  return (
+    nodesToPin.includes(node?.type?.toLowerCase()) ||
+    nodesToPin.includes(node?.category?.toLowerCase())
+  );
+}
+
+function orderBlueprintNodes(nodes) {
+  return nodes.sort((a, b) => {
+    if (a?.type?.toLowerCase() === 'start') {
+      return -1;
+    }
+    if (b?.type?.toLowerCase() === 'start') {
+      return 1;
+    }
+    return 0;
+  });
 }
 
 async function removeNodesByCategory(blueprint_spec, category) {
   let blueprint = _.cloneDeep(blueprint_spec);
   const nodes = _.cloneDeep(blueprint_spec.nodes);
-  const filteredNodes = nodes.filter((node) => node?.category?.toLowerCase() !== category);
+  const filteredNodes = nodes.filter(
+    (node) => node?.category?.toLowerCase() !== category
+  );
 
   blueprint.nodes = filteredNodes.map((node) => {
     // early return finish nodes
@@ -35,7 +72,11 @@ async function removeNodesByCategory(blueprint_spec, category) {
     // check unique nexts of flow nodes and get new next
     if (typeof node.next === 'object') {
       _.uniq(Object.entries(node.next)).map(([nextKey, nextValue]) => {
-        node.next[nextKey] = getNextExcludingCategory(nodes, nextValue, category);
+        node.next[nextKey] = getNextExcludingCategory(
+          nodes,
+          nextValue,
+          category
+        );
         if (node.id === node.next[nextKey]) {
           delete node.next[nextKey];
         }
@@ -45,6 +86,7 @@ async function removeNodesByCategory(blueprint_spec, category) {
     node.next = getNextExcludingCategory(nodes, node.next, category);
     return node;
   });
+  blueprint.nodes = orderBlueprintNodes(blueprint.nodes);
   return blueprint;
 }
 
@@ -71,10 +113,12 @@ async function pinNodesByTypeAndCategory(blueprint_spec, nodesToPin) {
     node.next = getNextOfPinnedNodes(nodes, node.next, nodesToPin);
     return node;
   });
+  blueprint.nodes = orderBlueprintNodes(blueprint.nodes);
   return blueprint;
 }
 
 module.exports = {
   removeNodesByCategory,
   pinNodesByTypeAndCategory,
-}
+  orderBlueprintNodes,
+};

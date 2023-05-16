@@ -17,8 +17,8 @@ Add a .env file with the following variables:
 - POSTGRES_DB (default = diagrams)
 - POSTGRES_HOST (default = localhost)
 - POSTGRES_PORT (default = 5432)
-- LOG_LEVEL (default = info)
-- FLOWBUILD_URL
+- DIAGRAMS_LOG_LEVEL (default = info)
+- CORE_LOG_LEVEL (default = info)
 
 ## Run the project on docker
 

@@ -1,7 +1,9 @@
-const diagramsValidator = require('./diagrams');
+const diagramValidator = require('./diagram');
 const workflowValidator = require('./workflow');
+const serverValidator = require('./server');
 
 module.exports = {
-  diagramsValidator,
+  diagramValidator,
   workflowValidator,
-}
+  serverValidator,
+};

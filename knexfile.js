@@ -10,18 +10,18 @@ module.exports = {
       port: process.env.POSTGRES_PORT || '5432',
       user: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgres',
-      database: process.env.POSTGRES_DB || 'diagrams'
+      database: process.env.POSTGRES_DB || 'diagrams',
     },
     pool: {
       min: 0,
-      max: 50
+      max: 50,
     },
     migrations: {
-      directory: path.join(BASE_PATH, 'migrations')
+      directory: path.join(BASE_PATH, 'migrations'),
     },
     seeds: {
-      directory: path.join(BASE_PATH, 'seeds')
-    }
+      directory: path.join(BASE_PATH, 'seeds'),
+    },
   },
   docker: {
     client: 'pg',
@@ -29,17 +29,17 @@ module.exports = {
       host: 'diagrams_db',
       user: 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgres',
-      database: 'diagrams'
+      database: 'diagrams',
     },
     pool: {
       min: 0,
-      max: 50
+      max: 50,
     },
     migrations: {
-      directory: path.join(BASE_PATH, 'migrations')
+      directory: path.join(BASE_PATH, 'migrations'),
     },
     seeds: {
-      directory: path.join(BASE_PATH, 'seeds')
-    }
-  }
-}
+      directory: path.join(BASE_PATH, 'seeds'),
+    },
+  },
+};
